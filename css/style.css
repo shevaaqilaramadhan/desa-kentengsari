@@ -388,11 +388,12 @@ ul { list-style: none; }
   width: max-content; min-width: 100%; margin-inline: auto;
 }
 
-/* Garis struktural: vertikal dari induk, horizontal antar anak */
+/* Garis struktural: vertikal dari induk, horizontal antar anak.
+   Semua garis memakai background + border-radius agar ujungnya membulat (tidak kaku). */
 .org-children { position: relative; display: flex; justify-content: center; padding-top: 38px; }
 .org-children::before {
   content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 2px; height: 38px; background: var(--org-line);
+  width: 2px; height: 38px; background: var(--org-line); border-radius: 999px;
 }
 /* Titik junction di pertemuan garis vertikal dari induk dan bus horizontal.
    Kartu Kepala Desa sudah punya titik bawah sendiri (.org-node--head::after),
@@ -401,18 +402,22 @@ ul { list-style: none; }
   position: relative; display: flex; flex-direction: column; align-items: center;
   padding: 38px .85rem 0;
 }
-/* Setiap cabang punya dua pseudo-element:
+/* Setiap cabang punya dua pseudo-element (keduanya z-index:0, di belakang kartu & titik):
    ::before = bus horizontal (garis antar-cabang di bagian atas)
-   ::after  = drop-line vertikal tepat di tengah, turun ke titik sambung kartu */
-.org-branch::before, .org-branch::after { content: ""; position: absolute; top: 0; }
-/* Bus horizontal: penuh selebar cabang, tapi cabang pertama & terakhir hanya setengah */
-.org-branch::before { left: 0; right: 0; height: 0; border-top: 2px solid var(--org-line); }
+   ::after  = drop-line vertikal tepat di tengah, turun ke titik sambung kartu.
+   Keduanya memakai background + border-radius agar ujung garis membulat. */
+.org-branch::before, .org-branch::after {
+  content: ""; position: absolute; top: 0; z-index: 0;
+  background: var(--org-line); border-radius: 999px;
+}
+/* Bus horizontal: penuh selebar cabang, tapi cabang pertama & terakhir hanya setengah.
+   Sedikit dinaikkan (-1px) agar titik tengahnya sejajar dengan sumbu drop-line. */
+.org-branch::before { left: 0; right: 0; top: -1px; height: 2px; }
 .org-branch:first-child::before { left: 50%; }
 .org-branch:last-child::before { right: 50%; }
-/* Drop-line vertikal: selalu di tengah tiap cabang, konsisten untuk semua */
-.org-branch::after { left: 50%; transform: translateX(-50%); width: 0; height: 38px; border-left: 2px solid var(--org-line); }
-/* Sudut membulat pada pertemuan bus dan drop-line di cabang ujung */
-.org-branch:first-child::after { border-radius: 0; }
+/* Drop-line vertikal: di tengah tiap cabang, berhenti tepat di tepi titik sambung
+   (36px dari 38px) agar tidak tampak menembus ke belakang titik. */
+.org-branch::after { left: 50%; transform: translateX(-50%); width: 2px; height: 36px; }
 .org-branch:only-child::before, .org-branch:only-child::after { display: none; }
 .org-branch--root { padding-top: 0; }
 .org-branch--root::before, .org-branch--root::after { display: none; }
@@ -424,9 +429,9 @@ ul { list-style: none; }
 .org-chart.is-visible .org-children .org-branch:nth-child(3) { animation-delay: .45s; }
 @keyframes orgRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
-/* Kartu jabatan */
+/* Kartu jabatan — z-index:1 agar selalu berada DI ATAS garis struktural */
 .org-node {
-  position: relative; width: 245px;
+  position: relative; z-index: 1; width: 245px;
   background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius);
   padding: 1.5rem 1.4rem 1.3rem; text-align: center;
   box-shadow: var(--shadow-sm), inset 0 3px 0 var(--accent, transparent);
@@ -440,10 +445,10 @@ ul { list-style: none; }
 .org-children .org-branch:nth-child(1) .org-node { --accent: var(--green-600); }
 .org-children .org-branch:nth-child(2) .org-node { --accent: var(--green-500); }
 .org-children .org-branch:nth-child(3) .org-node { --accent: var(--green-700); }
-/* Titik sambung antara garis struktural dan kartu */
+/* Titik sambung antara garis struktural dan kartu — z-index:2 agar di atas garis */
 .org-branch:not(.org-branch--root) .org-node::before,
 .org-node--head::after {
-  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+  content: ""; position: absolute; z-index: 2; left: 50%; transform: translateX(-50%);
   width: 12px; height: 12px; border-radius: 50%;
   background: var(--green-600); border: 2.5px solid #fff;
   box-shadow: 0 0 0 2px var(--org-line);
