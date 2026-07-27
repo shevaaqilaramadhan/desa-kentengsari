@@ -1,0 +1,92 @@
+# ============================================================
+# .gitignore — Website Desa Kentengsari
+# Mencegah teruploadnya file sensitif, besar, dan tidak perlu
+# ============================================================
+
+# ---------- Rahasia & Kredensial ----------
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+secrets.json
+credentials.json
+*secret*
+*credential*
+config/production.*
+deploy-config.*
+
+# ---------- File Besar & Duplikat ----------
+# Arsip aset asli (55 MB, melebihi batas nyaman Git)
+assets_kentengsari.zip
+# Hasil ekstraksi = duplikat dari folder assets/
+assets_extracted/
+# File arsip/backup umum
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bak
+*.old
+*.orig
+
+# ---------- Dokumen Kerja / Mentah ----------
+# File riset & draf internal (opsional — hapus tanda # jika ingin ikut diupload)
+# kentengsari_research.md
+# kutavillage_analysis.md
+
+# ---------- Sistem Operasi ----------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ---------- Editor & IDE ----------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ---------- Python (skrip optimize_assets.py) ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+pip-log.txt
+
+# ---------- Node (jika suatu saat dipakai) ----------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ---------- Log & File Sementara ----------
+*.log
+*.tmp
+*.temp
+~$*
+# Profil browser sementara & screenshot hasil pengecekan visual lokal
+.edge-tmp/
+.edge-tmp-*/
+org-check-*.png
+
+# ---------- Folder Build & Deploy ----------
+dist/
+build/
+.vercel
+.netlify/
+.cache/
