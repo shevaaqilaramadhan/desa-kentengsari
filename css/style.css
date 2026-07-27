@@ -1,7 +1,7 @@
 /* ============================================================
    Website Profil Desa Kentengsari
    Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah
-   Adaptasi struktur kutavillage.com — putih & aksen hijau
+   Adaptasi struktur kutavillage.com Ã¢â‚¬â€ putih & aksen hijau
    ============================================================ */
 
 :root {
@@ -394,24 +394,25 @@ ul { list-style: none; }
   content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
   width: 2px; height: 38px; background: var(--org-line);
 }
-/* Titik sambung di pertemuan garis vertikal dan horizontal */
-.org-children::after {
-  content: ""; position: absolute; top: 38px; left: 50%; z-index: 1;
-  transform: translate(-50%, -50%);
-  width: 13px; height: 13px; border-radius: 50%;
-  background: var(--green-600); border: 3px solid #fff;
-  box-shadow: 0 0 0 2px var(--org-line);
-}
+/* Titik junction di pertemuan garis vertikal dari induk dan bus horizontal.
+   Kartu Kepala Desa sudah punya titik bawah sendiri (.org-node--head::after),
+   jadi titik ini dihilangkan agar tidak tampak ganda/bertumpuk. */
 .org-branch {
   position: relative; display: flex; flex-direction: column; align-items: center;
   padding: 38px .85rem 0;
 }
-.org-branch::before, .org-branch::after { content: ""; position: absolute; top: 0; height: 38px; }
-.org-branch::before { right: 50%; width: 50%; border-top: 2px solid var(--org-line); }
-.org-branch::after { left: 50%; width: 50%; border-top: 2px solid var(--org-line); border-left: 2px solid var(--org-line); }
-.org-branch:first-child::before, .org-branch:last-child::after { border: 0; }
-.org-branch:first-child::after { border-radius: 12px 0 0 0; }
-.org-branch:last-child::before { border-right: 2px solid var(--org-line); border-radius: 0 12px 0 0; }
+/* Setiap cabang punya dua pseudo-element:
+   ::before = bus horizontal (garis antar-cabang di bagian atas)
+   ::after  = drop-line vertikal tepat di tengah, turun ke titik sambung kartu */
+.org-branch::before, .org-branch::after { content: ""; position: absolute; top: 0; }
+/* Bus horizontal: penuh selebar cabang, tapi cabang pertama & terakhir hanya setengah */
+.org-branch::before { left: 0; right: 0; height: 0; border-top: 2px solid var(--org-line); }
+.org-branch:first-child::before { left: 50%; }
+.org-branch:last-child::before { right: 50%; }
+/* Drop-line vertikal: selalu di tengah tiap cabang, konsisten untuk semua */
+.org-branch::after { left: 50%; transform: translateX(-50%); width: 0; height: 38px; border-left: 2px solid var(--org-line); }
+/* Sudut membulat pada pertemuan bus dan drop-line di cabang ujung */
+.org-branch:first-child::after { border-radius: 0; }
 .org-branch:only-child::before, .org-branch:only-child::after { display: none; }
 .org-branch--root { padding-top: 0; }
 .org-branch--root::before, .org-branch--root::after { display: none; }
@@ -461,7 +462,7 @@ ul { list-style: none; }
 .org-node:not(.org-node--head) .org-node__role { color: var(--green-600); }
 .org-node:not(.org-node--head) .org-node__name { color: var(--green-950); }
 
-/* Kepala Desa — hijau solid, tanpa gradient */
+/* Kepala Desa Ã¢â‚¬â€ hijau solid, tanpa gradient */
 .org-node--head {
   width: 272px; background: var(--green-900); border-color: var(--green-900);
   color: #fff;
