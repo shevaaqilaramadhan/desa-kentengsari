@@ -9,8 +9,14 @@ if (-not $repoRoot) {
 
 Push-Location -LiteralPath $repoRoot
 try {
-    $baseHead = (git rev-parse HEAD).Trim()
-    $tracked = @(git diff --name-only --relative HEAD)
+    $mergeBase = git merge-base HEAD main 2>$null
+    if ($LASTEXITCODE -eq 0 -and $mergeBase) {
+        $baseHead = ([string]$mergeBase).Trim()
+    }
+    else {
+        $baseHead = (git rev-parse HEAD).Trim()
+    }
+    $tracked = @(git diff --name-only --relative $baseHead)
     $untracked = @(git ls-files --others --exclude-standard)
 
     $paths = @($tracked + $untracked) |

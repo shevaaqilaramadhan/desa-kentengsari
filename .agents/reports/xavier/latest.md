@@ -1,25 +1,27 @@
 # Xavier QA Gate Report
 
-- Waktu gate: 2026-08-11T23:27:11.7293597+07:00
-- Base HEAD: e75c410a801a4715179fc1cdb0799f0bfefc906e
-- Diff fingerprint: ab283fc6ebac5dc69e8a960e710acd3822b34dbdc785437101b6f45c2bc82076
-- Scope/diff: `css/style.css` dan `js/main.js`
-- File yang diperiksa: `css/style.css`, `js/main.js`, `umkm.html`, `.agents/reports/orion/latest.md`, `.agents/reports/lyra/latest.md`, dan `.agents/reports/litcq/latest.md`
+- Waktu gate: 2026-08-12T01:23:49.3704093+07:00
+- Base HEAD: `7a72f2d657c091666ad218b1f91fe2ee2db3c3ed`
+- Diff fingerprint: `f95b1d87c29fe3840af48c9db11041864ab9a50d76f5c854cf3345c39b7c06c9`
+- Scope/diff: Kandidat migrasi besar final, 76 file non-report terhadap `main`, mencakup fondasi Astro/React/Tailwind/Motion/TypeScript, delapan route, shared layout/components/styles, data dan island UMKM, aset publik, metadata/sitemap/OG, konfigurasi Vercel/CI, dokumentasi, serta suite regresi.
 - Orion: READY_FOR_AUDIT
 - Lyra: PASS
 - Litcq: PASS_WITH_NOTES
+- Keputusan: PUSH
 
 ## Ringkasan Keputusan
 
-Kandidat memenuhi permintaan terkoreksi pada Base HEAD dan fingerprint yang tercatat. Transisi `transform` flipper kartu berubah dari 0,7 detik menjadi 1 detik dan berlaku simetris saat membuka maupun menutup kartu. Durasi exit filter yang sebelumnya keliru dinaikkan dikembalikan ke konfigurasi awal 180 ms. Penghapusan paragraf instruksi dan tiga box statistik dari perubahan sebelumnya tetap dipertahankan. Tidak ada temuan blocker/high atau validasi penting yang gagal.
+Kandidat pada Base HEAD dan fingerprint yang tercatat memenuhi acceptance criteria migrasi. Instalasi bersih terkunci, pemeriksaan Astro/TypeScript, build static, dan 11 pengujian Chromium mode CI lulus secara independen pada gate ini. Build menghasilkan tepat delapan halaman dan artifact deployment 47 file tanpa sumber privat. Diff menyediakan 24 data UMKM dengan distribusi 7/12/4/1, filter multi-select dan exit 180 ms, flip/unflip 3D satu detik, akses keyboard/mouse/touch, state aksesibilitas, no-JS, reduced-motion, responsive 320/768/1280, metadata sosial, sitemap, dan konfigurasi Vercel `dist`.
+
+Tidak ada temuan blocker/high, laporan worker segar dan berscope sama, serta fingerprint tidak berubah sesudah seluruh pemeriksaan. Izin gate hanya berlaku untuk Base HEAD dan fingerprint di atas; perubahan file non-report membatalkannya.
 
 ## Validasi Laporan Worker
 
-- Ketiga laporan tersedia, lengkap, dan mencatat Base HEAD serta fingerprint yang identik dengan hasil hitung ulang Xavier.
-- Orion berstatus `READY_FOR_AUDIT` dan mencakup kedua file kode kandidat. Bukti Chromium-nya mencakup computed transition 1 detik, flip/unflip tanpa snap, exit filter terukur 180 ms, reduced-motion, rapid-toggle last-input-wins, sinkronisasi ARIA, pointer/keyboard/touch, no-JS, serta viewport 320/768/1280 px.
-- Lyra berstatus `PASS`, mencakup scope yang sama, dan secara independen memverifikasi pada Edge/Chromium headless bahwa kartu masih berada di tengah rotasi pada 500 ms, unflip masih bertransisi setelah pointer keluar 120 ms, lalu berakhir tepat di sisi depan. Lyra juga memverifikasi reduced-motion dan layout 1/2/3 kolom tanpa overflow.
-- Litcq berstatus `PASS_WITH_NOTES` dan mencakup scope kode yang sama beserta regresi pada `umkm.html`. Catatannya terbatas pada ketiadaan backend browser independen; pemeriksaan statis dan validasi sintaks tidak menemukan regresi.
-- Perubahan pada `.agents/reports/**` hanya artefak audit dan dikecualikan dari fingerprint resmi.
+- `.agents/reports/orion/latest.md` tersedia, lengkap, berstatus `READY_FOR_AUDIT`, dan mencatat Base HEAD/fingerprint yang identik. Scope Orion mencakup seluruh 76 file kandidat dan bukti clean install, check, build, 11 tes, route, artifact, interaksi, aksesibilitas, metadata, serta deployment.
+- `.agents/reports/lyra/latest.md` tersedia, lengkap, berstatus `PASS`, dan mencatat Base HEAD/fingerprint identik. Scope visual mencakup semua delapan route, design tokens/komponen bersama, viewport 320/768/1280, kartu UMKM, midpoint flip fisik, durasi, exit filter, reduced-motion, dan OG image.
+- `.agents/reports/litcq/latest.md` tersedia, lengkap, berstatus `PASS_WITH_NOTES`, dan mencatat Base HEAD/fingerprint identik. Scope teknis mencakup fondasi, lockfile, seluruh route/data/aset, metadata, Vercel, CI, private-source absence, serta suite regresi.
+- Ketiga laporan memeriksa kandidat final yang sama. Perubahan `.agents/reports/**` dikecualikan oleh script fingerprint resmi dan tidak mengubah identitas kandidat.
+- Temuan low Litcq mengenai port tes lokal diverifikasi langsung pada `playwright.config.js:8,11,23` dan `tests/serve-dist.mjs:41`. Port 4321 memang tetap dan server dapat dipakai ulang di luar CI, tetapi ketika `CI` aktif konfigurasi memaksa satu worker dan `reuseExistingServer: false`; workflow GitHub Actions juga berjalan dalam environment terisolasi. Risiko ini tidak memengaruhi runtime produk, build Vercel, atau validasi CI final.
 
 ## Blocking Issues
 
@@ -27,22 +29,35 @@ Tidak ada.
 
 ## Risiko yang Diterima
 
-- Litcq tidak dapat mengulang pengujian browser karena backend browser tidak tersedia. Percobaan browser Xavier juga gagal diluncurkan akibat pembatasan proses `spawn EPERM`. Risiko ini diterima karena bukti runtime independen Lyra dan bukti Chromium Orion lengkap, berasal dari fingerprint identik, dan konsisten dengan diff serta pemeriksaan statis Xavier.
-- Pengujian lintas-engine Firefox/WebKit, perangkat sentuh fisik, dan pembaca layar manusia tidak dilakukan. Diff tidak mengubah struktur kontrol atau jalur aksesibilitas; reduced-motion dan sinkronisasi state tetap tervalidasi.
-- Durasi satu detik sengaja membuat respons visual kartu lebih lambat daripada baseline 0,7 detik, sesuai koreksi pengguna.
+- Runner Playwright lokal non-CI dapat bentrok bila dua audit memakai port 4321 bersamaan. Dampaknya terbatas pada false failure atau salah-server di mesin pengembang; mode CI yang menjadi gate publikasi tidak menggunakan kembali server dan 11/11 tes lulus setelah clean install.
+- Audit browser otomatis hanya memakai Chromium headless. Firefox, WebKit, perangkat fisik, dan pembaca layar manusia belum diuji. Risiko diterima karena source memakai kontrol `button` native, state ARIA tersinkron, no-JS/reduced-motion tervalidasi, dan pengukuran responsive/overflow lulus.
+- Google Fonts dan Google Maps bergantung pada jaringan runtime. Font memiliki fallback sistem dan konten utama tidak bergantung pada resource eksternal tersebut.
+- Source legacy tracked tetap ada di root sebagai baseline non-runtime. `vercel.json` hanya menerbitkan `dist`; inspeksi artifact membuktikan 47 file output tidak memuat source privat, PDF, ZIP, atau Markdown.
+- Percobaan clean install pertama Xavier tertahan binary yang masih dikunci server preview audit pada port 4322. Setelah proses preview spesifik dihentikan, `npm ci` berhasil; pengulangan check/build/tes juga lulus. Ini merupakan kondisi environment audit, bukan cacat dependency atau kandidat.
+
+## Daftar File yang Diperiksa
+
+- Orkestrasi/kontrak: `AGENTS.md`, `.agents/contracts/astro-migration.md`, `.agents/get-change-fingerprint.ps1`, `.agents/orion.md`, `.agents/vega.md`, `.agents/nova.md`.
+- Build, CI, deployment, dan dokumentasi: `.github/workflows/playwright.yml`, `.gitignore`, `.vercelignore`, `README.md`, `astro.config.mjs`, `optimize_assets.py`, `package.json`, `package-lock.json`, `playwright.config.js`, `tsconfig.json`, `vercel.json`.
+- Shared application: `src/config/site.ts`, `src/types/site.ts`, `src/env.d.ts`, `src/styles/global.css`, `src/layouts/SiteLayout.astro`.
+- Komponen Astro: `src/components/astro/CallToAction.astro`, `DestinationCard.astro`, `InfoCard.astro`, `PageHero.astro`, `SectionHeading.astro`, dan `StatGrid.astro`.
+- Halaman: `src/pages/index.astro`, `profil-desa.astro`, `berita.astro`, `galeri.astro`, `dusun.astro`, `destinasi.astro`, `umkm.astro`, dan `kontak.astro`.
+- UMKM: `src/data/umkm.ts`, `src/components/react/UmkmExplorer.tsx`, serta 23 gambar `public/assets/umkm/*.webp`.
+- Public umum: 10 gambar/logo `public/assets/*.{jpg,png}`, `public/og.png`, dan `public/sitemap.xml`.
+- Tes: `tests/serve-dist.mjs`, `tests/site-parity.spec.ts`, dan `tests/umkm.spec.ts`.
+- Laporan yang divalidasi: `.agents/reports/orion/latest.md`, `.agents/reports/lyra/latest.md`, dan `.agents/reports/litcq/latest.md`.
 
 ## Pemeriksaan Xavier
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` setelah laporan worker selesai; hasilnya Base HEAD `e75c410a801a4715179fc1cdb0799f0bfefc906e` dan fingerprint `ab283fc6ebac5dc69e8a960e710acd3822b34dbdc785437101b6f45c2bc82076`.
-- Membaca diff langsung. `css/style.css:588` hanya mengubah durasi `.umkm-card__flipper` dari `.7s` menjadi `1s`; selector hover, focus, dan `.is-flipped` tetap menggunakan properti `transform` yang sama sehingga kedua arah memakai durasi serta easing yang sama.
-- Memastikan media query reduced-motion di `css/style.css:641-644` tetap menonaktifkan transisi flipper.
-- Memastikan `js/main.js:191-193` memulihkan exit filter menjadi 180 ms, stagger 18 ms maksimal 90 ms, dan `ease-in`; durasi reflow 540 ms serta enter 440 ms tidak berubah.
-- Memeriksa jalur interaksi `js/main.js:35-84`; click/touch, Enter, Spasi, Escape, outside pointer, dan focusout tetap melalui fungsi yang menyinkronkan class, `aria-expanded`, dan `aria-hidden`.
-- Memastikan mekanisme filter tetap membatalkan animasi lama, memakai token run terbaru, menyembunyikan kartu dengan `inert`/`tabIndex=-1`/`aria-hidden`, dan mengambil jalur instan untuk reduced-motion atau tanpa WAAPI.
-- Menjalankan `node --check js/main.js` dan `git diff --check`; keduanya lulus.
-- Menghitung struktur sumber: tetap terdapat 24 kartu, 24 muka depan, dan 24 muka belakang. Copy paragraf instruksi, tiga box statistik, selector `.umkm-summary`, dan konfigurasi exit 460 ms tidak ditemukan.
-- Memastikan Base HEAD tidak berubah dan kandidat kode tetap hanya `css/style.css` serta `js/main.js`.
-
-## Keputusan
-
-PUSH
+- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan sesudah validasi. Hasil tetap Base HEAD `7a72f2d657c091666ad218b1f91fe2ee2db3c3ed`, fingerprint `f95b1d87c29fe3840af48c9db11041864ab9a50d76f5c854cf3345c39b7c06c9`, dan 76 file kandidat non-report.
+- Membaca diff langsung terhadap Base HEAD, termasuk konfigurasi build/CI/deployment, shared layout/styles, seluruh halaman/komponen, data dan island UMKM, serta suite tes. `git diff --check` lulus.
+- Menjalankan `npm ci` setelah menghentikan server preview audit yang mengunci binary: 346 package terpasang, 347 package diaudit, 0 vulnerability.
+- Menjalankan `npm run check`: 27 file, 0 error, 0 warning, 0 hint.
+- Menjalankan `$env:CI='true'; npm test -- --reporter=line` setelah clean install: Astro static build lulus, tepat 8 halaman dibangun, dan 11/11 tes Chromium lulus dengan satu worker.
+- Memverifikasi langsung `astro.config.mjs` memakai output static dan `build.format: 'file'`; `vercel.json` memakai framework Astro, build `npm run build`, output `dist`, dan `cleanUrls: false` sehingga URL `.html` tetap dipertahankan.
+- Memverifikasi artifact `dist`: 47 file, tepat 8 HTML, 1 CSS, 3 JavaScript, 9 JPG, 2 PNG, 23 WebP, dan 1 XML; tidak ada PDF/ZIP/Markdown atau marker nama sumber privat.
+- Memverifikasi `src/data/umkm.ts` memuat tepat 24 record dalam urutan canonical dengan lokasi 7 Nglarangan, 12 Kenteng Krajan, 4 Kenteng Wetan, dan 1 belum terverifikasi.
+- Memverifikasi `UmkmExplorer.tsx` memakai perspective 1400 px, `preserve-3d`, Motion `rotateY`, durasi flip satu detik, exit filter 180 ms, reduced-motion, grid 1/2/3 kolom, kontrol button native, serta sinkronisasi `aria-expanded`/`aria-hidden`.
+- Memverifikasi copy instruksi panjang, tiga summary box, dan frasa status aktivitas yang diminta dihapus tidak hadir pada `src`, `public`, maupun `dist`.
+- Memverifikasi shared layout menghasilkan canonical, `og:url`, absolute `og:image`, metadata X/Twitter, dan social preview pada seluruh route; sitemap memuat delapan URL produksi.
+- Memverifikasi suite menguji no-JS SSR, filter/count/zero/rapid-toggle/stable order, physical midpoint dan flip/unflip, keyboard/mouse/touch/focus/Escape/outside, active-face accessibility, reduced-motion, galeri, kontak, mobile navigation, local references, metadata, serta overflow pada 320/768/1280.

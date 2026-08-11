@@ -12,13 +12,14 @@ const {
 } = Astro.props as SiteLayoutProps;
 
 const canonicalUrl = new URL(canonicalPath, SITE.origin);
+const socialImageUrl = new URL('/og.png', SITE.origin);
 ---
 
 <!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#1e6b3f" />
@@ -26,10 +27,19 @@ const canonicalUrl = new URL(canonicalPath, SITE.origin);
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL('/assets/hero-background.jpg', SITE.origin)} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:image" content={socialImageUrl.href} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1731" />
+    <meta property="og:image:height" content="909" />
+    <meta property="og:image:alt" content="Desa Kentengsari di lereng Gunung Sumbing" />
     <meta property="og:locale" content={SITE.locale} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="canonical" href={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl.href} />
+    <meta name="twitter:image:alt" content="Desa Kentengsari di lereng Gunung Sumbing" />
+    <link rel="canonical" href={canonicalUrl.href} />
     <link rel="icon" type="image/png" href="/assets/kentengsari-logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -139,7 +149,7 @@ const canonicalUrl = new URL(canonicalPath, SITE.origin);
       </div>
       <div class="border-t border-white/15 py-5">
         <div class="mx-auto flex w-[min(1120px,calc(100%-2rem))] flex-wrap justify-between gap-3 text-xs text-white/60">
-          <p>© <span data-current-year>{new Date().getFullYear()}</span> Pemerintah Desa Kentengsari.</p>
+          <p>© <span data-current-year>{new Date().getFullYear()}</span> Pemerintah Desa Kentengsari. Hak cipta dilindungi undang-undang.</p>
           <p>Dikembangkan dengan semangat gotong royong.</p>
         </div>
       </div>
@@ -166,6 +176,13 @@ const canonicalUrl = new URL(canonicalPath, SITE.origin);
 
       window.addEventListener('resize', () => {
         if (window.innerWidth >= 768) setNavigation(false);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+          setNavigation(false);
+          toggle.focus();
+        }
       });
     </script>
   </body>

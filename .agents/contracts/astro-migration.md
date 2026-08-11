@@ -6,9 +6,9 @@
 - Checkpoint worker: commit lokal akan dibuat oleh Master setelah Orion menyatakan `FOUNDATION_CHECKPOINT`
 - Output produksi: static HTML di `dist/`, `build.format: "file"`, dan URL lama berekstensi `.html`
 
-## Batas checkpoint fondasi
+## Riwayat checkpoint fondasi
 
-Checkpoint ini hanya menyediakan dependency, build, layout bersama, design tokens, kontrak data, aset publik, smoke route, dan titik mount React. Placeholder pada `src/pages/index.astro` dan `src/components/react/UmkmExplorer.tsx` bukan implementasi parity dan wajib diganti oleh worker sesuai kepemilikan di bawah. Source HTML/CSS/JS lama tetap berada di root sebagai baseline sampai integrasi final selesai.
+Checkpoint fondasi menyediakan dependency, build, layout bersama, design tokens, kontrak data, aset publik, smoke route, dan titik mount React. Placeholder checkpoint telah diganti pada checkpoint Vega dan Nova, lalu digabungkan pada branch integrasi untuk validasi parity final oleh Orion. Source HTML/CSS/JS lama tetap berada di root sebagai baseline non-runtime; Vercel hanya menerbitkan hasil Astro dari `dist/`.
 
 ## Kepemilikan file setelah checkpoint
 
@@ -148,7 +148,7 @@ import { umkmBusinesses } from '../data/umkm';
 
 - URL aset publik selalu absolut dari root: `/assets/...`.
 - `public/assets/**` hanya berasal dari file aset yang sudah tracked pada checkpoint.
-- Root `assets/**`, HTML lama, `css/style.css`, dan `js/main.js` dipertahankan sebagai baseline; jangan dihapus sebelum integrasi final selesai.
+- Runtime produksi bersumber dari `src/**` dan `public/**`, lalu dibangun ke `dist/`. Root `assets/**`, HTML lama, `css/style.css`, dan `js/main.js` bukan input build atau deployment.
 - Sumber berikut exact-path ignored dan dilarang masuk `public/` maupun `dist/`:
   - `assets/DATA UMKM GIAT 16 DESA KENTENGSARI - Form Responses 1.pdf`
   - `assets/Panduan Integrasi Desain Card Flip UMKM.md`
@@ -162,5 +162,5 @@ import { umkmBusinesses } from '../data/umkm';
 2. Master membuat branch/worktree Vega dan Nova dari commit yang identik.
 3. Worker hanya mengubah scope miliknya dan menulis laporan masing-masing.
 4. Master membuat checkpoint lokal worker dan menggabungkan secara mekanis ke branch integrasi.
-5. Orion melakukan integrasi semantik, parity/regression validation, dan baru kemudian membuat fingerprint final `READY_FOR_AUDIT`.
+5. Orion melakukan integrasi semantik, parity/regression validation, memasang metadata social card bersama, dan baru kemudian membuat fingerprint final `READY_FOR_AUDIT`.
 6. Lyra/Litcq/Xavier hanya memeriksa kandidat final, bukan checkpoint fondasi ini.

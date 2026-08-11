@@ -1,14 +1,14 @@
 # Lyra Report
 
-- Waktu audit: 2026-08-11T23:25:07+07:00
-- Base HEAD: e75c410a801a4715179fc1cdb0799f0bfefc906e
-- Diff fingerprint: ab283fc6ebac5dc69e8a960e710acd3822b34dbdc785437101b6f45c2bc82076
-- Scope: `css/style.css` dan `js/main.js`; audit visual animasi flip/unflip kartu UMKM, reduced motion, exit filter, keberlanjutan penghapusan paragraf/statistik sebelumnya, serta layout responsif.
+- Waktu audit: 2026-08-12T01:15:59.0224189+07:00
+- Base HEAD: `7a72f2d657c091666ad218b1f91fe2ee2db3c3ed`
+- Diff fingerprint: `f95b1d87c29fe3840af48c9db11041864ab9a50d76f5c854cf3345c39b7c06c9`
+- Scope: Kandidat migrasi final 76 file terhadap `main`; delapan route Astro, shared layout/components/design tokens, halaman dan island UMKM React/Motion, responsive 320/768/1280, serta social preview `public/og.png`.
 - Status: PASS
 
 ## Ringkasan
 
-Perubahan menempatkan tambahan durasi pada animasi yang dimaksud pengguna: flip dan unflip kartu kini berlangsung 1 detik dengan kurva yang sama pada kedua arah. Gerak terlihat halus dan natural, tidak snap ketika hover/focus keluar, sementara exit filter kembali singkat pada 180 ms sehingga penyaringan tidak terasa tertahan. Bahasa visual kartu, filter, hierarchy, dan layout responsif tetap konsisten.
+Kandidat final mempertahankan satu bahasa visual Kentengsari yang konsisten pada seluruh delapan halaman: palet hijau, tipografi Plus Jakarta Sans dengan system fallback, skala radius/bayangan, ritme section, container, hierarchy heading, tombol, kartu, form, header, hero, dan footer memakai token serta komponen bersama. Halaman UMKM mengikuti sistem yang sama dan animasi flip memiliki bukti transformasi 3D fisik pada midpoint, flip/unflip satu detik, transisi filter 180 ms, serta versi reduced-motion. Tidak ditemukan inkonsistensi visual yang perlu ditindaklanjuti.
 
 ## Temuan
 
@@ -16,17 +16,18 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menghitung fingerprint resmi sebelum dan sesudah audit; Base HEAD dan fingerprint sama dengan laporan Orion.
-- Memeriksa diff kandidat: `.umkm-card__flipper` berubah dari 0,7 detik menjadi 1 detik tanpa perubahan kurva `cubic-bezier(.4, .2, .2, 1)` (`css/style.css:585-589`), sedangkan exit filter kembali ke 180 ms, stagger maksimum 90 ms, dan `ease-in` (`js/main.js:183-196`).
-- Menjalankan Microsoft Edge/Chromium headless lokal dan memverifikasi computed transition `1s`. Pada 500 ms kartu masih berada di tengah rotasi; setelah hover keluar selama 120 ms transform juga masih berada di antara 180 dan 0 derajat, lalu berakhir tepat pada sisi depan. Bukti ini menunjukkan flip dan unflip menggunakan interpolasi yang sama dan tidak snap.
-- Memeriksa tampilan sisi depan dan belakang pada viewport 1280 px. Border, radius, bayangan, badge, gambar, hierarchy judul/detail, warna hijau, dan keterbacaan tetap konsisten dengan design system.
-- Memeriksa viewport 320, 768, dan 1280 px: grid masing-masing 1, 2, dan 3 kolom; seluruh 24 kartu tampil; tidak ada horizontal overflow.
-- Memverifikasi `prefers-reduced-motion: reduce` menghasilkan computed duration `0s`/transition `none` pada flipper (`css/style.css:641-645`).
-- Memastikan tidak ada perubahan HTML pada kandidat. Paragraf instruksi spesifik yang dihapus pada pekerjaan sebelumnya dan wrapper `.umkm-summary` tetap tidak ada; tiga box statistik tidak muncul pada pemeriksaan visual desktop/mobile.
-- Meninjau bukti Orion untuk state click/touch, Enter/Space, Escape, outside/focusout, ARIA, rapid filter toggle, dan no-JS sebagai konteks pendukung; audit Lyra berfokus pada hasil visualnya.
-- Menjalankan `git diff --check`; tidak ada error whitespace.
+- Menghitung ulang fingerprint resmi sebelum dan sesudah validasi. Base HEAD dan fingerprint identik dengan laporan Orion.
+- Menelaah token warna, tipografi, radius, shadow, focus ring, dan reduced-motion di `src/styles/global.css:3`, `src/styles/global.css:43`, dan `src/styles/global.css:81`.
+- Memeriksa konsistensi header, navigasi aktif, container, footer, serta breakpoint mobile/desktop pada `src/layouts/SiteLayout.astro:60` dan `src/layouts/SiteLayout.astro:113`.
+- Memeriksa template presentasional bersama: `src/components/astro/PageHero.astro:11`, `src/components/astro/SectionHeading.astro:14`, `src/components/astro/InfoCard.astro:10`, `src/components/astro/DestinationCard.astro:13`, `src/components/astro/StatGrid.astro:15`, dan `src/components/astro/CallToAction.astro:11`.
+- Membandingkan hierarchy, spacing, grid, kartu, imagery, CTA, galeri/dialog, peta, dan form pada `/index.html`, `/profil-desa.html`, `/berita.html`, `/galeri.html`, `/dusun.html`, `/destinasi.html`, `/umkm.html`, dan `/kontak.html` melalui source Astro dan hasil build produksi.
+- Memeriksa sistem visual UMKM: perspective 1400 px (`src/components/react/UmkmExplorer.tsx:124`), `preserve-3d` (`src/components/react/UmkmExplorer.tsx:144`), front/back face, depth, midpoint lighting (`src/components/react/UmkmExplorer.tsx:243`), shadow/scale, active filter state, count badge, empty state, dan grid 1/2/3 kolom (`src/components/react/UmkmExplorer.tsx:423`).
+- Memastikan paragraf instruksi panjang dan tiga summary box yang diminta dihapus tidak hadir; assertion regresinya terdapat di `tests/umkm.spec.ts:118`. Filter hanya menampilkan state aktif melalui styling tombol/`aria-pressed`, tanpa checklist atau label status aktivitas.
+- Menjalankan build produksi dan seluruh suite Chromium Playwright: 8 halaman berhasil dibangun dan 11/11 test lulus. Suite membuktikan tidak ada horizontal overflow di semua route pada 320/768/1280 (`tests/site-parity.spec.ts:184`), grid UMKM 1/2/3 kolom (`tests/umkm.spec.ts:247`), exit filter sekitar 180 ms (`tests/umkm.spec.ts:58`), physical midpoint serta flip/unflip 0,9–1,15 detik (`tests/umkm.spec.ts:124`), dan reduced-motion instan (`tests/umkm.spec.ts:230`).
+- Memeriksa `public/og.png` pada resolusi asli: logo, judul, lokasi, kontras overlay, dan komposisi gunung/desa terbaca jelas dan selaras dengan identitas hijau website.
+- Menjalankan `git diff --check`; tidak ada whitespace error.
 
 ## Batasan
 
-- Audit browser independen dilakukan pada Microsoft Edge berbasis Chromium secara headless; tidak dilakukan perbandingan visual lintas-engine Firefox/Safari.
-- Timing exit filter dan sinkronisasi state interaksi merupakan ranah utama Litcq; Lyra menilai dampak visual dan menggunakan bukti Orion sebagai pendukung.
+- Browser interaktif bawaan tidak tersedia pada sesi audit (`agent.browsers.list()` mengembalikan daftar kosong), sehingga tidak ada inspeksi screenshot manual seluruh halaman atau pengujian visual Firefox/WebKit. Audit visual runtime memakai suite Chromium Playwright yang ada, pengukuran computed layout/transform di suite tersebut, inspeksi source/build, dan inspeksi visual langsung untuk social preview.
+- Google Fonts dan Google Maps memerlukan jaringan runtime. Layout menyediakan font fallback dan pengujian overflow tidak bergantung pada koneksi eksternal, tetapi variasi rendering font antarplatform tetap mungkin kecil.

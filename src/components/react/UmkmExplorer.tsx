@@ -44,8 +44,9 @@ interface UmkmCardProps {
 
 function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) {
   const shouldReduceMotion = useReducedMotion();
-  const cardRef = useRef<HTMLElement>(null);
   const pointerFocusRef = useRef(false);
+  const touchBlurRef = useRef(false);
+  const activationPointerRef = useRef<string | null>(null);
   const rotation = useMotionValue(flipped ? 180 : 0);
   const edgeDistance = useTransform(rotation, (value) => Math.abs(90 - value) / 90);
   const cardScale = useTransform(edgeDistance, [0, 1], [0.955, 1]);
@@ -68,11 +69,24 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
     return () => playback.stop();
   }, [flipped, rotation, shouldReduceMotion]);
 
-  const handlePointerDown = () => {
+  const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
+    activationPointerRef.current = event.pointerType;
+    touchBlurRef.current = event.pointerType === 'touch' || event.pointerType === 'pen';
     pointerFocusRef.current = true;
     window.setTimeout(() => {
       pointerFocusRef.current = false;
     }, 0);
+  };
+
+  const handleClick = () => {
+    const pointerType = activationPointerRef.current;
+    activationPointerRef.current = null;
+    onFlipChange(pointerType === 'mouse' ? true : !flipped);
+    if (touchBlurRef.current) {
+      window.setTimeout(() => {
+        touchBlurRef.current = false;
+      }, 300);
+    }
   };
 
   const handlePointerEnter = (event: PointerEvent<HTMLElement>) => {
@@ -88,14 +102,12 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
   };
 
   const handleBlur = (event: FocusEvent<HTMLElement>) => {
+    if (touchBlurRef.current) return;
     if (!event.currentTarget.contains(event.relatedTarget)) onFlipChange(false);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onFlipChange(!flipped);
-    } else if (event.key === 'Escape') {
+    if (event.key === 'Escape') {
       event.preventDefault();
       onFlipChange(false);
     }
@@ -108,28 +120,16 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
 
   return (
     <div
-      className="h-full [perspective:1400px]"
+      data-umkm-card-shell
+      className="relative h-full [perspective:1400px]"
       onPointerEnter={enhanced ? handlePointerEnter : undefined}
       onPointerLeave={enhanced ? handlePointerLeave : undefined}
     >
       <motion.article
-        ref={cardRef}
         data-umkm-card
-        role={enhanced ? 'button' : undefined}
-        tabIndex={enhanced ? 0 : undefined}
-        aria-label={
-          enhanced
-            ? `${flipped ? 'Tutup' : 'Buka'} detail UMKM ${business.name}, produk ${business.product}`
-            : undefined
-        }
-        aria-expanded={enhanced ? flipped : undefined}
-        aria-controls={enhanced ? detailId : undefined}
-        aria-describedby={enhanced ? instructionId : undefined}
-        onClick={enhanced ? () => onFlipChange(!flipped) : undefined}
-        onPointerDown={enhanced ? handlePointerDown : undefined}
-        onFocus={enhanced ? handleFocus : undefined}
-        onBlur={enhanced ? handleBlur : undefined}
-        onKeyDown={enhanced ? handleKeyDown : undefined}
+        data-umkm-id={business.id}
+        data-umkm-flip-surface
+        data-flipped={enhanced ? String(flipped) : undefined}
         className={`group relative h-full min-w-0 rounded-card ${
           enhanced ? 'min-h-[26rem] cursor-pointer touch-manipulation' : ''
         }`}
@@ -147,6 +147,7 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
         }
       >
         <section
+          data-umkm-face="front"
           aria-hidden={enhanced ? flipped : undefined}
           className={`${faceBase} ${uncertainBorder}`}
           style={enhanced ? { transform: 'translateZ(1px)' } : undefined}
@@ -189,6 +190,7 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
         </section>
 
         <section
+          data-umkm-face="back"
           id={detailId}
           aria-hidden={enhanced ? !flipped : undefined}
           className={`${faceBase} ${uncertainBorder} ${
@@ -238,23 +240,41 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
         {enhanced && !shouldReduceMotion && (
           <>
             <motion.span
+              data-umkm-lighting
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 z-10 rounded-card bg-gradient-to-r from-transparent via-white to-kenteng-950 mix-blend-soft-light [backface-visibility:hidden]"
               style={{ opacity: lightOpacity, transform: 'translateZ(2px)' }}
             />
             <motion.span
+              data-umkm-lighting
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 z-10 rounded-card bg-gradient-to-l from-transparent via-white to-kenteng-950 mix-blend-soft-light [backface-visibility:hidden]"
               style={{ opacity: lightOpacity, transform: 'rotateY(180deg) translateZ(2px)' }}
             />
           </>
         )}
-        {enhanced && (
+      </motion.article>
+      {enhanced && (
+        <>
+          <button
+            data-umkm-flip-control
+            type="button"
+            aria-label={`${flipped ? 'Tutup' : 'Buka'} detail UMKM ${business.name}, produk ${business.product}`}
+            aria-expanded={flipped}
+            aria-controls={detailId}
+            aria-describedby={instructionId}
+            onClick={handleClick}
+            onPointerDown={handlePointerDown}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="absolute inset-0 z-20 cursor-pointer rounded-card border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-amber-300"
+          />
           <span id={instructionId} className="sr-only">
             Gunakan Enter atau Spasi untuk membalik kartu dan Escape untuk menutup detail.
           </span>
-        )}
-      </motion.article>
+        </>
+      )}
     </div>
   );
 }
@@ -272,7 +292,7 @@ export default function UmkmExplorer({ businesses, initialFilters }: UmkmExplore
   useEffect(() => {
     const closeOnOutsideInteraction = (event: globalThis.PointerEvent) => {
       const target = event.target;
-      if (!(target instanceof Element) || !target.closest('[data-umkm-card]')) {
+      if (!(target instanceof Element) || !target.closest('[data-umkm-card-shell]')) {
         setFlippedCardId(null);
       }
     };

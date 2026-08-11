@@ -1,39 +1,40 @@
 # Litcq Report
 
-- Waktu audit: 2026-08-11T23:21:55+07:00
-- Base HEAD: e75c410a801a4715179fc1cdb0799f0bfefc906e
-- Diff fingerprint: ab283fc6ebac5dc69e8a960e710acd3822b34dbdc785437101b6f45c2bc82076
-- Scope: `css/style.css`, `js/main.js`; regresi terkait `umkm.html` dan laporan implementasi Orion
+- Waktu audit: 2026-08-12T01:18:23.9580505+07:00
+- Base HEAD: `7a72f2d657c091666ad218b1f91fe2ee2db3c3ed`
+- Diff fingerprint: `f95b1d87c29fe3840af48c9db11041864ab9a50d76f5c854cf3345c39b7c06c9`
+- Scope: Kandidat migrasi final 76 file terhadap `main`: fondasi Astro 7/React 19/Tailwind 4/Motion 13, delapan route publik, shared layout, data dan island UMKM, seluruh aset publik, metadata/sitemap, Vercel static output, workflow, lockfile, dan suite Playwright.
 - Status: PASS_WITH_NOTES
 
 ## Ringkasan
 
-Perubahan tepat mengoreksi target durasi: flip dan unflip `.umkm-card__flipper` kini memakai transisi `transform` simetris 1 detik, sedangkan exit filter kembali ke konfigurasi awal 180 ms. Tidak ditemukan bug fungsional atau regresi yang dapat ditindaklanjuti pada diff. Jalur state kartu, keyboard/pointer, ARIA, reduced-motion, pembatalan rapid filter, urutan/kalkulasi jumlah, fallback tanpa JavaScript, referensi lokal, dan breakpoint responsif tetap utuh secara statis. Bukti Chromium Orion juga meliputi seluruh interaksi dan viewport material yang diminta.
+Tidak ditemukan bug blocker/high maupun regresi fungsi website pada fingerprint final. Clean install, Astro/TypeScript check, static build, dan suite Chromium mode CI lulus; build menghasilkan tepat delapan halaman dan 47 file deployment. Sebelas pengujian browser membuktikan parity route, referensi lokal, metadata/social sharing, nav, galeri, kontak, no-JS, 24 data UMKM, filter, flip 3D, seluruh input, aksesibilitas state, reduced-motion, dan responsive grid. Satu catatan low hanya menyangkut isolasi server pengujian lokal saat auditor berjalan paralel; workflow CI tidak terkena karena menggunakan server non-reuse dan satu worker.
 
 ## Temuan
 
-### [note] Browser interaktif Litcq tidak tersedia
-- Bukti: runtime browser auditor mengembalikan daftar backend kosong (`[]`), sehingga Litcq tidak dapat menjalankan pengujian browser independen pada sesi ini.
-- Dampak: computed style, accessibility tree, timing aktual, touch, dan overflow tidak diukur ulang secara independen oleh Litcq.
-- Rekomendasi: Xavier dapat memverifikasi bukti Chromium pada `.agents/reports/orion/latest.md`; Orion mencatat computed duration `1s`, unflip tanpa snap, sinkronisasi ARIA untuk seluruh input, exit terukur 180 ms, rapid-toggle last-input-wins, reduced-motion, no-JS, serta viewport 320/768/1280 px tanpa overflow.
+### [low] Runner Playwright lokal dapat memakai server audit lain pada port tetap
+- Bukti: `playwright.config.js:11`, `playwright.config.js:22-23`, dan `tests/serve-dist.mjs:41` memakai port tetap 4321 serta `reuseExistingServer: true` di luar CI. Saat Lyra dan Litcq berjalan paralel, percobaan `npm test -- --reporter=line` pertama menempel ke server audit lain dan menghasilkan tiga kegagalan 404 (`/index.html` dan `/umkm.html`). Setelah server paralel ditutup, pengulangan dengan `CI=true` pada fingerprint identik lulus 11/11.
+- Dampak: pengembang atau auditor lokal yang menjalankan preview/test bersamaan dapat memperoleh false failure atau, lebih buruk, menguji artifact dari proses lain. Produk dan GitHub Actions tidak terdampak pada konfigurasi sekarang karena `playwright.config.js:8,23` menetapkan satu worker dan melarang reuse saat `CI` aktif.
+- Rekomendasi: pada pekerjaan lanjutan, beri port unik yang dapat dikonfigurasi per worktree/auditor atau nonaktifkan `reuseExistingServer` untuk perintah validasi kandidat. Catatan ini tidak memblokir deployment karena suite CI final lulus penuh.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum audit: Base HEAD dan fingerprint cocok dengan laporan Orion; scope kode hanya `css/style.css` dan `js/main.js`.
-- Memeriksa diff: `css/style.css:588` mengubah satu-satunya durasi flipper dari `.7s` menjadi `1s`; karena transition berada pada base rule, arah flip dan unflip memakai durasi/easing yang sama. Selector hover dan state `.is-flipped` tetap mengubah properti `transform` yang sama (`css/style.css:592-596`).
-- Memeriksa exit filter: `js/main.js:191-193` kembali ke `duration: 180`, stagger 18 ms maksimal 90 ms, dan `ease-in`; konfigurasi 460 ms tidak lagi ditemukan. Durasi reflow 540 ms dan enter 440 ms tetap tidak berubah.
-- Menelusuri kontrol kartu pada `js/main.js:35-84`: click/touch, Enter, Spasi, Escape, outside `pointerdown`, dan `focusout` tetap menuju `setCardExpanded`; fungsi yang sama menyinkronkan `.is-flipped`, `aria-expanded`, dan `aria-hidden` kedua muka kartu.
-- Memeriksa aksesibilitas fungsional: 24 kartu tetap memiliki `tabindex="0"`; JavaScript memberi `role="button"`, label, `aria-controls`, dan ID detail unik. Filter tersembunyi memakai `inert`, `tabIndex=-1`, `aria-hidden`, dan `hidden`. Live result count tetap memakai `aria-live="polite"` serta `aria-atomic="true"`.
-- Memeriksa reduced-motion: media query `prefers-reduced-motion: reduce` menghapus transition flipper (`css/style.css:641-644`), dan jalur filter menjadi instan ketika media query cocok atau WAAPI tidak tersedia (`js/main.js:163-178`).
-- Memeriksa filter FLIP dan rapid toggle secara statis: setiap run membatalkan animasi lama, menaikkan token `filterRun`, mengabaikan completion kedaluwarsa, dan mempertahankan urutan DOM melalui array `cards`. Jumlah sumber cocok: 24 total = 7 Nglarangan + 12 Kenteng Krajan + 4 Kenteng Wetan + 1 belum terverifikasi; kombinasi Nglarangan dan Kenteng Krajan adalah 19.
-- Memeriksa fallback no-JS: filter tetap `hidden`; rule `.umkm-card:focus .umkm-card__flipper` tetap membuka detail, sementara override `.js` hanya aktif ketika script berjalan (`css/style.css:590-594`, `js/main.js:4`).
-- Memeriksa responsif secara statis: grid 3 kolom default, 2 kolom pada breakpoint tablet, dan 1 kolom pada breakpoint kecil; `minmax(0, 1fr)`, `min-width: 0`, serta `overflow-wrap` tetap tersedia untuk mencegah overflow.
-- Menjalankan `node --check js/main.js` dan `git diff --check`; keduanya lulus.
-- Memeriksa 33 referensi lokal pada `umkm.html`; semuanya ada. Struktur kartu konsisten: 24 artikel, 24 muka depan, dan 24 muka belakang.
-- Memastikan copy instruksi yang diminta, tiga box statistik, selector `.umkm-summary`, dan konfigurasi exit 460 ms tetap tidak ditemukan.
-- Membaca bukti validasi Chromium Orion pada `.agents/reports/orion/latest.md`: flip/unflip 1 detik tanpa snap; hover/focus/click/touch/Enter/Spasi/Escape/outside/focusout dan ARIA lulus; exit 180 ms; rapid toggle/count 19; reduced-motion/no-JS; viewport 320/768/1280 tanpa overflow.
+- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan sesudah audit; Base HEAD dan fingerprint selalu identik dengan laporan Orion: `7a72f2d...` / `f95b1d...`, dengan 76 file kandidat.
+- Menjalankan `npm ci`: 346 package terpasang, 0 vulnerability. Menjalankan `npm run check`: 27 file, 0 error, 0 warning, 0 hint. `npm ls --all` keluar dengan status 0.
+- Menjalankan build produksi melalui `CI=true npm test -- --reporter=line`: tepat 8 halaman (`index`, `profil-desa`, `berita`, `galeri`, `dusun`, `destinasi`, `umkm`, `kontak`) dan 11/11 test Chromium lulus dalam 16 detik.
+- Memverifikasi route, title/description, canonical, absolute `og:url`/`og:image`, metadata X/Twitter, sitemap, nav aktif, footer, unique IDs, seluruh local link/aset, dan OG image melalui `tests/site-parity.spec.ts`; implementasi shared metadata berada di `src/layouts/SiteLayout.astro:14,30-42`.
+- Memverifikasi menu mobile (open/close/Escape/focus return), delapan halaman tanpa overflow pada 320/768/1280 px, enam trigger galeri beserta close/Escape/backdrop/focus return, dan form kontak fallback/enhancement `mailto:` (`src/pages/kontak.astro:31,56`).
+- Memverifikasi canonical data 24 UMKM dalam urutan sumber dan distribusi 7 Nglarangan, 12 Kenteng Krajan, 4 Kenteng Wetan, 1 belum terverifikasi (`src/data/umkm.ts:6-271`). Filter count 24/7/12/4/1, multi-select union, zero state, canonical order, rapid toggle, serta exit terukur 180 ms lulus.
+- Memverifikasi physical flip/unflip: midpoint matrix/depth, `preserve-3d`, lighting/shadow, target satu detik, interruption recovery, hover/click/touch/focus/Enter/Spasi/Escape/outside/focusout. State `aria-expanded`, `aria-controls`, `aria-describedby`, dan `aria-hidden` kedua muka tersinkron (`src/components/react/UmkmExplorer.tsx:151,195,263-270`).
+- Memverifikasi reduced-motion menyelesaikan flip/filter secara instan, SSR/no-JS tetap menampilkan 24 front/back detail dalam urutan canonical dan menonaktifkan filter dengan jujur, serta grid UMKM menjadi 1/2/3 kolom tanpa overflow (`src/components/react/UmkmExplorer.tsx:283,423`).
+- Memastikan copy/box yang diminta dihapus tidak ditemukan: paragraf instruksi panjang, `24 usaha terdata`, `3 dusun teridentifikasi`, `6+ bidang usaha`, dan frasa `belum terverifikasi aktif` semuanya 0 match pada `src`, `public`, dan `dist`.
+- Memeriksa artifact `dist`: 47 file, tepat 8 `.html`, tidak ada PDF/ZIP/Markdown atau marker nama sumber privat. `public/og.png` dan `dist/og.png` byte-identik dengan SHA-256 `74B035B5BB4853CF08D175E2408922075F6F68ECC487D871F3F00FDFD5ADCFA6`.
+- Memastikan PDF survei, panduan Markdown, direktori/ZIP redesign, arsip aset, dan hasil ekstraksi di-ignore secara eksplisit. `vercel.json:4-6` hanya membangun Astro ke `dist` dengan `cleanUrls: false`; root legacy tidak masuk 47-file artifact deployment.
+- Memeriksa `astro.config.mjs:6-9`, `vercel.json:4-6`, `.github/workflows/playwright.yml:17-28`, `package.json`, dan `package-lock.json` untuk static file routing, Node 22, clean install, check/build/test, serta dependency version yang terkunci.
+- Menjalankan `git diff --check` terhadap Base HEAD; lulus tanpa whitespace error.
 
 ## Batasan
 
-- Audit browser independen tidak dapat dijalankan karena tidak ada backend browser yang tersedia pada runtime Litcq. Hasil runtime bergantung pada bukti Chromium Orion dan pemeriksaan statis Litcq.
-- Pengujian lintas-engine Firefox/WebKit tidak tersedia.
+- Browser in-app tidak tersedia pada sesi Litcq (daftar backend kosong), sehingga eksekusi interaktif independen dilakukan melalui suite Chromium Playwright milik repo, bukan kontrol browser in-app.
+- Audit runtime hanya menggunakan Chromium headless. Firefox, WebKit, perangkat fisik, integrasi klien email untuk `mailto:`, dan pemuatan eksternal Google Fonts/Google Maps tidak diuji end-to-end.
+- Source HTML/CSS/JS legacy tetap berada di root repository sebagai baseline non-runtime; kesimpulan aman deployment berdasarkan `outputDirectory: "dist"` dan inspeksi 47 file hasil build.

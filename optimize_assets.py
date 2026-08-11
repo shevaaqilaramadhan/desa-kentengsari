@@ -2,7 +2,7 @@
 from PIL import Image
 from pathlib import Path
 
-ASSETS = Path(r"D:\testing-web-cline\assets")
+ASSETS = Path(__file__).resolve().parent / "public" / "assets"
 
 # (nama file, lebar maksimum, kualitas JPEG)
 JOBS = [
