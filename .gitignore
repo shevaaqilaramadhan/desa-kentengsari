@@ -64,6 +64,7 @@ $RECYCLE.BIN/
 *~
 .project
 .settings/
+/.worktrees/
 
 # ---------- Python (skrip optimize_assets.py) ----------
 __pycache__/

@@ -1,7 +1,8 @@
 # Orion Foundation Checkpoint Report
 
-- Waktu implementasi: 2026-08-12T00:33:45+07:00
-- Base HEAD: `f75166d271c8b8e2ebf9d7c90df8158bb025d709`
+- Waktu implementasi: 2026-08-12T00:35:58+07:00
+- Base HEAD: `0a392ceef7decd8831c53586fbaea67d0aa78719`
+- Base fondasi awal: `f75166d271c8b8e2ebf9d7c90df8158bb025d709`
 - Branch/worktree: `migration/astro-react-motion` / `D:\testing-web-cline`
 - Diff fingerprint: N/A — checkpoint fondasi migrasi, bukan kandidat audit final
 - Permintaan/scope: Menyiapkan fondasi build production Astro + React islands + Tailwind CSS 4 + Motion + TypeScript, kontrak data/route/ownership, aset publik aman, Vercel static output, dan smoke scaffold untuk paralelisasi Vega/Nova tanpa memigrasikan parity konten final.
@@ -18,6 +19,7 @@
 - Menyalin hanya 33 aset tracked ke `public/assets/**` dan mempertahankan seluruh HTML/CSS/JS/aset root lama sebagai baseline. PDF sumber, panduan desain, folder/ZIP redesign, dan arsip lokal tetap exact-path ignored serta tidak masuk `public/`/`dist/`.
 - Mengganti setup Playwright lokal lama dengan smoke suite produksi dan workflow QA yang menjalankan install bersih, check, build, serta Chromium.
 - Menulis kontrak handoff eksplisit pada `.agents/contracts/astro-migration.md` untuk kepemilikan Orion/Vega/Nova, delapan URL, route/layout props, design tokens, schema UMKM, titik mount island, dan kebijakan aset privat.
+- Setelah Master membuat commit checkpoint lokal `0a392ce`, menambahkan hanya aturan `/.worktrees/` ke `.gitignore` agar worktree nested Vega/Nova tidak masuk kandidat perubahan branch integrasi.
 
 ## File yang Berubah
 
@@ -64,11 +66,11 @@
 - Pemeriksaan aset — 33 file pada `public/assets/**`, identik jumlahnya dengan 33 aset source tracked.
 - Pemeriksaan eksklusi sumber privat pada `public/` dan `dist/` — 0 PDF/ZIP/panduan/folder redesign terdeteksi; seluruh exact path juga tetap dikenali oleh `git check-ignore`.
 - `git diff --check` — lulus tanpa whitespace error.
-- Git status terakhir mempertahankan Base HEAD `f75166d271c8b8e2ebf9d7c90df8158bb025d709`; tidak ada commit, push, merge, deployment, atau perubahan pada source legacy root.
+- Follow-up orkestrasi pada Base HEAD `0a392ceef7decd8831c53586fbaea67d0aa78719`: `git diff --check` lulus dan `git check-ignore -v -- .worktrees/` mengonfirmasi aturan `/.worktrees/` aktif. Hanya `.gitignore` yang berubah di luar artefak laporan; Orion tidak melakukan commit, push, merge, deployment, atau perubahan source website.
 
 ## Kontrak Handoff
 
-- Master dapat membuat commit checkpoint lokal dari status ini; commit tersebut bukan izin push.
+- Master telah membuat commit checkpoint lokal `0a392ce`; commit tersebut bukan izin push. Worktree Vega/Nova dapat dibuat di `.worktrees/` tanpa muncul sebagai kandidat perubahan.
 - Vega menerima `src/pages/**`, `src/components/astro/**`, dan `src/content/**`; Vega mengganti seluruh placeholder dengan parity konten tetapi tidak mengubah shared files atau React island.
 - Nova menerima `src/components/react/**`; Nova mengganti stub `UmkmExplorer.tsx` dengan filter/flip/motion production sambil mempertahankan `UmkmExplorerProps` dan default export.
 - Vega memasang island hanya dengan import `UmkmExplorer`, import `umkmBusinesses`, lalu `<UmkmExplorer businesses={umkmBusinesses} client:visible />`; tidak perlu dan tidak boleh mengedit file Nova.
