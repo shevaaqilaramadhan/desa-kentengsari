@@ -1,0 +1,25 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout
+  title="Desa Kentengsari — Website Resmi"
+  description="Website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang."
+  activeRoute="beranda"
+  canonicalPath="/index.html"
+  skipTarget="#checkpoint"
+>
+  <main id="checkpoint" class="bg-surface-soft py-24">
+    <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] gap-8">
+      <div class="max-w-3xl">
+        <p class="font-bold uppercase tracking-[0.16em] text-kenteng-700">Checkpoint migrasi</p>
+        <h1 class="mt-3 text-4xl font-extrabold tracking-tight text-kenteng-950 md:text-6xl">
+          Fondasi Astro siap untuk migrasi paralel
+        </h1>
+        <p class="mt-5 text-lg text-muted">
+          Halaman ini hanya smoke scaffold. Konten dan tampilan final akan dimigrasikan oleh worker setelah checkpoint.
+        </p>
+      </div>
+    </div>
+  </main>
+</SiteLayout>

@@ -1,0 +1,16 @@
+---
+interface Props {
+  eyebrow: string;
+  heading: string;
+}
+
+const { eyebrow, heading } = Astro.props;
+---
+
+<div class="max-w-3xl">
+  <p class="font-bold uppercase tracking-[0.16em] text-kenteng-700">{eyebrow}</p>
+  <h1 class="mt-3 text-4xl font-extrabold tracking-tight text-kenteng-950 md:text-6xl">{heading}</h1>
+  <p class="mt-5 text-lg text-muted">
+    Route legacy ini sudah aktif pada fondasi build. Konten parity akan dimigrasikan oleh Vega setelah checkpoint.
+  </p>
+</div>

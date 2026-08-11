@@ -1,0 +1,20 @@
+---
+import FoundationPlaceholder from '../components/astro/FoundationPlaceholder.astro';
+import UmkmExplorer from '../components/react/UmkmExplorer';
+import { umkmBusinesses } from '../data/umkm';
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout
+  title="UMKM — Desa Kentengsari"
+  description="Direktori 24 usaha mikro, kecil, dan menengah Desa Kentengsari di bidang kuliner, perdagangan, pertanian, peternakan, kerajinan, dan jasa."
+  activeRoute="umkm"
+  canonicalPath="/umkm.html"
+>
+  <main id="main-content" class="bg-surface-soft py-24">
+    <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] gap-8">
+      <FoundationPlaceholder eyebrow="Checkpoint migrasi" heading="UMKM Desa Kentengsari" />
+      <UmkmExplorer businesses={umkmBusinesses} client:visible />
+    </div>
+  </main>
+</SiteLayout>
