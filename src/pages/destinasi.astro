@@ -1,17 +1,42 @@
 ---
-import FoundationPlaceholder from '../components/astro/FoundationPlaceholder.astro';
+import CallToAction from '../components/astro/CallToAction.astro';
+import DestinationCard from '../components/astro/DestinationCard.astro';
+import InfoCard from '../components/astro/InfoCard.astro';
+import PageHero from '../components/astro/PageHero.astro';
+import SectionHeading from '../components/astro/SectionHeading.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
-<SiteLayout
-  title="Destinasi — Desa Kentengsari"
-  description="Destinasi dan tempat menarik di Desa Kentengsari: panorama Gunung Sumbing, hamparan sawah terasering, dan kebun tembakau di ketinggian 750 mdpl."
-  activeRoute="destinasi"
-  canonicalPath="/destinasi.html"
->
-  <main id="main-content" class="bg-surface-soft py-24">
-    <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-      <FoundationPlaceholder eyebrow="Checkpoint migrasi" heading="Destinasi Desa Kentengsari" />
-    </div>
+<SiteLayout title="Destinasi — Desa Kentengsari" description="Destinasi dan tempat menarik di Desa Kentengsari: panorama Gunung Sumbing, hamparan sawah terasering, dan kebun tembakau di ketinggian 750 mdpl." activeRoute="destinasi" canonicalPath="/destinasi.html">
+  <main id="main-content">
+    <PageHero current="Destinasi" title="Destinasi & Tempat Menarik" description="Jelajahi pesona alam dan kehidupan desa di ketinggian 750 mdpl, lereng Gunung Sumbing." />
+    <section class="py-20 md:py-28">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Wisata Alam" title="Pesona Lereng Gunung Sumbing" description="Kentengsari menawarkan ketenangan khas desa pegunungan — udara sejuk, hamparan hijau, dan keramahan warganya." />
+        <div class="mt-10 grid gap-6 md:grid-cols-2">
+          <DestinationCard image="/assets/destinasi-image-1.jpg" alt="Hamparan sawah terasering hijau di Desa Kentengsari" tag="Alam" title="Hamparan Sawah Terasering" description="Pemandangan sawah berundak yang hijau membentang di kaki Gunung Sumbing. Menjelang musim panen, hamparan ini berubah keemasan — momen terbaik untuk berfoto dan menikmati suasana desa." />
+          <DestinationCard image="/assets/destinasi-image-2.jpg" alt="Panorama megah Gunung Sumbing dari wilayah Desa Kentengsari" tag="Panorama" title="Panorama Gunung Sumbing" description="Dari ketinggian 750 mdpl, megahnya Gunung Sumbing terlihat jelas di ufuk. Pagi hari dengan kabut tipis dan langit cerah adalah waktu terbaik menikmati pemandangan ini." />
+          <DestinationCard image="/assets/galeri-1.jpg" alt="Kebun tembakau dan lahan pertanian warga Kentengsari" tag="Agrowisata" title="Kebun Tembakau & Lahan Tani" description="Saksikan langsung aktivitas bertani warga — dari padi, tembakau, hingga sayuran. Tanah subur lereng Sumbing menjadikan pertanian sebagai denyut nadi ekonomi desa." />
+          <DestinationCard image="/assets/galeri-3.jpg" alt="Suasana permukiman pedesaan yang asri di Kentengsari" tag="Budaya" title="Wisata Desa & Kehidupan Warga" description="Rasakan keramahan dan kehangatan masyarakat yang guyub rukun. Pengalaman otentik kehidupan pedesaan Jawa yang masih terjaga kearifan lokalnya." />
+        </div>
+      </div>
+    </section>
+    <section class="bg-surface-soft py-20 md:py-28">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Panduan" title="Tips Berkunjung ke Kentengsari" description="Beberapa hal yang perlu diperhatikan agar kunjungan Anda semakin nyaman." />
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          <InfoCard title="Waktu Terbaik" description="Pagi hingga siang hari saat cuaca cerah. Musim kemarau menawarkan pemandangan Sumbing yang paling jelas.">
+            <svg slot="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          </InfoCard>
+          <InfoCard title="Akses & Rute" description="Sekitar 2,5 Km dari ibu kota Kecamatan Windusari, atau 29 Km dari Kota Magelang melalui Bandongan.">
+            <svg slot="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.1-7-11a7 7 0 0 1 14 0c0 5.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          </InfoCard>
+          <InfoCard title="Yang Perlu Dibawa" description="Jaket atau pakaian hangat — udara di ketinggian 750 mdpl cukup sejuk, terutama pagi dan sore hari.">
+            <svg slot="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 22 2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+          </InfoCard>
+        </div>
+      </div>
+    </section>
+    <CallToAction title="Rencanakan Kunjungan Anda" description="Hubungi kantor desa untuk informasi kunjungan, kegiatan, atau kerja sama wisata desa." href="/kontak.html" label="Hubungi Kami" />
   </main>
 </SiteLayout>
