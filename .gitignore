@@ -39,6 +39,10 @@ assets_extracted/
 # kutavillage_analysis.md
 # Sumber survei UMKM lokal mengandung data nonpublik; jangan masukkan ke repository.
 /assets/DATA UMKM GIAT 16 DESA KENTENGSARI - Form Responses 1.pdf
+# Sumber lokal redesign kartu UMKM; hasil integrasi publik berada di assets/umkm/.
+/assets/Panduan Integrasi Desain Card Flip UMKM.md
+/assets/umkm-card-redesign/
+/assets/umkm-card-redesign.zip
 
 # ---------- Sistem Operasi ----------
 Thumbs.db

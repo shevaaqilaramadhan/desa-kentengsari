@@ -1,6 +1,8 @@
 /* ============================================================
    Website Desa Kentengsari — Interaksi utama
    ============================================================ */
+document.documentElement.classList.add('js');
+
 document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Navbar: background gelap saat di-scroll ---------- */
   const navbar = document.getElementById('navbar');
@@ -25,6 +27,63 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = open ? 'hidden' : '';
     });
     menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  }
+
+  /* ---------- Kartu UMKM: kontrol flip yang aksesibel ---------- */
+  const umkmCards = document.querySelectorAll('.umkm-card[tabindex="0"]');
+  if (umkmCards.length) {
+    const setCardExpanded = (card, expanded) => {
+      const front = card.querySelector('.umkm-card__front');
+      const back = card.querySelector('.umkm-card__back');
+
+      card.classList.toggle('is-flipped', expanded);
+      card.setAttribute('aria-expanded', String(expanded));
+      front.setAttribute('aria-hidden', String(expanded));
+      back.setAttribute('aria-hidden', String(!expanded));
+    };
+
+    const toggleCard = card => {
+      setCardExpanded(card, card.getAttribute('aria-expanded') !== 'true');
+    };
+
+    document.addEventListener('pointerdown', event => {
+      umkmCards.forEach(card => {
+        if (!card.contains(event.target)) {
+          setCardExpanded(card, false);
+          if (document.activeElement === card) card.blur();
+        }
+      });
+    });
+
+    umkmCards.forEach((card, index) => {
+      const front = card.querySelector('.umkm-card__front');
+      const back = card.querySelector('.umkm-card__back');
+      const businessName = front.querySelector('h3').textContent.trim();
+      const product = front.querySelector('.umkm-card__product').textContent.trim();
+
+      back.id = `umkm-card-detail-${index + 1}`;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `Detail UMKM ${businessName}, produk ${product}`);
+      card.setAttribute('aria-controls', back.id);
+      setCardExpanded(card, false);
+
+      card.addEventListener('click', () => {
+        card.focus({ preventScroll: true });
+        toggleCard(card);
+      });
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          if (!event.repeat) toggleCard(card);
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          setCardExpanded(card, false);
+        }
+      });
+      card.addEventListener('focusout', event => {
+        if (!card.contains(event.relatedTarget)) setCardExpanded(card, false);
+      });
+    });
   }
 
   /* ---------- Animasi reveal saat elemen masuk viewport ---------- */

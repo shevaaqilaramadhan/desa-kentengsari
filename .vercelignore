@@ -1,5 +1,9 @@
 # Sumber survei UMKM lokal mengandung data nonpublik; jangan unggah ke deployment.
 /assets/DATA UMKM GIAT 16 DESA KENTENGSARI - Form Responses 1.pdf
+# Sumber lokal redesign kartu UMKM; hasil integrasi publik berada di assets/umkm/.
+/assets/Panduan Integrasi Desain Card Flip UMKM.md
+/assets/umkm-card-redesign/
+/assets/umkm-card-redesign.zip
 # Setup Playwright lokal concurrent; jangan unggah ke deployment.
 /.github/workflows/playwright.yml
 /package.json

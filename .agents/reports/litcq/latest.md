@@ -1,16 +1,16 @@
 # Litcq Functional and Regression Audit Report
 
-- Waktu audit: 2026-08-11T15:42:22.2307698+07:00
-- Base HEAD: `750e234b4d5b6a78b4229880fdcd5c4e443d4b38`
-- Diff fingerprint: `0452ff7269d9f0a9e5db18d87b88ccd7c393d9487771f82c90d2d1e033f72f86`
-- Scope: `.gitignore`, `.vercelignore`, `berita.html`, `css/style.css`, `destinasi.html`, `dusun.html`, `galeri.html`, `index.html`, `kontak.html`, `profil-desa.html`, `sitemap.xml`, `umkm.html`, dependency `js/main.js`, serta verifikasi pengecualian lokal PDF survei dan empat file setup Playwright; file agent/orchestrator lain dalam fingerprint hanya dicocokkan sebagai identitas kandidat.
+- Waktu audit: 2026-08-11T20:28:16.6354811+07:00
+- Base HEAD: `800fa37cdaf8139d73dafa895840d3acdcf0a79c`
+- Diff fingerprint: `255bfc2ea01a258f6bddb3f23b497b0068dd04cd0e637061955bed2092fea33c`
+- Scope: `.gitignore`, `.vercelignore`, `umkm.html`, `css/style.css`, `js/main.js`, 23 WebP publik dalam `assets/umkm/`, dependency navigasi/sitemap, serta pengecualian sumber lokal panduan, direktori redesign, dan `assets/umkm-card-redesign.zip`.
 - Status: PASS
 
 ## Ringkasan
 
-Tidak ditemukan bug fungsional atau regresi yang dapat ditindaklanjuti pada fingerprint ini. Blocker PDF dan temuan high CI lama telah tertutup: PDF survei serta `.github/workflows/playwright.yml`, `package.json`, `playwright.config.js`, dan `tests/example.spec.js` tetap ada secara lokal, tidak tracked, diabaikan Git dengan aturan exact-path, dikecualikan Vercel, dan tidak muncul dalam fingerprint. Karena workflow/package/config/test bukan lagi kandidat, kegagalan `npm ci` pada audit sebelumnya tidak berlaku pada calon push ini.
+Tidak ditemukan bug fungsional atau regresi yang dapat ditindaklanjuti pada fingerprint ini. Temuan high sebelumnya tertutup: arsip sumber ZIP kini mempunyai aturan exact-path di Git dan Vercel, tetap ada secara lokal, tidak terlacak, dan tidak masuk fingerprint. Temuan semantik pembaca layar juga tertutup melalui progressive enhancement yang menyinkronkan role, nama, `aria-expanded`, `aria-controls`, ID target unik, serta `aria-hidden` komplementer.
 
-Halaman UMKM tetap memuat tepat 24 kartu dengan distribusi 7/12/4/1, tidak memuat pola data privat yang diperiksa, empat entri publik yang sebelumnya terpotong tetap lengkap, dan pemeriksaan navigasi, footer, referensi lokal, ID/ARIA, sitemap, JavaScript, CSS, serta fallback responsif statis lulus.
+Pengujian Chromium headless membuktikan click/tap, Enter, Spasi, Escape, pointer di luar, focusout, hover preview, fallback tanpa JavaScript, accessibility tree, reduced-motion, dan overflow 320/768/1280 bekerja sesuai kontrak. Seluruh 24 data UMKM tetap identik dengan Base HEAD, distribusi 7/12/4/1 tetap sama, dan pemeriksaan aset, privasi, referensi lokal, navigasi, serta sitemap lulus.
 
 ## Temuan
 
@@ -18,23 +18,22 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum audit dan sesudah seluruh pemeriksaan; Base HEAD/fingerprint stabil dan cocok dengan laporan Orion.
-- Memastikan lima file lokal tetap ada: `.github/workflows/playwright.yml`, `package.json`, `playwright.config.js`, `tests/example.spec.js`, dan `assets/DATA UMKM GIAT 16 DESA KENTENGSARI - Form Responses 1.pdf`; PDF tetap berukuran 43.041 byte.
-- Menjalankan `git check-ignore -v` pada kelima file; masing-masing menunjuk aturan exact-path di `.gitignore:41` dan `.gitignore:103-106`, tidak tracked, dan tidak muncul dalam fingerprint resmi.
-- Memastikan aturan deployment exact-path tersedia tepat sekali di `.vercelignore:2` dan `.vercelignore:4-7`.
-- Menguji path pembanding `.github/workflows/other.yml`, `package-other.json`, `playwright.other.js`, `tests/other.spec.js`, dan `assets/other-document.pdf`; tidak ada yang ikut terabaikan sehingga aturan terbukti tidak melebar.
-- Menghitung tepat 24 elemen `.umkm-card`: Nglarangan 7, Kenteng Krajan 12, Kenteng Wetan 4, dan lokasi belum terverifikasi 1.
-- Memindai `umkm.html` untuk pola nomor telepon, Google Drive/Docs/Maps, RT/RW, nama pengisi form, pembukuan, keuangan usaha, dan jumlah tenaga kerja; seluruh hitungan nol.
-- Memverifikasi data publik lengkap: Rizqi `Kerajinan & Perdagangan` dan `Pelepah pisang dan sembako` (`umkm.html:179-181`); Rodiah `Kuliner & Perdagangan` dan `Gorengan dan snack` (`umkm.html:215-217`); Bu Sofiyah dengan keripik singkong, keripik talas, dan peyek kacang (`umkm.html:221-223`); Zainal Abidin dengan keripik singkong, pangsit, dan putil (`umkm.html:263-265`).
-- Memeriksa delapan halaman HTML; masing-masing memiliki tepat satu `main`, satu link UMKM di navbar, satu link UMKM di footer, ID unik, fragment dan referensi ARIA yang valid, seluruh gambar beratribut alt, serta seluruh referensi lokal tersedia.
-- Memeriksa seluruh referensi `url(...)` lokal CSS tersedia dan pasangan kurung CSS seimbang 291/291.
-- Menjalankan `node --check js/main.js` dengan exit `0`; ID selector navbar yang digunakan script tersedia pada seluruh delapan halaman.
-- Mem-parse `sitemap.xml`; XML valid, memiliki delapan URL, dan URL kanonis `https://www.kentengsari.desa.id/umkm.html` muncul tepat sekali.
-- Menelusuri cascade responsif: `.umkm-grid--single` tetap satu kolom pada breakpoint tablet (`css/style.css:665-666`); menu mobile rata atas dengan padding dan `overflow-y: auto`, sehingga delapan tautan dapat digulir pada viewport pendek (`css/style.css:669-675`).
-- Menjalankan `git diff --check`; lulus selain peringatan normalisasi LF/CRLF Git.
-- Tidak menjalankan atau mengubah setup Playwright lokal karena keempat file tersebut sengaja berada di luar kandidat/fingerprint dan dependency tidak termasuk scope perubahan.
+- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan sesudah audit; Base HEAD/fingerprint stabil dan cocok dengan laporan Orion. Semua 23 output `assets/umkm/*.webp` muncul pada kandidat, sedangkan ZIP, panduan, dan direktori sumber tidak muncul.
+- Memastikan `.gitignore:43-45` dan `.vercelignore:4-6` memiliki aturan exact-path terpisah untuk panduan, direktori `assets/umkm-card-redesign/`, dan `assets/umkm-card-redesign.zip`. Arsip tetap ada secara lokal dengan ukuran 1.313.886 byte; `git check-ignore -v` menunjuk aturan exact ZIP, sementara `assets/umkm/anyaman.webp` tidak terabaikan.
+- Membandingkan nama, produk, tahun/lama usaha, dan legalitas setiap kartu terhadap `HEAD:umkm.html`: `DATA_BASE=24`, `DATA_CURRENT=24`, dan `DATA_DELTA=0`; distribusi tetap Nglarangan 7, Kenteng Krajan 12, Kenteng Wetan 4, serta lokasi belum terverifikasi 1.
+- Memeriksa 24 kartu, 24 sisi depan, 24 sisi belakang, 24 blok detail, dan 24 thumbnail. Seluruh gambar mempunyai `src`, alt nonkosong, lazy loading, async decoding, serta atribut 640x480; terdapat 22 path unik, 23 WebP publik valid 640x480, dan nol referensi hilang.
+- Memindai isi kartu untuk URL, email, nomor Indonesia, WhatsApp/telepon, alamat, omzet, pendapatan, dan data produksi privat; tidak ada kecocokan.
+- Memeriksa struktur statis: 15 ID markup awal unik, tidak ada fragment link yang kehilangan anchor, dan seluruh 33 referensi lokal unik tersedia. ID runtime `umkm-card-detail-1` sampai `umkm-card-detail-24` juga unik dan seluruh `aria-controls` tepat menunjuk pasangan sisi belakangnya.
+- Memverifikasi inisialisasi seluruh kartu di Chromium: masing-masing menjadi `role="button"`, mendapat nama seperti `Detail UMKM Sunarti, produk Sembako`, `aria-expanded="false"`, sisi depan `aria-hidden="false"`, dan sisi belakang `aria-hidden="true"` (`js/main.js:31-61`).
+- Menguji state: click pertama membuka dan click kedua menutup; Enter serta Spasi membuka/men-toggle; Escape menutup sambil mempertahankan fokus; perpindahan fokus ke kartu berikutnya menutup kartu lama; pointerdown pada body menutup serta melepas fokus (`js/main.js:62-83`).
+- Memeriksa accessibility snapshot Chromium. State awal hanya mengekspos satu nama, gambar, kategori, heading, dan produk; sisi belakang tidak terduplikasi. Setelah dibuka, snapshot menunjukkan button berstatus expanded dan mengekspos `Detail Usaha`, satu heading, produk, serta pasangan term/definition untuk Berdiri, Legalitas, dan Dusun.
+- Memverifikasi hover pada pointer halus: media query cocok dan flipper mencapai matriks rotasi Y 180 derajat. CSS tetap memisahkan preview hover dari state eksplisit `.is-flipped` (`css/style.css:592-600`).
+- Menguji JavaScript-off: class `js`, role, serta `aria-hidden` runtime tidak ada; fokus tetap menghasilkan rotasi Y 180 derajat dan seluruh 24 `<dl>` tersedia. Ini menjaga detail dapat diakses ketika script gagal/dinonaktifkan.
+- Menguji `prefers-reduced-motion: reduce`: durasi transisi flipper terhitung `0s` (`css/style.css:644-647`). Pada viewport 320, 768, dan 1280 piksel, `scrollWidth` sama dengan `clientWidth` (tidak ada overflow horizontal).
+- Memeriksa navbar/footer halaman UMKM dan dependency halaman lain yang tidak berubah; link UMKM tetap tersedia. `sitemap.xml:9` tetap memuat URL kanonis UMKM.
+- Menjalankan `node --check js/main.js` serta `git diff --check`; keduanya lulus, selain warning normalisasi LF/CRLF Git yang tidak mengubah konten.
 
 ## Batasan
 
-- Backend browser in-app tidak tersedia, sehingga verifikasi responsif dilakukan dari markup, cascade CSS, dan alur JavaScript, bukan inspeksi interaktif halaman lokal.
-- Isi atau layout PDF tidak diaudit ulang karena PDF tidak berubah dan sengaja dikecualikan dari kandidat/deployment; audit ini memverifikasi keberadaan lokal serta efektivitas pengecualiannya.
+- Pengujian browser menggunakan Chromium headless lokal; tidak mencakup Safari/iOS, Firefox, perangkat sentuh fisik, atau pembaca layar manusia. Accessibility snapshot Chromium digunakan untuk membuktikan state dan penghilangan duplikasi pada accessibility tree.
+- Hover preview sengaja tidak mengubah `aria-expanded`; state aksesibel berubah saat pengguna mengaktifkan kontrol dengan click/tap atau keyboard.
