@@ -84,6 +84,206 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!card.contains(event.relatedTarget)) setCardExpanded(card, false);
       });
     });
+
+    /* ---------- Filter dusun dengan reflow bergaya FLIP (native WAAPI) ---------- */
+    const filter = document.getElementById('umkmFilter');
+    const grid = document.getElementById('umkmGrid');
+    const resultCount = document.getElementById('umkmResultCount');
+    const emptyState = document.getElementById('umkmEmptyState');
+
+    if (filter && grid && resultCount && emptyState) {
+      const cards = Array.from(umkmCards);
+      const allFilter = filter.querySelector('[data-filter-all]');
+      const categoryFilters = Array.from(filter.querySelectorAll('[data-filter-category]'));
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let filterRun = 0;
+
+      const getCardDusun = card => {
+        const locationRow = Array.from(card.querySelectorAll('.umkm-card__details > div')).find(row => {
+          const term = row.querySelector('dt');
+          return term && /^(Dusun|Lokasi)$/i.test(term.textContent.trim());
+        });
+        const location = locationRow ? locationRow.querySelector('dd').textContent.trim().toLowerCase() : '';
+
+        if (location.includes('nglarangan')) return 'nglarangan';
+        if (location.includes('kenteng krajan')) return 'kenteng-krajan';
+        if (location.includes('kenteng wetan')) return 'kenteng-wetan';
+        return 'belum-terverifikasi';
+      };
+
+      const setFilterVisibility = (card, visible) => {
+        card.dataset.filterVisible = String(visible);
+        setCardExpanded(card, false);
+        card.inert = !visible;
+
+        if (visible) {
+          card.hidden = false;
+          card.tabIndex = 0;
+          card.removeAttribute('aria-hidden');
+        } else {
+          card.tabIndex = -1;
+          card.setAttribute('aria-hidden', 'true');
+          card.hidden = true;
+        }
+      };
+
+      const cancelCardAnimations = () => {
+        cards.forEach(card => {
+          card.getAnimations().forEach(animation => animation.cancel());
+          card.style.removeProperty('opacity');
+          card.style.removeProperty('transform');
+          card.style.removeProperty('will-change');
+        });
+      };
+
+      const animateFilter = async () => {
+        const run = ++filterRun;
+        cancelCardAnimations();
+
+        /* Selesaikan keadaan target dari interaksi sebelumnya sebelum mengukur ulang. */
+        cards.forEach(card => {
+          if (card.dataset.filterVisible) {
+            setFilterVisibility(card, card.dataset.filterVisible === 'true');
+          }
+        });
+
+        const firstRects = new Map(
+          cards.filter(card => !card.hidden).map(card => [card, card.getBoundingClientRect()])
+        );
+        const selectedDusun = new Set(
+          categoryFilters.filter(input => input.checked).map(input => input.value)
+        );
+        const targets = new Map(cards.map(card => [card, selectedDusun.has(card.dataset.dusun)]));
+        const leaving = cards.filter(card => !card.hidden && !targets.get(card));
+        const entering = cards.filter(card => card.hidden && targets.get(card));
+        const retained = cards.filter(card => !card.hidden && targets.get(card));
+        const visibleCount = cards.filter(card => targets.get(card)).length;
+        const instant = reducedMotion.matches || !Element.prototype.animate;
+
+        cards.forEach(card => {
+          card.dataset.filterVisible = String(targets.get(card));
+          if (!targets.get(card)) {
+            setCardExpanded(card, false);
+            card.inert = true;
+            card.tabIndex = -1;
+            card.setAttribute('aria-hidden', 'true');
+          }
+        });
+
+        resultCount.textContent = `${visibleCount} usaha ditampilkan`;
+        emptyState.hidden = visibleCount !== 0;
+
+        if (instant) {
+          cards.forEach(card => setFilterVisibility(card, targets.get(card)));
+          return;
+        }
+
+        const exitAnimations = leaving.map((card, index) => {
+          card.style.willChange = 'opacity, transform';
+          return card.animate(
+            [
+              { opacity: 1, transform: 'scale(1)' },
+              { opacity: 0, transform: 'scale(.92)' }
+            ],
+            {
+              duration: 180,
+              delay: Math.min(index * 18, 90),
+              easing: 'ease-in',
+              fill: 'forwards'
+            }
+          );
+        });
+
+        await Promise.allSettled(exitAnimations.map(animation => animation.finished));
+        if (run !== filterRun) return;
+
+        exitAnimations.forEach(animation => animation.cancel());
+        leaving.forEach(card => card.style.removeProperty('will-change'));
+        leaving.forEach(card => setFilterVisibility(card, false));
+        entering.forEach(card => setFilterVisibility(card, true));
+
+        /* Paksa layout sesudah perubahan visibility, lalu gerakkan kartu yang bertahan
+           dari koordinat lama ke koordinat baru tanpa mengubah urutan DOM. */
+        const lastRects = new Map(
+          cards.filter(card => targets.get(card)).map(card => [card, card.getBoundingClientRect()])
+        );
+        const visibleCards = cards.filter(card => targets.get(card));
+
+        retained.forEach(card => {
+          const first = firstRects.get(card);
+          const last = lastRects.get(card);
+          if (!first || !last) return;
+
+          const deltaX = first.left - last.left;
+          const deltaY = first.top - last.top;
+          if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+
+          const index = visibleCards.indexOf(card);
+          card.style.willChange = 'transform';
+          const animation = card.animate(
+            [
+              { transform: `translate(${deltaX}px, ${deltaY}px)` },
+              { transform: 'translate(0, 0)' }
+            ],
+            {
+              duration: 540,
+              delay: Math.min(index * 28, 168),
+              easing: 'cubic-bezier(.2, .75, .25, 1)',
+              fill: 'none'
+            }
+          );
+          animation.finished.then(() => {
+            if (run === filterRun) card.style.removeProperty('will-change');
+            animation.cancel();
+          }).catch(() => {});
+        });
+
+        entering.forEach(card => {
+          const index = visibleCards.indexOf(card);
+          card.style.willChange = 'opacity, transform';
+          const animation = card.animate(
+            [
+              { opacity: 0, transform: 'scale(.92)' },
+              { opacity: 1, transform: 'scale(1)' }
+            ],
+            {
+              duration: 440,
+              delay: Math.min(index * 28, 168),
+              easing: 'cubic-bezier(.2, .75, .25, 1)',
+              fill: 'none'
+            }
+          );
+          animation.finished.then(() => {
+            if (run === filterRun) card.style.removeProperty('will-change');
+            animation.cancel();
+          }).catch(() => {});
+        });
+
+      };
+
+      cards.forEach(card => {
+        card.dataset.dusun = getCardDusun(card);
+        card.dataset.filterVisible = 'true';
+      });
+
+      allFilter.addEventListener('change', () => {
+        categoryFilters.forEach(input => { input.checked = allFilter.checked; });
+        allFilter.indeterminate = false;
+        animateFilter();
+      });
+
+      categoryFilters.forEach(input => {
+        input.addEventListener('change', () => {
+          const checkedCount = categoryFilters.filter(category => category.checked).length;
+          allFilter.checked = checkedCount === categoryFilters.length;
+          allFilter.indeterminate = checkedCount > 0 && checkedCount < categoryFilters.length;
+          animateFilter();
+        });
+      });
+
+      filter.hidden = false;
+      animateFilter();
+    }
   }
 
   /* ---------- Animasi reveal saat elemen masuk viewport ---------- */
