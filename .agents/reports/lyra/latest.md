@@ -1,14 +1,14 @@
 # Lyra Report
 
-- Waktu audit: 2026-08-11T20:12:44.1326657+07:00
-- Base HEAD: `800fa37cdaf8139d73dafa895840d3acdcf0a79c`
-- Diff fingerprint: `255bfc2ea01a258f6bddb3f23b497b0068dd04cd0e637061955bed2092fea33c`
-- Scope: Audit ulang visual/design system untuk flip-card direktori UMKM pada `umkm.html`, `css/style.css`, dan 23 aset WebP publik di `assets/umkm/`, termasuk dampak presentasional perubahan progressive enhancement/ARIA di `js/main.js`. Aturan exact-path ZIP/panduan/paket lokal pada `.gitignore` dan `.vercelignore` tercakup dalam fingerprint tetapi nonvisual.
+- Waktu audit: 2026-08-11T21:12:47.3094514+07:00
+- Base HEAD: `785ed921d99853846968c64ad7f6b7cdbc080374`
+- Diff fingerprint: `5ab4da43665c1fbd05ad58b881c7723b836e1bceffd6af80a0f3fe0ad116a2d4`
+- Scope: Audit visual/design system adaptasi referensi CodePen “Smooth Flexbox Filtering with Flip” pada `umkm.html`, `css/style.css`, dan dampak presentasional `js/main.js`: satu grid 24 kartu, chip checkbox Semua + empat kategori lokasi, state selected/unselected/indeterminate/focus, live count, empty state, wrapping/spacing, reflow/enter/leave, koeksistensi flip-card, grid 3/2/1 pada target 1280/768/320, serta reduced motion.
 - Status: PASS
 
 ## Ringkasan
 
-Perbaikan progressive enhancement/ARIA tidak mengubah desain flip-card yang telah lulus audit sebelumnya. Selector baru memisahkan fokus dari state aktif saat JavaScript tersedia, tetapi sisi depan/belakang, hover pointer halus, outline fokus, tinggi kartu, crop gambar, badge, tipografi, detail, reduced-motion, dan grid 3/2/1 kolom tetap konsisten dengan design system situs. Teks instruksi yang diperjelas masih mengikuti ukuran, lebar, warna, dan wrapping komponen deskripsi yang ada. Seluruh 24 kartu serta 23 ilustrasi WebP tetap utuh dan konsisten. Tidak ditemukan inkonsistensi visual yang perlu ditindaklanjuti.
+Adaptasi mengambil pola pengelompokan dan gerak FLIP dari referensi tanpa membawa tampilan demo CodePen ke situs. Panel filter, chip, result count, empty state, warna, radius, bayangan, tipografi, dan outline memakai bahasa visual hijau-putih yang sudah ada. Seluruh 24 kartu tetap berada dalam satu grid, sementara transform reflow diterapkan pada elemen kartu dan transform flip 3D tetap berada pada flipper di dalamnya sehingga kedua efek tidak berebut layer transform. Breakpoint mempertahankan 3/2/1 kolom dan kontrol filter memiliki pola wrapping yang layak untuk desktop, tablet, serta mobile.
 
 ## Temuan
 
@@ -16,20 +16,20 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum audit; Base HEAD dan fingerprint identik dengan laporan Orion terbaru berstatus `READY_FOR_AUDIT`.
-- Membaca diff dan menghitung ulang tepat 24 kartu, 24 sisi depan, 24 sisi belakang, 24 thumbnail, empat kelompok lokasi, dan satu modifier grid kartu tunggal pada `umkm.html:97-340`.
-- Membandingkan perubahan state dengan versi audit sebelumnya. Fallback tanpa JavaScript tetap membalik kartu saat fokus (`css/style.css:594`); ketika JavaScript aktif fokus biasa menampilkan sisi depan (`css/style.css:595`) dan class `.is-flipped` membalik ke sisi belakang (`css/style.css:596`). Ketiga selector hanya mengubah transform state, bukan ukuran, spacing, warna, atau hierarki kartu.
-- Memeriksa hover desktop pada `css/style.css:597-599`: preview tetap dibatasi media query pointer halus dan tetap memakai transform 180 derajat yang sama. Border serta bayangan hover/fokus tetap konsisten pada `css/style.css:606-607`.
-- Memeriksa fokus visual pada `css/style.css:641`: outline kuning 3 px dengan offset 4 px tidak diubah dan tetap kontras terhadap kartu putih maupun latar lembut. Penambahan `role`, label, `aria-expanded`, `aria-controls`, ID, dan `aria-hidden` di `js/main.js:29-86` tidak menambah elemen visual atau style inline.
-- Memeriksa reduced-motion pada `css/style.css:643-646`: transisi flipper dan face tetap dinonaktifkan, termasuk untuk state `.is-flipped`, sehingga peralihan sisi tidak beranimasi.
-- Memeriksa dimensi/presentasi kartu pada `css/style.css:583-640`: tinggi minimum tetap 360 px, thumbnail tetap 150 px dengan `object-fit: cover`, badge tetap dapat membungkus, front/back memakai radius/border/bayangan yang sama, dan detail dua kolom tetap memiliki `overflow-wrap` untuk konten panjang.
-- Memeriksa grid responsif: tiga kolom default (`css/style.css:579`), dua kolom sampai 992 px (`css/style.css:706-712`), dan satu kolom sampai 560 px (`css/style.css:734-742`). Modifier grup satu kartu tetap satu track dengan lebar maksimum 370 px (`css/style.css:580`, `css/style.css:711`).
-- Memeriksa teks instruksi baru di `umkm.html:59` dan `umkm.html:94`. Keduanya tetap berada di komponen deskripsi yang sudah mempunyai batas lebar dan wrapping; header direktori tetap berubah menjadi blok pada tablet/mobile (`css/style.css:730-731`), sehingga tambahan frasa Enter/Spasi tidak mengganggu kolom kartu.
-- Membandingkan token kartu dengan baseline design system di `css/style.css:7-26` dan `css/style.css:53-67`: warna hijau, tipografi Plus Jakarta Sans, radius, garis, shadow, serta hierarchy tetap berasal dari variabel dan pola global situs.
-- Memverifikasi 23 aset WebP publik masih memiliki hash yang sama dengan audit PASS sebelumnya. Seluruhnya tetap 640 x 480 RGB, bergaya ilustrasi hangat hijau/cokelat, dan sesuai crop 150 px; tidak ada aset visual baru atau berubah pada siklus perbaikan ini.
-- Memeriksa aturan exact-path ZIP/panduan/paket lokal pada `.gitignore` dan `.vercelignore`; perubahan tersebut tidak memengaruhi output visual dan tidak mengecualikan `assets/umkm/` yang dipakai kartu.
+- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum audit; Base HEAD dan fingerprint identik dengan laporan Orion `READY_FOR_AUDIT`, dengan scope calon push hanya `umkm.html`, `css/style.css`, dan `js/main.js`.
+- Membaca diff terhadap Base HEAD dan laporan Orion. Empat section lama digabung menjadi satu `.umkm-grid` pada `umkm.html:125`; lima chip checkbox (Semua + Nglarangan + Kenteng Krajan + Kenteng Wetan + Belum terverifikasi) berada dalam satu fieldset pada `umkm.html:90-113`.
+- Memeriksa konsistensi panel filter pada `css/style.css:549-588`: background putih, border `var(--line)`, radius `var(--radius)`, shadow `var(--shadow-sm)`, palet hijau, ukuran teks, dan bentuk pill meneruskan token serta pola komponen situs. Panel tidak tampak seperti skin demo terpisah.
+- Memeriksa state chip pada `css/style.css:569-588`: hover mempunyai perubahan border, checked memakai latar hijau dan teks putih, indeterminate memakai aksen kuning yang sama dengan warning/focus situs, unselected memakai hijau muda, checkbox native tetap terlihat, suffix teks “aktif/tidak aktif/sebagian aktif” memberikan pembeda nonwarna, dan `:focus-within` memberi outline 3 px.
+- Memeriksa hierarki serta keadaan hasil pada `umkm.html:116-123` dan `css/style.css:589-596`: live count tetap ringkas dan berjarak satu ritme sebelum grid; empty state memakai kartu putih, border dashed hijau, radius, tipografi, dan muted text yang konsisten dengan empty state situs.
+- Memeriksa spacing/wrapping: opsi memakai flex-wrap dengan gap `.7rem` pada desktop/tablet (`css/style.css:560`); pada lebar mobile berubah menjadi satu kolom, padding filter menyusut, radius chip menjadi 12 px, dan badge jumlah terdorong ke kanan (`css/style.css:753-756`). Struktur flex memungkinkan label panjang membungkus tanpa membuat horizontal scroller.
+- Memeriksa grid target: tiga kolom default pada `css/style.css:597`, dua kolom sampai 992 px pada `css/style.css:726`, dan satu kolom sampai 560 px pada `css/style.css:752`. Dengan container global `min(100% - 2.5rem, 1140px)`, target 1280/768/320 memperoleh area konten sekitar 1140/728/280 px tanpa fixed width atau overflow container baru.
+- Memeriksa gerak dari diff `js/main.js:181-259`: kartu keluar memakai fade/scale singkat, kartu bertahan memakai delta posisi FLIP, dan kartu masuk memakai fade/scale dengan stagger terbatas. Transform reflow berada pada `.umkm-card`, sedangkan putaran 3D tetap pada `.umkm-card__flipper` (`css/style.css:604-613`), sehingga flip-card dan filtering mempunyai layer transform terpisah.
+- Memeriksa keadaan interaksi cepat secara presentasional: animasi lama dibatalkan dan style inline opacity/transform/will-change dibersihkan sebelum pengukuran baru (`js/main.js:126-149`), sehingga tidak ada opacity atau transform sisa yang secara desain dapat membuat kartu tampak hilang/miring setelah toggle beruntun.
+- Memeriksa reduced motion: JavaScript memilih jalur instan ketika media query aktif (`js/main.js:98`, `js/main.js:161-178`), sementara CSS menonaktifkan transisi flipper, face, dan chip pada `css/style.css:660-664`.
+- Memeriksa referensi CodePen yang diberikan. Referensi teridentifikasi sebagai “Smooth Flexbox Filtering with Flip”; implementasi lokal hanya mengadopsi konsep satu kumpulan yang difilter dan reflow halus, sedangkan komposisi visual, konten, kontrol, serta kartu tetap milik design system Kentengsari.
+- Menjalankan `git diff --check` dan `node --check js/main.js`; keduanya lulus. Pemeriksaan ini mendukung bahwa aturan CSS/diff tidak mengandung whitespace rusak dan skrip presentasional dapat diparse.
 
 ## Batasan
 
-- Browser in-app tetap tidak tersedia pada sesi audit (`agent.browsers.list()` mengembalikan daftar kosong), sehingga tidak ada screenshot runtime atau observasi animasi aktual. Verifikasi desktop, tablet, mobile, focus, hover, wrapping, dan reduced-motion dilakukan dari markup, urutan cascade/breakpoint CSS, diff terhadap audit PASS sebelumnya, serta hash/inspeksi aset asli.
-- Sinkronisasi ARIA, perilaku click/tap/keyboard, focus management, dan fallback teknis berada di luar scope visual Lyra dan menjadi tanggung jawab Litcq/Xavier.
+- Backend browser terintegrasi tidak tersedia pada sesi ini (`agent.browsers.list()` mengembalikan `[]` setelah prosedur troubleshooting), sehingga screenshot runtime dan observasi frame animasi pada 320/768/1280 tidak dapat dihasilkan. Audit responsif, state, wrapping, dan gerak dilakukan dari markup, cascade/breakpoint CSS, pembagian layer transform, serta diff terhadap desain UMKM yang sebelumnya telah lulus audit.
+- Akurasi live count, sinkronisasi checkbox, keyboard/ARIA, dan regresi fungsi runtime berada dalam scope Litcq/Xavier; Lyra hanya menilai keluaran dan konsistensi visualnya.

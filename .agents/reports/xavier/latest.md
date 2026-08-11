@@ -1,63 +1,48 @@
 # Xavier QA Gate Report
 
-- Waktu gate: `2026-08-11T20:44:45.6373734+07:00`
-- Base HEAD: `800fa37cdaf8139d73dafa895840d3acdcf0a79c`
-- Diff fingerprint: `255bfc2ea01a258f6bddb3f23b497b0068dd04cd0e637061955bed2092fea33c`
-- Scope/diff website: `.gitignore`, `.vercelignore`, `umkm.html`, `css/style.css`, `js/main.js`, serta 23 WebP publik di `assets/umkm/`: `anyaman.webp`, `beras.webp`, `catering.webp`, `cireng.webp`, `default.webp`, `es-mambo.webp`, `es-teller.webp`, `gorengan.webp`, `interior.webp`, `jamur.webp`, `jenang.webp`, `keranjang.webp`, `keripik.webp`, `kue-basah.webp`, `laundry.webp`, `makanan-warung.webp`, `pasar-makanan.webp`, `pempek.webp`, `permen.webp`, `peternakan-ayam.webp`, `sayuran.webp`, `seafood.webp`, dan `sembako.webp`.
-- Sumber lokal di luar kandidat yang diperiksa: `assets/Panduan Integrasi Desain Card Flip UMKM.md`, `assets/umkm-card-redesign/`, dan `assets/umkm-card-redesign.zip`.
-- Orion: `READY_FOR_AUDIT`
-- Lyra: `PASS`
-- Litcq: `PASS`
+- Waktu gate: 2026-08-11T21:27:56.8309559+07:00
+- Base HEAD: `785ed921d99853846968c64ad7f6b7cdbc080374`
+- Diff fingerprint: `5ab4da43665c1fbd05ad58b881c7723b836e1bceffd6af80a0f3fe0ad116a2d4`
+- Scope/diff: `umkm.html`, `css/style.css`, dan `js/main.js`
+- Orion: READY_FOR_AUDIT
+- Lyra: PASS
+- Litcq: PASS
+- Keputusan: PUSH
 
 ## Ringkasan Keputusan
 
-Kandidat pada Base HEAD dan fingerprint di atas aman untuk didorong. Blocker deployment sebelumnya telah ditutup dengan aturan exact-path untuk ZIP pada Git dan Vercel; paket sumber tetap lokal, tidak tracked, dan tidak masuk fingerprint. Temuan aksesibilitas juga tertutup: 24 kartu menjadi kontrol bernama dengan state dan target yang tersinkron, kedua sisi tidak lagi terduplikasi pada accessibility tree, dan interaksi pointer/keyboard tetap memiliki fallback tanpa JavaScript. Audit visual bersih, data dan aset utuh, privasi terjaga, serta validasi runtime Chromium lulus.
+Kandidat pada Base HEAD dan fingerprint di atas memenuhi acceptance criteria adaptasi referensi CodePen “Smooth Flexbox Filtering with Flip”. Direktori kini memakai satu grid berisi 24 kartu, filter checkbox multi-select per dusun dengan hitungan yang benar, sinkronisasi Semua, live count dan empty-state, serta animasi native enter/leave/reflow yang tetap aman saat input cepat. Flip-card lama, fallback no-JS, reduced motion, aksesibilitas kartu tersembunyi, responsivitas, isi data, dan batas privasi tetap terjaga. Tidak ditemukan blocker atau temuan high yang diperkenalkan oleh diff.
+
+Izin ini hanya berlaku untuk Base HEAD dan fingerprint yang tercatat. Perubahan pada file selain `.agents/reports/**` membatalkan izin dan mewajibkan siklus audit baru.
 
 ## Validasi Laporan Worker
 
-- Laporan Orion, Lyra, dan Litcq tersedia, selesai, dan mencatat Base HEAD `800fa37cdaf8139d73dafa895840d3acdcf0a79c` serta fingerprint `255bfc2ea01a258f6bddb3f23b497b0068dd04cd0e637061955bed2092fea33c`, identik dengan hitung ulang Xavier.
-- Orion berstatus `READY_FOR_AUDIT`; laporan mencakup perbaikan exact ignore, progressive enhancement/ARIA, interaksi, fallback, aset, data, dan privasi.
-- Lyra berstatus `PASS`; scope visual mencakup struktur kartu, perubahan state progressive enhancement, 23 aset, design system, responsive grid, focus-visible, hover, dan reduced-motion. Tidak ada temuan.
-- Litcq berstatus `PASS`; scope teknis mencakup seluruh diff dan dependency terkait, exact ignore sumber, data/aset/privasi, serta pengujian Chromium untuk interaksi, accessibility tree, fallback tanpa JavaScript, reduced-motion, dan responsivitas. Tidak ada temuan.
-- Scope kedua auditor sesuai perannya dan secara gabungan mencakup seluruh kandidat. Laporan dibuat terhadap fingerprint yang sama dan tetap segar setelah hitung ulang Xavier.
+- Laporan Orion tersedia dan lengkap dengan status `READY_FOR_AUDIT`, waktu implementasi, Base HEAD, fingerprint, scope, daftar file, validasi, serta batasan. Scope yang dilaporkan tepat tiga file kandidat.
+- Laporan Lyra tersedia dan lengkap dengan status `PASS`; auditnya mencakup satu-grid, design system filter/chip, state checked/unchecked/indeterminate/focus, empty-state, pemisahan layer transform kartu dan flipper, breakpoint 3/2/1, serta reduced motion.
+- Laporan Litcq tersedia dan lengkap dengan status `PASS`; pengujian Microsoft Edge/Chromium headless mencakup seluruh hitungan 24/7/12/4/1/19/0, sinkronisasi Semua, keyboard/ARIA, animasi dan rapid toggle, no-JS, reduced motion, flip-card setelah filter, accessibility tree, overflow, serta smoke test delapan halaman.
+- Xavier menjalankan ulang `.agents/get-change-fingerprint.ps1`. Base HEAD dan fingerprint identik dengan nilai Orion, Lyra, Litcq, dan nilai yang diharapkan; kandidat hanya berisi `umkm.html`, `css/style.css`, dan `js/main.js`. Perubahan laporan tidak masuk fingerprint resmi.
+- Xavier membaca diff kode secara langsung. Tidak ada ketidaksesuaian scope, laporan kedaluwarsa, atau temuan worker yang memerlukan validasi korektif.
 
 ## Blocking Issues
 
 Tidak ada.
 
-## Validasi Perbaikan Temuan Sebelumnya
-
-- `.gitignore:43-45` dan `.vercelignore:4-6` masing-masing mempunyai tepat satu aturan exact-path untuk panduan, direktori sumber, dan arsip `assets/umkm-card-redesign.zip`.
-- Arsip ZIP tetap ada lokal dengan ukuran 1.313.886 byte dan SHA-256 `BDC1ADDF01299F78D5AF6DFD49A562ADE18BE80EEF80480C92778958557A0A96`; file tidak tracked dan tidak tercantum dalam fingerprint. Aset pembanding `assets/umkm/anyaman.webp` tidak terabaikan, sehingga aturan tidak menyapu output publik.
-- Pada runtime, seluruh 24 kartu memiliki `role="button"`, accessible label spesifik, `aria-expanded="false"`, `aria-controls` unik, sisi depan `aria-hidden="false"`, dan sisi belakang `aria-hidden="true"` saat awal.
-- Aktivasi mengubah class visual, `aria-expanded`, dan kedua `aria-hidden` secara atomik. Accessibility snapshot awal tidak memuat `Detail Usaha`; setelah dibuka, kontrol berstatus expanded dan detail sisi belakang muncul tanpa duplikasi sisi depan.
-- Click membuka, Enter dan Spasi men-toggle, Escape menutup sambil mempertahankan fokus, pointer di luar menutup, dan perpindahan fokus menutup kartu lama. Hover pointer halus tetap menjadi preview visual terpisah.
-
-## Validasi Website UMKM
-
-- Perbandingan langsung dengan `HEAD:umkm.html` menghasilkan 24 kartu pada baseline dan kandidat, dengan nol perubahan nama atau produk; laporan Litcq juga membuktikan tahun/lama usaha dan legalitas identik serta distribusi tetap 7/12/4/1.
-- Struktur berisi tepat 24 front, 24 back, 24 blok detail, dan 24 thumbnail. Terdapat 23 WebP publik; seluruh 24 gambar runtime termuat pada dimensi alami 640×480. Pemakaian ulang `keripik.webp` dan keberadaan `default.webp` sebagai fallback disengaja.
-- Pemeriksaan privasi worker tidak menemukan kontak, URL, alamat lengkap, omzet, pendapatan, atau data produksi privat. Xavier sebelumnya juga memverifikasi nol nomor telepon, email, URL, dan WhatsApp pada area direktori; perubahan perbaikan tidak menambah data usaha.
-- Dengan JavaScript dinonaktifkan, class progressive enhancement dan atribut ARIA runtime tidak dipasang, seluruh 24 `<dl>` tetap tersedia, dan fokus tetap memicu transformasi flip melalui CSS fallback.
-- Pada `prefers-reduced-motion: reduce`, durasi transisi flipper terhitung `0s`. Viewport 320, 768, dan 1280 piksel masing-masing memiliki `scrollWidth` sama dengan `clientWidth`, sehingga tidak ada overflow horizontal.
-- `node --check js/main.js` dan `git diff --check` lulus; warning LF/CRLF Git bersifat non-blocking dan tidak mengubah hash kandidat.
-
 ## Risiko yang Diterima
 
-- Pengujian runtime memakai Chromium headless lokal, bukan Safari/iOS, Firefox, perangkat sentuh fisik, atau pembaca layar manusia. Bukti DOM, event, accessibility snapshot, fallback, dan cascade cukup untuk scope perubahan; tidak ada indikasi regresi material.
-- Hover preview sengaja tidak mengubah `aria-expanded` karena bukan aktivasi kontrol. State aksesibel berubah hanya saat pengguna mengaktifkan kartu melalui click/tap atau keyboard.
-- Lyra tidak memperoleh browser in-app dan melakukan audit visual secara statis. Risiko ini diterima karena diff state tidak mengubah geometri visual, aset mempertahankan hash audit sebelumnya, dan Xavier/Litcq menjalankan validasi Chromium teknis pada fingerprint yang sama.
+- Pengujian runtime menggunakan Edge/Chromium headless di Windows; Safari/iOS, Firefox, perangkat sentuh fisik, dan pembaca layar manusia tidak diuji. Risiko diterima karena markup menggunakan checkbox native dan semantik standar, Litcq memverifikasi keyboard serta Chrome accessibility tree, dan fallback no-JS tetap utuh.
+- Styling status chip menggunakan `:has()`. Pada browser lama yang tidak mendukung selector tersebut, checkbox native tetap terlihat dan fungsional, sehingga dampaknya terbatas pada pengayaan visual.
+- Label dusun kartu dipetakan dari baris detail `Dusun`/`Lokasi`. Pemetaan saat ini sesuai seluruh 24 data; perubahan istilah data pada masa mendatang perlu diikuti pembaruan pemetaan.
+- Lyra tidak memperoleh backend browser untuk screenshot runtime. Batasan tersebut ditutup oleh bukti Chromium Litcq dan sampling runtime independen Xavier untuk state utama, rapid toggle, reduced motion, fallback no-JS, serta viewport 320/768/1280.
 
 ## Pemeriksaan Xavier
 
-- Membaca instruksi Xavier, diff langsung, laporan Orion/Lyra/Litcq terbaru, dan file kandidat relevan.
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan sesudah pemeriksaan; Base HEAD, daftar file, hash, dan fingerprint cocok dengan seluruh worker.
-- Memeriksa exact-path Git/Vercel, keberadaan serta hash sumber lokal, status tracked/ignored, dan probe output publik.
-- Mengulang Chromium headless untuk inisialisasi 24 kontrol, keunikan target, click, Enter, Spasi, Escape, pointer-outside, accessibility snapshot awal/expanded, pemuatan gambar, fallback tanpa JavaScript, reduced-motion, dan overflow 320/768/1280.
-- Mengulang pemeriksaan jumlah kartu/aset dan perbandingan data inti terhadap Base HEAD, pemeriksaan sintaks JavaScript, serta whitespace diff.
-
-## Handoff
-
-Izin ini hanya berlaku untuk Base HEAD `800fa37cdaf8139d73dafa895840d3acdcf0a79c` dan fingerprint `255bfc2ea01a258f6bddb3f23b497b0068dd04cd0e637061955bed2092fea33c`. Perubahan apa pun di luar `.agents/reports/**` membatalkan izin dan mewajibkan siklus audit baru. Master harus menghitung ulang fingerprint tepat sebelum commit/push/deployment dan hanya melanjutkan bila identik.
-
-- Keputusan: PUSH
+- Menjalankan `git diff --check` dan `node --check js/main.js`; keduanya lulus.
+- Memeriksa markup secara statis: tepat 24 `.umkm-card`, satu `.umkm-grid`, dan lima label checkbox. Distribusi data yang dibaca dari kartu adalah Nglarangan 7, Kenteng Krajan 12, Kenteng Wetan 4, dan Belum terverifikasi 1; tidak ada konten kartu yang diubah oleh diff, hanya pembungkus kelompok yang digabung.
+- Memeriksa kontrol pada `umkm.html:90-123`: fieldset progressive-enhancement tersembunyi sebelum JavaScript aktif, checkbox Semua dan empat kategori checked pada kondisi awal, `aria-controls` mengarah ke grid, live result memakai `aria-live="polite"`/`aria-atomic="true"`, dan empty-state tersedia untuk hasil nol.
+- Memeriksa sinkronisasi filter pada `js/main.js:259-285`: Semua mengubah seluruh kategori; perubahan kategori menetapkan checked hanya saat semua kategori aktif dan indeterminate saat sebagian aktif. Seleksi menggunakan `Set`, sehingga multi-select bersifat union dan urutan DOM tidak dipindah.
+- Memeriksa jalur animasi pada `js/main.js:130-255`: animasi lama dibatalkan serta inline style dibersihkan, run token mencegah penyelesaian async lama menimpa state baru, leaving memakai opacity/scale, retained memakai delta FLIP, dan entering memakai opacity/scale. Transform reflow berada pada `.umkm-card`, sedangkan transform flip 3D tetap pada `.umkm-card__flipper` di `css/style.css:600-617`.
+- Memeriksa aksesibilitas visibility pada `js/main.js:114-128` dan `js/main.js:163-178`: kartu keluar ditutup ke sisi depan, dibuat inert, dikeluarkan dari urutan fokus dan accessibility tree, lalu di-hidden; kartu masuk dipulihkan. Jalur reduced motion menerapkan target secara instan.
+- Sampling ulang Edge/Chromium headless membuktikan state awal 24, nol kategori 0 dengan empty-state, Nglarangan 7, union Nglarangan + Kenteng Krajan 19, dan status Semua indeterminate pada pilihan parsial. Setelah tujuh toggle berjarak 25 ms, hasil akhir konsisten dan tersisa nol animasi maupun inline `opacity`/`transform`/`will-change`.
+- Sampling reduced-motion menghasilkan nol animasi. Fallback JavaScript-off pada 320 px menyembunyikan filter, menampilkan 24 kartu, dan tidak overflow. Pada viewport 320/768/1280, `scrollWidth` sama dengan lebar viewport dan grid terhitung 1/2/3 kolom.
+- Memeriksa bukti Chromium Litcq untuk kategori individual 12/4/1, interaksi Enter/Spasi/Escape pada flip-card, reset kartu ketika disaring, pengumuman live count, snapshot accessibility, serta enter/leave/retained FLIP; seluruhnya sesuai acceptance criteria dan tidak menghasilkan error console.
+- Memeriksa privasi dan scope: PDF sumber, panduan desain, direktori/arsip sumber redesign, serta setup Playwright lokal tetap di-ignore dan tidak terlacak. Tidak ada dependency, CDN, aset, navigasi, sitemap, atau halaman lain yang masuk kandidat.

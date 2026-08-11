@@ -74,13 +74,6 @@
           </div>
         </div>
 
-        <nav class="umkm-jump" aria-label="Pilih daftar UMKM berdasarkan dusun">
-          <span>Lihat berdasarkan lokasi:</span>
-          <a href="#nglarangan">Nglarangan <strong>7</strong></a>
-          <a href="#kenteng-krajan">Kenteng Krajan <strong>12</strong></a>
-          <a href="#kenteng-wetan">Kenteng Wetan <strong>4</strong></a>
-          <a href="#lokasi-belum-terverifikasi">Belum terverifikasi <strong>1</strong></a>
-        </nav>
       </div>
     </section>
 
@@ -91,18 +84,45 @@
             <span class="section-label">Direktori Usaha</span>
             <h2 class="section-title" id="daftar-umkm-title">Daftar UMKM</h2>
           </div>
-          <p>Data dikelompokkan berdasarkan dusun agar mudah dipindai. Arahkan kursor, sentuh, atau fokuskan kartu lalu tekan Enter/Spasi untuk membaliknya. Status legalitas mengikuti data sumber.</p>
+          <p>Pilih satu atau beberapa dusun untuk menyaring daftar. Arahkan kursor, sentuh, atau fokuskan kartu lalu tekan Enter/Spasi untuk membaliknya. Status legalitas mengikuti data sumber.</p>
         </div>
 
-        <section class="umkm-group" id="nglarangan" aria-labelledby="nglarangan-title">
-          <div class="umkm-group__head">
-            <div>
-              <span class="umkm-group__eyebrow">7 usaha</span>
-              <h2 id="nglarangan-title">Nglarangan</h2>
-            </div>
-            <a href="#daftar-umkm">Kembali ke atas</a>
+        <fieldset class="umkm-filter" id="umkmFilter" hidden>
+          <legend>Saring UMKM berdasarkan dusun</legend>
+          <div class="umkm-filter__options">
+            <label class="umkm-filter__option umkm-filter__option--all">
+              <input type="checkbox" value="semua" data-filter-all aria-controls="umkmGrid" checked>
+              <span>Semua</span><strong>24</strong>
+            </label>
+            <label class="umkm-filter__option">
+              <input type="checkbox" value="nglarangan" data-filter-category aria-controls="umkmGrid" checked>
+              <span>Nglarangan</span><strong>7</strong>
+            </label>
+            <label class="umkm-filter__option">
+              <input type="checkbox" value="kenteng-krajan" data-filter-category aria-controls="umkmGrid" checked>
+              <span>Kenteng Krajan</span><strong>12</strong>
+            </label>
+            <label class="umkm-filter__option">
+              <input type="checkbox" value="kenteng-wetan" data-filter-category aria-controls="umkmGrid" checked>
+              <span>Kenteng Wetan</span><strong>4</strong>
+            </label>
+            <label class="umkm-filter__option">
+              <input type="checkbox" value="belum-terverifikasi" data-filter-category aria-controls="umkmGrid" checked>
+              <span>Belum terverifikasi</span><strong>1</strong>
+            </label>
           </div>
-          <div class="umkm-grid">
+        </fieldset>
+
+        <div class="umkm-results" aria-live="polite" aria-atomic="true">
+          <p id="umkmResultCount">24 usaha ditampilkan</p>
+        </div>
+
+        <div class="umkm-empty" id="umkmEmptyState" hidden>
+          <h3>Tidak ada usaha yang ditampilkan</h3>
+          <p>Pilih setidaknya satu dusun pada filter di atas untuk melihat daftar UMKM.</p>
+        </div>
+
+        <div class="umkm-grid" id="umkmGrid" aria-describedby="umkmResultCount">
             <article class="umkm-card" tabindex="0">
               <div class="umkm-card__flipper">
                 <div class="umkm-card__face umkm-card__front">
@@ -201,18 +221,6 @@
                 </div></div>
               </div>
             </article>
-          </div>
-        </section>
-
-        <section class="umkm-group" id="kenteng-krajan" aria-labelledby="kenteng-krajan-title">
-          <div class="umkm-group__head">
-            <div>
-              <span class="umkm-group__eyebrow">12 usaha</span>
-              <h2 id="kenteng-krajan-title">Kenteng Krajan</h2>
-            </div>
-            <a href="#daftar-umkm">Kembali ke atas</a>
-          </div>
-          <div class="umkm-grid">
             <article class="umkm-card" tabindex="0">
               <div class="umkm-card__flipper">
                 <div class="umkm-card__face umkm-card__front"><img class="umkm-card__thumb" src="assets/umkm/sembako.webp" alt="Ilustrasi toko sembako" loading="lazy" decoding="async" width="640" height="480"><span class="umkm-card__badge">Perdagangan</span><div class="umkm-card__body"><h3>Bu Wanti (Toko Farel)</h3><p class="umkm-card__product">Sembako</p></div><span class="umkm-card__hint" aria-hidden="true">Putar kartu untuk detail</span></div>
@@ -285,18 +293,6 @@
                 <div class="umkm-card__face umkm-card__back"><div class="umkm-card__back-inner"><span class="umkm-card__badge">Detail Usaha</span><h3>Septi Setianingrum</h3><p class="umkm-card__product">Jamur</p><dl class="umkm-card__details"><div><dt>Berdiri</dt><dd>2022</dd></div><div><dt>Legalitas</dt><dd>Belum memiliki legalitas</dd></div><div><dt>Dusun</dt><dd>Kenteng Krajan</dd></div></dl></div></div>
               </div>
             </article>
-          </div>
-        </section>
-
-        <section class="umkm-group" id="kenteng-wetan" aria-labelledby="kenteng-wetan-title">
-          <div class="umkm-group__head">
-            <div>
-              <span class="umkm-group__eyebrow">4 usaha</span>
-              <h2 id="kenteng-wetan-title">Kenteng Wetan</h2>
-            </div>
-            <a href="#daftar-umkm">Kembali ke atas</a>
-          </div>
-          <div class="umkm-grid">
             <article class="umkm-card" tabindex="0">
               <div class="umkm-card__flipper">
                 <div class="umkm-card__face umkm-card__front"><img class="umkm-card__thumb" src="assets/umkm/permen.webp" alt="Ilustrasi aneka permen" loading="lazy" decoding="async" width="640" height="480"><span class="umkm-card__badge">Kuliner</span><div class="umkm-card__body"><h3>Hanafi - Willo</h3><p class="umkm-card__product">Permen</p></div><span class="umkm-card__hint" aria-hidden="true">Putar kartu untuk detail</span></div>
@@ -321,27 +317,13 @@
                 <div class="umkm-card__face umkm-card__back"><div class="umkm-card__back-inner"><span class="umkm-card__badge">Detail Usaha</span><h3>Zainal Abidin</h3><p class="umkm-card__product">Keripik singkong, pangsit, dan putil</p><dl class="umkm-card__details"><div><dt>Berdiri</dt><dd>2012</dd></div><div><dt>Legalitas</dt><dd>Belum memiliki legalitas</dd></div><div><dt>Dusun</dt><dd>Kenteng Wetan</dd></div></dl></div></div>
               </div>
             </article>
-          </div>
-        </section>
-
-        <section class="umkm-group" id="lokasi-belum-terverifikasi" aria-labelledby="lokasi-belum-terverifikasi-title">
-          <div class="umkm-group__head">
-            <div>
-              <span class="umkm-group__eyebrow">1 usaha</span>
-              <h2 id="lokasi-belum-terverifikasi-title">Lokasi Belum Terverifikasi</h2>
-            </div>
-            <a href="#daftar-umkm">Kembali ke atas</a>
-          </div>
-          <p class="umkm-group__note">Kolom lokasi dan jenis usaha pada data sumber tidak terbaca dengan jelas, sehingga informasi tersebut tidak ditampilkan.</p>
-          <div class="umkm-grid umkm-grid--single">
             <article class="umkm-card umkm-card--uncertain" tabindex="0">
               <div class="umkm-card__flipper">
                 <div class="umkm-card__face umkm-card__front"><img class="umkm-card__thumb" src="assets/umkm/interior.webp" alt="Ilustrasi pekerjaan interior" loading="lazy" decoding="async" width="640" height="480"><span class="umkm-card__badge">Jenis usaha belum terverifikasi</span><div class="umkm-card__body"><h3>Abrorin (SB Production)</h3><p class="umkm-card__product">Interior</p></div><span class="umkm-card__hint" aria-hidden="true">Putar kartu untuk detail</span></div>
                 <div class="umkm-card__face umkm-card__back"><div class="umkm-card__back-inner"><span class="umkm-card__badge">Detail Usaha</span><h3>Abrorin (SB Production)</h3><p class="umkm-card__product">Interior</p><dl class="umkm-card__details"><div><dt>Berdiri</dt><dd>2023</dd></div><div><dt>Legalitas</dt><dd>Belum memiliki legalitas</dd></div><div><dt>Lokasi</dt><dd>Belum terverifikasi</dd></div></dl></div></div>
               </div>
             </article>
-          </div>
-        </section>
+        </div>
       </div>
     </section>
 
