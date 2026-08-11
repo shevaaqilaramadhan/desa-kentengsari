@@ -1,23 +1,25 @@
 # Xavier QA Gate Report
 
-- Waktu gate: 2026-08-11T22:23:40.6407340+07:00
-- Base HEAD: `0321c1ded8a258c99eb30cc97c98ad7507171c20`
-- Diff fingerprint: `35e3cac46f00d170a28657944e781434e1b3ecb3da642a8ccc0f842fdd615f23`
+- Waktu gate: 2026-08-11T22:52:43.6479696+07:00
+- Base HEAD: 1d6efe103237fb11375fb74ff334f518def806fb
+- Diff fingerprint: 6bdc574ebbf5718dbe00bd5a8ab1a95b476edaed0a71da55c6d2e2f59b246c4d
 - Scope/diff: `umkm.html`, `css/style.css`, dan `js/main.js`
 - Orion: READY_FOR_AUDIT
 - Lyra: PASS
-- Litcq: PASS
+- Litcq: PASS_WITH_NOTES
+- Keputusan: PUSH
 
 ## Ringkasan Keputusan
 
-Perubahan memenuhi feedback pengguna: kontrol filter UMKM sekarang tepat lima tombol native, bukan checklist; tidak ada checkbox, checkmark, atau copy visual `aktif`, `tidak aktif`, maupun `sebagian aktif`. State hanya disampaikan melalui tampilan tombol dan `aria-pressed` (`true`, `false`, atau `mixed` pada tombol Semua). Hitungan, multi-select, sinkronisasi Semua, FLIP, flip-card, aksesibilitas kartu tersembunyi, fallback no-JS, reduced-motion, dan responsivitas tetap berfungsi. Tidak ditemukan blocker atau temuan high yang diperkenalkan diff.
+Kandidat memenuhi seluruh acceptance criteria pada Base HEAD dan fingerprint yang tercatat. Exit filter berubah dari 180 ms menjadi 460 ms, paragraf instruksi panjang serta tiga box statistik dihapus, dan selector CSS yang menjadi yatim ikut dibersihkan. Tidak ada temuan blocker/high atau validasi penting yang gagal. Catatan Litcq mengenai tidak tersedianya browser independen diterima karena Orion menjalankan validasi Chromium pada fingerprint identik dan hasil tersebut konsisten dengan pemeriksaan statis Lyra, Litcq, serta Xavier.
 
 ## Validasi Laporan Worker
 
-- Laporan Orion tersedia, lengkap, berstatus `READY_FOR_AUDIT`, dan mencatat Base HEAD, fingerprint, serta tiga file scope yang sama dengan calon perubahan.
-- Laporan Lyra tersedia dan berstatus `PASS`; laporan memeriksa penghilangan checklist/status-copy, pembeda visual active/inactive/mixed, focus-visible, wrapping mobile/desktop, live count, empty state, dan reflow kartu.
-- Laporan Litcq tersedia dan berstatus `PASS`; laporan memeriksa logika filter, seluruh hitungan, input mouse/touch/keyboard, rapid toggle/FLIP, flip-card, hidden accessibility, no-JS, reduced-motion, responsivitas, referensi lokal, navigasi, sitemap, dan privasi.
-- Xavier menghitung ulang fingerprint sesudah membaca diff dan melakukan validasi. Base HEAD `0321c1ded8a258c99eb30cc97c98ad7507171c20` serta fingerprint `35e3cac46f00d170a28657944e781434e1b3ecb3da642a8ccc0f842fdd615f23` identik dengan ketiga laporan worker. Scope fingerprint hanya memuat `css/style.css`, `js/main.js`, dan `umkm.html`; artefak laporan dikecualikan oleh script resmi.
+- Ketiga laporan tersedia, lengkap, dibuat sesudah implementasi, dan mencatat Base HEAD serta fingerprint yang identik dengan hasil hitung ulang Xavier.
+- Laporan Orion berstatus `READY_FOR_AUDIT` dan mencakup seluruh tiga file kandidat. Buktinya meliputi exit aktual sekitar 463 ms, rapid-toggle last-input-wins, reduced-motion sekitar 1,5 ms tanpa animasi, hitungan 24/7/12/4/1/19/0, no-JS, interaksi kartu, dan viewport 320/768/1280 tanpa overflow.
+- Laporan Lyra berstatus `PASS`, mencakup hierarchy, spacing, motion, dan responsivitas pada scope yang sama, serta tidak mencatat temuan.
+- Laporan Litcq berstatus `PASS_WITH_NOTES`, mencakup fungsi/regresi pada scope yang sama. Satu catatan hanya menyatakan runtime Chromium tidak dapat diulang secara independen; audit statisnya tidak menemukan regresi.
+- Perubahan pada `.agents/reports/**` merupakan artefak audit yang dikecualikan dari fingerprint; kandidat kode tetap hanya tiga file scope.
 
 ## Blocking Issues
 
@@ -25,24 +27,17 @@ Tidak ada.
 
 ## Risiko yang Diterima
 
-- Validasi runtime independen dan kedua audit worker memakai Chromium headless lokal; Firefox, WebKit/Safari, perangkat sentuh fisik, dan pembaca layar manusia tidak diuji. Risiko dinilai rendah karena kontrol memakai elemen `button` native, keyboard activation bawaan, `fieldset`/`legend`, dan state ARIA eksplisit.
-- Pelafalan `aria-pressed="mixed"` dapat bervariasi antarkombinasi pembaca layar/peramban. State tersebut hanya dipakai pada tombol Semua untuk merepresentasikan pilihan parsial dan tidak menambahkan copy visual yang ditolak pengguna.
+- Litcq tidak memiliki browser pada sesi audit sehingga tidak mengulang elapsed runtime, rapid-toggle, reduced-motion, dan pengukuran overflow. Risiko ini diterima karena bukti Chromium Orion lengkap, berasal dari kandidat dengan fingerprint identik, dan jalur kode terkait diverifikasi statis oleh Litcq serta Xavier.
+- Total transisi pada kasus dengan exit bertingkat lalu reflow dapat mendekati 1,17 detik. Ini merupakan konsekuensi yang diketahui dari permintaan memperlambat fase exit; mekanisme pembatalan menjaga interaksi baru tetap last-input-wins.
+- Pengujian lintas-engine, perangkat sentuh fisik, dan pembaca layar manusia tidak dilakukan; tidak ada perubahan struktur kontrol atau aksesibilitas yang memperkenalkan indikasi regresi pada diff ini.
 
 ## Pemeriksaan Xavier
 
-- Membaca diff langsung terhadap Base HEAD. Perubahan terbatas pada markup kontrol (`umkm.html:90-108`), styling state (`css/style.css:561-584`), dan handler state/filter (`js/main.js:151-292`); data 24 kartu dan struktur lain tidak diubah.
-- Pemeriksaan statis menemukan tepat 5 tombol filter, 0 checkbox, 5 atribut `aria-pressed`, dan 24 kartu. Tidak ada selector checkbox lama (`:has(input...)`, `input:checked`, `input:indeterminate`), state `.checked`/`.indeterminate`, handler `change`, pseudo-element status, atau copy `tidak aktif`/`sebagian aktif`.
-- `node --check js/main.js` dan `git diff --check -- css/style.css js/main.js umkm.html` lulus.
-- Chromium headless independen memverifikasi keadaan awal 24; tidak ada kategori 0; Nglarangan 7; Kenteng Krajan 12; Kenteng Wetan 4; Belum terverifikasi 1; Nglarangan + Kenteng Krajan 19; Kenteng Krajan + Kenteng Wetan 16; serta Kenteng Wetan + Belum terverifikasi 5. Live count dan empty state sinkron.
-- Sinkronisasi tombol Semua tervalidasi sebagai `true` ketika empat kategori aktif, `mixed` ketika sebagian aktif, dan `false` ketika tidak ada kategori; Space pada tombol native memulihkan seluruh kategori dan 24 kartu.
-- Computed style membedakan active dari inactive bukan hanya lewat warna: active memiliki font-weight 800, shadow, dan offset 1 px; inactive memiliki font-weight 700 tanpa shadow/transform. `span::after` bernilai `none`, sehingga label seperti “Belum terverifikasi aktif” tidak muncul.
-- Rapid toggle 37 kali berakhir konsisten pada state terbaru: Nglarangan `false`, Semua `mixed`, count 17, dan 17 kartu terlihat; setelah settling tidak ada animasi kartu aktif atau residu inline `opacity`, `transform`, maupun `will-change`. Pembacaan diff memastikan algoritme tidak memindahkan node sehingga stable DOM order tetap dipertahankan; hasil ini konsisten dengan verifikasi Litcq.
-- Pada state hanya Belum terverifikasi aktif, tepat 1 kartu terlihat dan 23 tersembunyi; semua kartu tersembunyi memiliki `hidden`, `inert`, `aria-hidden="true"`, dan `tabindex="-1"`, sedangkan kartu terlihat tetap `tabindex="0"`.
-- Flip-card tetap membuka dengan `aria-expanded="true"` dan menutup lewat Escape menjadi `false` setelah perubahan filter.
-- Konteks reduced-motion menerapkan filter secara instan dengan 0 animasi aktif pada kartu maupun tombol. Konteks JavaScript-off menyembunyikan kontrol filter dan mempertahankan seluruh 24 kartu terlihat.
-- Viewport 320, 768, dan 1280 piksel masing-masing menghasilkan selisih `scrollWidth - clientWidth` sebesar 0; kontrol tetap responsif tanpa overflow horizontal.
-- Fingerprint dihitung ulang setelah seluruh pemeriksaan dan tetap sama. Izin gate hanya berlaku untuk Base HEAD dan fingerprint di atas; perubahan file non-report membatalkan izin dan mewajibkan siklus audit baru.
+- Menjalankan `.agents/get-change-fingerprint.ps1`; hasilnya Base HEAD `1d6efe103237fb11375fb74ff334f518def806fb` dan fingerprint `6bdc574ebbf5718dbe00bd5a8ab1a95b476edaed0a71da55c6d2e2f59b246c4d`.
+- Membaca diff langsung. `umkm.html` hanya menghapus wrapper tiga statistik dan paragraf instruksi yang diminta; struktur heading, filter, live count, empty state, dan grid tetap ada.
+- Memastikan teks target, label statistik, serta `.umkm-summary*` tidak tersisa pada `umkm.html`, `css/style.css`, atau `js/main.js`.
+- Memastikan `js/main.js:191` menetapkan exit `duration: 460`, stagger maksimum 120 ms, dan easing `cubic-bezier(.4, 0, .6, 1)` tanpa mengubah jalur pembatalan animasi, token `filterRun`, reduced-motion, reflow, maupun enter.
+- Menjalankan `node --check js/main.js` dan `git diff --check`; keduanya lulus.
+- Memastikan `git rev-parse HEAD` cocok dengan Base HEAD dan daftar kandidat kode hanya `css/style.css`, `js/main.js`, serta `umkm.html`.
 
-## Keputusan
-
-PUSH
+Izin gate ini hanya berlaku selama Base HEAD dan diff fingerprint di atas tetap identik.
