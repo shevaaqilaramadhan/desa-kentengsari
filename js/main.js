@@ -151,7 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
           cards.filter(card => !card.hidden).map(card => [card, card.getBoundingClientRect()])
         );
         const selectedDusun = new Set(
-          categoryFilters.filter(input => input.checked).map(input => input.value)
+          categoryFilters
+            .filter(button => button.getAttribute('aria-pressed') === 'true')
+            .map(button => button.value)
         );
         const targets = new Map(cards.map(card => [card, selectedDusun.has(card.dataset.dusun)]));
         const leaving = cards.filter(card => !card.hidden && !targets.get(card));
@@ -266,17 +268,27 @@ document.addEventListener('DOMContentLoaded', () => {
         card.dataset.filterVisible = 'true';
       });
 
-      allFilter.addEventListener('change', () => {
-        categoryFilters.forEach(input => { input.checked = allFilter.checked; });
-        allFilter.indeterminate = false;
+      allFilter.addEventListener('click', () => {
+        const activateAll = allFilter.getAttribute('aria-pressed') !== 'true';
+        categoryFilters.forEach(button => {
+          button.setAttribute('aria-pressed', String(activateAll));
+        });
+        allFilter.setAttribute('aria-pressed', String(activateAll));
         animateFilter();
       });
 
-      categoryFilters.forEach(input => {
-        input.addEventListener('change', () => {
-          const checkedCount = categoryFilters.filter(category => category.checked).length;
-          allFilter.checked = checkedCount === categoryFilters.length;
-          allFilter.indeterminate = checkedCount > 0 && checkedCount < categoryFilters.length;
+      categoryFilters.forEach(button => {
+        button.addEventListener('click', () => {
+          const isActive = button.getAttribute('aria-pressed') === 'true';
+          button.setAttribute('aria-pressed', String(!isActive));
+
+          const activeCount = categoryFilters.filter(category => (
+            category.getAttribute('aria-pressed') === 'true'
+          )).length;
+          const allState = activeCount === categoryFilters.length
+            ? 'true'
+            : activeCount === 0 ? 'false' : 'mixed';
+          allFilter.setAttribute('aria-pressed', allState);
           animateFilter();
         });
       });

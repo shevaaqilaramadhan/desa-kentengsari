@@ -559,33 +559,29 @@ ul { list-style: none; }
 }
 .umkm-filter__options { display: flex; flex-wrap: wrap; gap: .7rem; }
 .umkm-filter__option {
+  appearance: none;
   display: inline-flex; align-items: center; gap: .45rem;
   min-height: 44px; padding: .55rem .8rem;
   color: var(--green-800); background: var(--green-50);
   border: 1px solid var(--green-100); border-radius: 999px;
-  cursor: pointer; font-size: .84rem; font-weight: 700;
-  transition: color .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+  cursor: pointer; font: inherit; font-size: .84rem; font-weight: 700;
+  transition: color .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 .umkm-filter__option:hover { border-color: var(--green-500); }
-.umkm-filter__option:has(input:checked) {
+.umkm-filter__option[aria-pressed="true"] {
   color: #fff; background: var(--green-700); border-color: var(--green-700);
-  box-shadow: 0 4px 12px rgba(30, 107, 63, .2);
+  box-shadow: 0 4px 12px rgba(30, 107, 63, .2); font-weight: 800;
+  transform: translateY(-1px);
 }
-.umkm-filter__option:has(input:indeterminate) {
+.umkm-filter__option[aria-pressed="mixed"] {
   color: var(--green-950); background: #fff5d9; border-color: #d9a441;
+  box-shadow: inset 0 0 0 1px #d9a441;
 }
-.umkm-filter__option input {
-  flex: 0 0 auto; width: 1.05rem; height: 1.05rem; margin: 0;
-  accent-color: var(--green-950); cursor: pointer;
-}
-.umkm-filter__option span::after { content: " tidak aktif"; font-size: .72rem; font-weight: 500; }
-.umkm-filter__option:has(input:checked) span::after { content: " aktif"; }
-.umkm-filter__option:has(input:indeterminate) span::after { content: " sebagian aktif"; }
 .umkm-filter__option strong {
   min-width: 1.45rem; padding: .05rem .35rem; border-radius: 999px;
   color: var(--green-800); background: rgba(255, 255, 255, .82); text-align: center;
 }
-.umkm-filter__option:focus-within { outline: 3px solid #f2c96d; outline-offset: 3px; }
+.umkm-filter__option:focus-visible { outline: 3px solid #f2c96d; outline-offset: 3px; }
 .umkm-results { min-height: 1.5rem; margin-bottom: 1rem; }
 .umkm-results p { color: var(--green-950); font-size: .9rem; font-weight: 800; }
 .umkm-empty {
