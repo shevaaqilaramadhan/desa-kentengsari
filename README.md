@@ -34,6 +34,19 @@ python -m http.server 8000 --directory D:\testing-web-cline
 
 Lalu buka `http://localhost:8000`. Alternatif: klik dua kali `index.html` langsung di browser.
 
+## Multi-Agent Orchestrator
+
+Proyek ini memiliki protokol implementasi dan QA master-worker di `AGENTS.md`:
+
+- **Orion** adalah satu-satunya implementer dan bug fixer. Orion menerima permintaan atau temuan `DO_NOT_PUSH`, mengubah kode tanpa commit/push, lalu menulis `.agents/reports/orion/latest.md` berdasarkan `.agents/orion.md`.
+- **Lyra** memeriksa visual dan design system berdasarkan `.agents/lyra.md`, lalu menulis `.agents/reports/lyra/latest.md`.
+- **Litcq** memeriksa fungsi teknis dan regresi berdasarkan `.agents/litcq.md`, lalu menulis `.agents/reports/litcq/latest.md`.
+- **Xavier** memverifikasi diff serta laporan Orion, Lyra, dan Litcq berdasarkan `.agents/xavier.md`, lalu menulis keputusan `PUSH` atau `DO_NOT_PUSH` ke `.agents/reports/xavier/latest.md`.
+
+Lyra, Litcq, dan Xavier bersifat audit-only. Master tidak mengubah website, memperbaiki kode, atau mengambil keputusan QA; master hanya mengoordinasikan siklus dan melakukan push ke GitHub jika Xavier memberi keputusan `PUSH` untuk diff yang masih sama. Jika Xavier memilih `DO_NOT_PUSH`, master mengembalikan temuan kepada Orion, lalu seluruh audit diulang setelah Orion menghasilkan fingerprint baru.
+
+Kesegaran audit diverifikasi dengan fingerprint SHA-256 dari `.agents/get-change-fingerprint.ps1`. Artefak `.agents/reports/**` dikecualikan agar penulisan laporan tidak membatalkan gate; perubahan pada file lain tetap mewajibkan audit ulang.
+
 ## Mengoptimasi Ulang Aset Gambar
 
 Jika ada foto baru berukuran besar, jalankan:

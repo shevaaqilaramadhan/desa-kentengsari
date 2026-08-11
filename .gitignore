@@ -37,6 +37,8 @@ assets_extracted/
 # File riset & draf internal (opsional — hapus tanda # jika ingin ikut diupload)
 # kentengsari_research.md
 # kutavillage_analysis.md
+# Sumber survei UMKM lokal mengandung data nonpublik; jangan masukkan ke repository.
+/assets/DATA UMKM GIAT 16 DESA KENTENGSARI - Form Responses 1.pdf
 
 # ---------- Sistem Operasi ----------
 Thumbs.db
@@ -90,3 +92,15 @@ build/
 .vercel
 .netlify/
 .cache/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+# Setup Playwright lokal concurrent; dikecualikan dari kandidat atas izin pengguna.
+/.github/workflows/playwright.yml
+/package.json
+/playwright.config.js
+/tests/example.spec.js

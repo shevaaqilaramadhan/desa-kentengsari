@@ -1,0 +1,7 @@
+# Sumber survei UMKM lokal mengandung data nonpublik; jangan unggah ke deployment.
+/assets/DATA UMKM GIAT 16 DESA KENTENGSARI - Form Responses 1.pdf
+# Setup Playwright lokal concurrent; jangan unggah ke deployment.
+/.github/workflows/playwright.yml
+/package.json
+/playwright.config.js
+/tests/example.spec.js
