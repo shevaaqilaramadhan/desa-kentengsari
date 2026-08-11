@@ -1,14 +1,14 @@
-# Lyra Visual and Design System Report
+# Lyra Report
 
-- Waktu audit: 2026-08-11T22:49:13.2670862+07:00
-- Base HEAD: 1d6efe103237fb11375fb74ff334f518def806fb
-- Diff fingerprint: 6bdc574ebbf5718dbe00bd5a8ab1a95b476edaed0a71da55c6d2e2f59b246c4d
-- Scope: `umkm.html`, `css/style.css`, dan `js/main.js`; khusus hierarchy/spacing setelah penghapusan paragraf bantuan dan tiga kartu ringkasan, serta motion exit/reflow/enter dan konsistensi responsif 320/768/1280 px.
+- Waktu audit: 2026-08-11T23:25:07+07:00
+- Base HEAD: e75c410a801a4715179fc1cdb0799f0bfefc906e
+- Diff fingerprint: ab283fc6ebac5dc69e8a960e710acd3822b34dbdc785437101b6f45c2bc82076
+- Scope: `css/style.css` dan `js/main.js`; audit visual animasi flip/unflip kartu UMKM, reduced motion, exit filter, keberlanjutan penghapusan paragraf/statistik sebelumnya, serta layout responsif.
 - Status: PASS
 
 ## Ringkasan
 
-Paragraf bantuan direktori dan tiga kartu ringkasan telah hilang sepenuhnya tanpa meninggalkan selector presentasional yatim atau kontainer kosong yang membentuk ruang tambahan. Hierarchy intro ke bagian direktori tetap jelas; heading direktori, garis pemisah, filter, live result count, dan grid mempertahankan ritme spacing yang konsisten. Exit 460 ms memakai animasi kompositor `opacity` dan `transform`, easing yang halus, serta stagger terbatas 120 ms; secara desain motion durasi ini terasa lebih terbaca daripada 180 ms lama dan tetap selaras dengan enter 440 ms serta reflow 540 ms.
+Perubahan menempatkan tambahan durasi pada animasi yang dimaksud pengguna: flip dan unflip kartu kini berlangsung 1 detik dengan kurva yang sama pada kedua arah. Gerak terlihat halus dan natural, tidak snap ketika hover/focus keluar, sementara exit filter kembali singkat pada 180 ms sehingga penyaringan tidak terasa tertahan. Bahasa visual kartu, filter, hierarchy, dan layout responsif tetap konsisten.
 
 ## Temuan
 
@@ -16,16 +16,17 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint identik dengan laporan Orion serta nilai yang diberikan master.
-- Memeriksa diff penuh tiga file scope dan memastikan perubahan presentasional hanya menghapus `.umkm-summary`, paragraf `.umkm-directory__head > p`, selector responsif terkait, serta memperpanjang parameter exit.
-- Memastikan copy `Pilih satu atau beberapa dusun...`, `24 Usaha terdata`, `3 Dusun teridentifikasi`, dan `6+ Bidang usaha` tidak lagi muncul pada markup; `.umkm-summary*` juga tidak tersisa di CSS.
-- Memeriksa hierarchy `umkm.html:54-104`: intro berakhir langsung setelah deskripsi utama, direktori dimulai dengan label dan heading, lalu filter pada jarak yang ditentukan tanpa wrapper kosong atau spacer tambahan.
-- Memeriksa spacing `css/style.css:527-578`: intro menggunakan padding section yang konsisten, header direktori mempertahankan separator dan `padding-bottom: 2rem`, filter memakai `margin-top: 2rem`, result count `margin-bottom: 1rem`, dan grid `gap: 1.25rem`.
-- Memeriksa breakpoint `css/style.css:703-736`: grid tetap 3/2/1 kolom pada 1280/768/320 px; penghapusan summary tidak meninggalkan rule mobile yatim; filter tetap menjadi satu kolom pada 320 px dan dua/lebih tombol terbungkus alami pada viewport yang lebih lebar.
-- Memeriksa motion `js/main.js:183-261`: exit 460 ms + stagger maksimum 120 ms menggunakan `opacity/scale` dan `will-change`, reflow 540 ms serta enter 440 ms tidak diubah, sehingga urutan exit lalu pergeseran grid tetap terbaca dan durasi antarfase konsisten.
-- Meninjau bukti validasi Chromium headless Orion: 1/2/3 kolom pada 320/768/1280 px tanpa overflow horizontal, ruang bawah intro 61/72/72 px, exit aktual 463 ms, dan tidak ada animasi/inline style tersisa setelah transisi.
+- Menghitung fingerprint resmi sebelum dan sesudah audit; Base HEAD dan fingerprint sama dengan laporan Orion.
+- Memeriksa diff kandidat: `.umkm-card__flipper` berubah dari 0,7 detik menjadi 1 detik tanpa perubahan kurva `cubic-bezier(.4, .2, .2, 1)` (`css/style.css:585-589`), sedangkan exit filter kembali ke 180 ms, stagger maksimum 90 ms, dan `ease-in` (`js/main.js:183-196`).
+- Menjalankan Microsoft Edge/Chromium headless lokal dan memverifikasi computed transition `1s`. Pada 500 ms kartu masih berada di tengah rotasi; setelah hover keluar selama 120 ms transform juga masih berada di antara 180 dan 0 derajat, lalu berakhir tepat pada sisi depan. Bukti ini menunjukkan flip dan unflip menggunakan interpolasi yang sama dan tidak snap.
+- Memeriksa tampilan sisi depan dan belakang pada viewport 1280 px. Border, radius, bayangan, badge, gambar, hierarchy judul/detail, warna hijau, dan keterbacaan tetap konsisten dengan design system.
+- Memeriksa viewport 320, 768, dan 1280 px: grid masing-masing 1, 2, dan 3 kolom; seluruh 24 kartu tampil; tidak ada horizontal overflow.
+- Memverifikasi `prefers-reduced-motion: reduce` menghasilkan computed duration `0s`/transition `none` pada flipper (`css/style.css:641-645`).
+- Memastikan tidak ada perubahan HTML pada kandidat. Paragraf instruksi spesifik yang dihapus pada pekerjaan sebelumnya dan wrapper `.umkm-summary` tetap tidak ada; tiga box statistik tidak muncul pada pemeriksaan visual desktop/mobile.
+- Meninjau bukti Orion untuk state click/touch, Enter/Space, Escape, outside/focusout, ARIA, rapid filter toggle, dan no-JS sebagai konteks pendukung; audit Lyra berfokus pada hasil visualnya.
+- Menjalankan `git diff --check`; tidak ada error whitespace.
 
 ## Batasan
 
-- In-app browser tidak tersedia pada sesi audit Lyra (`agent.browsers.list()` kosong), sehingga screenshot visual independen tidak dapat diambil. Penilaian dilakukan melalui diff/CSS/markup, karakteristik animasi WAAPI, dan bukti render Chromium headless pada laporan Orion.
-- Audit ini terbatas pada bahasa visual, hierarchy, spacing, motion, dan responsivitas dalam scope perubahan. Perilaku state, keyboard, ARIA, dan regresi fungsi merupakan lingkup Litcq.
+- Audit browser independen dilakukan pada Microsoft Edge berbasis Chromium secara headless; tidak dilakukan perbandingan visual lintas-engine Firefox/Safari.
+- Timing exit filter dan sinkronisasi state interaksi merupakan ranah utama Litcq; Lyra menilai dampak visual dan menggunakan bukti Orion sebagai pendukung.
