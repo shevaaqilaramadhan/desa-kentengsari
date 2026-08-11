@@ -1,17 +1,61 @@
 ---
-import FoundationPlaceholder from '../components/astro/FoundationPlaceholder.astro';
+import PageHero from '../components/astro/PageHero.astro';
+import SectionHeading from '../components/astro/SectionHeading.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
-<SiteLayout
-  title="Kontak — Desa Kentengsari"
-  description="Hubungi Pemerintah Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Alamat kantor desa, email, dan peta lokasi."
-  activeRoute="kontak"
-  canonicalPath="/kontak.html"
->
-  <main id="main-content" class="bg-surface-soft py-24">
-    <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-      <FoundationPlaceholder eyebrow="Checkpoint migrasi" heading="Kontak Desa Kentengsari" />
-    </div>
+<SiteLayout title="Kontak — Desa Kentengsari" description="Hubungi Pemerintah Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Alamat kantor desa, email, dan peta lokasi." activeRoute="kontak" canonicalPath="/kontak.html">
+  <main id="main-content">
+    <PageHero current="Kontak" title="Hubungi Kami" description="Kami terbuka untuk pertanyaan, masukan, dan kerja sama demi kemajuan Desa Kentengsari." />
+    <section class="bg-surface-soft py-20 md:py-28">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Kontak & Lokasi" title="Kantor Desa Kentengsari" description="Silakan datang langsung ke kantor desa pada jam pelayanan, atau hubungi kami melalui email." />
+        <div class="mt-10 grid gap-8 lg:grid-cols-2">
+          <div class="grid gap-4">
+            <article class="flex gap-4 rounded-card border border-line bg-white p-5 shadow-card"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-kenteng-50 text-kenteng-700"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M12 21s-7-5.1-7-11a7 7 0 0 1 14 0c0 5.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></div><div><h3 class="font-extrabold text-kenteng-950">Alamat Kantor Desa</h3><p class="mt-1 leading-7 text-muted">Kantor Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah, Indonesia.</p></div></article>
+            <article class="flex gap-4 rounded-card border border-line bg-white p-5 shadow-card"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-kenteng-50 text-kenteng-700"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></div><div><h3 class="font-extrabold text-kenteng-950">Email Resmi</h3><a class="mt-1 block break-all font-bold text-kenteng-700 hover:text-kenteng-900" href="mailto:pemdeskentengsari@gmail.com">pemdeskentengsari@gmail.com</a></div></article>
+            <article class="flex gap-4 rounded-card border border-line bg-white p-5 shadow-card"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-kenteng-50 text-kenteng-700"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3 class="font-extrabold text-kenteng-950">Jam Pelayanan</h3><p class="mt-1 leading-7 text-muted">Senin – Jumat, pukul 08.00 – 14.00 WIB. Di luar jam tersebut silakan hubungi melalui email.</p></div></article>
+            <article class="flex gap-4 rounded-card border border-line bg-white p-5 shadow-card"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-kenteng-50 text-kenteng-700"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2Z"/></svg></div><div><h3 class="font-extrabold text-kenteng-950">Layanan Aspirasi</h3><p class="mt-1 leading-7 text-muted">Sampaikan aspirasi dan pengaduan masyarakat melalui email resmi atau langsung ke kantor desa.</p></div></article>
+          </div>
+          <div class="min-h-[430px] overflow-hidden rounded-panel border border-line bg-white shadow-card">
+            <iframe class="h-full min-h-[430px] w-full" src="https://maps.google.com/maps?q=Kentengsari,%20Windusari,%20Magelang&t=&z=14&ie=UTF8&iwloc=&output=embed" title="Peta lokasi Desa Kentengsari, Windusari, Magelang" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <div class="mt-16 grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <SectionHeading eyebrow="Kirim Pesan" title="Sampaikan Aspirasi & Pertanyaan Anda" />
+            <p class="mt-5 leading-8 text-muted">Gunakan formulir di samping untuk mengirim pesan kepada Pemerintah Desa Kentengsari. Pesan Anda akan diteruskan ke email resmi desa melalui aplikasi email di perangkat Anda.</p>
+            <p class="mt-3 leading-8 text-muted">Untuk urusan mendesak terkait pelayanan administrasi, kami sarankan datang langsung ke kantor desa pada jam pelayanan.</p>
+          </div>
+          <form class="rounded-panel border border-line bg-white p-7 shadow-raised md:p-9" id="contactForm" action="mailto:pemdeskentengsari@gmail.com" method="post" enctype="text/plain">
+            <h2 class="text-2xl font-extrabold text-kenteng-950">Formulir Kontak</h2>
+            <p class="mt-2 text-muted">Lengkapi data berikut, lalu klik tombol kirim.</p>
+            <div class="mt-6 grid gap-2"><label class="font-bold text-kenteng-950" for="nama">Nama Lengkap</label><input class="min-h-12 rounded-lg border border-line px-4 focus:border-kenteng-600" type="text" id="nama" name="nama" placeholder="Tulis nama Anda" required autocomplete="name" /></div>
+            <div class="mt-5 grid gap-2"><label class="font-bold text-kenteng-950" for="email">Alamat Email</label><input class="min-h-12 rounded-lg border border-line px-4 focus:border-kenteng-600" type="email" id="email" name="email" placeholder="nama@email.com" required autocomplete="email" /></div>
+            <div class="mt-5 grid gap-2"><label class="font-bold text-kenteng-950" for="pesan">Pesan</label><textarea class="min-h-36 rounded-lg border border-line p-4 focus:border-kenteng-600" id="pesan" name="pesan" placeholder="Tulis pertanyaan, aspirasi, atau masukan Anda..." required></textarea></div>
+            <button class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" type="submit">Kirim Pesan<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+            <p id="formNote" class="mt-4 text-sm font-bold text-kenteng-700" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#contactForm');
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const formData = new FormData(form);
+      const nama = String(formData.get('nama') ?? '').trim();
+      const email = String(formData.get('email') ?? '').trim();
+      const pesan = String(formData.get('pesan') ?? '').trim();
+      const subject = encodeURIComponent(`Pesan dari ${nama} — Website Desa Kentengsari`);
+      const body = encodeURIComponent(`Nama: ${nama}\nEmail: ${email}\n\nPesan:\n${pesan}`);
+      window.location.href = `mailto:pemdeskentengsari@gmail.com?subject=${subject}&body=${body}`;
+      const note = document.querySelector<HTMLElement>('#formNote');
+      if (note) note.textContent = 'Aplikasi email Anda akan terbuka dengan pesan yang sudah terisi. Terima kasih!';
+    });
+  </script>
 </SiteLayout>

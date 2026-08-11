@@ -1,17 +1,36 @@
 ---
-import FoundationPlaceholder from '../components/astro/FoundationPlaceholder.astro';
+import InfoCard from '../components/astro/InfoCard.astro';
+import PageHero from '../components/astro/PageHero.astro';
+import SectionHeading from '../components/astro/SectionHeading.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
+
+const hamlets = [
+  ['Dusun Krajan 1', 'Bagian dari kawasan Krajan yang menjadi salah satu pusat permukiman dan kegiatan warga desa.'],
+  ['Dusun Krajan 2', 'Kawasan permukiman yang berdampingan dengan lahan pertanian produktif warga.'],
+  ['Dusun Krajan 3', 'Dusun dengan suasana khas pedesaan dan masyarakat yang menjunjung gotong royong.'],
+  ['Dusun Kenteng Wetan', 'Terletak di sisi timur wilayah desa, mewarisi nama desa pendahulu — Kenteng.'],
+  ['Dusun Nglarangan', 'Kawasan di tepi wilayah desa dengan panorama alam lereng Sumbing yang memukau.'],
+  ['8 RT / 2 RW', 'Kelima dusun terbagi dalam 8 Rukun Tetangga dan 2 Rukun Warga sebagai unit terkecil pemerintahan.'],
+] as const;
 ---
 
-<SiteLayout
-  title="Dusun — Desa Kentengsari"
-  description="Lima dusun di Desa Kentengsari: Krajan 1, Krajan 2, Krajan 3, Kenteng Wetan, dan Nglarangan — wilayah administrasi dengan 8 RT dan 2 RW."
-  activeRoute="dusun"
-  canonicalPath="/dusun.html"
->
-  <main id="main-content" class="bg-surface-soft py-24">
-    <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-      <FoundationPlaceholder eyebrow="Checkpoint migrasi" heading="Dusun Desa Kentengsari" />
-    </div>
+<SiteLayout title="Dusun — Desa Kentengsari" description="Lima dusun di Desa Kentengsari: Krajan 1, Krajan 2, Krajan 3, Kenteng Wetan, dan Nglarangan — wilayah administrasi dengan 8 RT dan 2 RW." activeRoute="dusun" canonicalPath="/dusun.html">
+  <main id="main-content">
+    <PageHero current="Dusun" title="Dusun di Desa Kentengsari" description="Wilayah Desa Kentengsari terbagi dalam lima dusun yang guyub dan rukun." />
+    <section class="bg-surface-soft py-20 md:py-28">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Wilayah Administrasi" title="Lima Dusun, Satu Kentengsari" description="Secara administratif, Desa Kentengsari terdiri atas 5 dusun dengan 8 RT dan 2 RW yang dihuni 309 jiwa dari 92 kepala keluarga." />
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{hamlets.map(([title, description]) => <InfoCard title={title} description={description} />)}</div>
+      </div>
+    </section>
+    <section class="py-20 md:py-28">
+      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
+        <div>
+          <SectionHeading eyebrow="Kehidupan Bermasyarakat" title="Guyub Rukun di Setiap Dusun" description="Meski terbagi dalam lima dusun, masyarakat Kentengsari hidup dalam satu kesatuan adat dan budaya. Kegiatan gotong royong, kerja bakti, dan acara dusun menjadi perekat kebersamaan warga — dari Krajan hingga Nglarangan." />
+          <a class="mt-7 inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/galeri.html">Lihat Dokumentasi Kegiatan</a>
+        </div>
+        <img class="h-[390px] w-full rounded-panel object-cover shadow-raised" src="/assets/kata-sambutan-2.jpg" alt="Kegiatan bersama masyarakat dusun di Desa Kentengsari" loading="lazy" />
+      </div>
+    </section>
   </main>
 </SiteLayout>

@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  current: string;
+}
+
+const { title, description, current } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-kenteng-950 py-16 text-white md:py-20">
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(47,158,95,.28),transparent_44%)]"></div>
+  <div class="relative mx-auto w-[min(1120px,calc(100%-2rem))]">
+    <p class="mb-4 text-sm font-bold text-kenteng-100">
+      <a class="transition-colors hover:text-white" href="/index.html">Beranda</a>
+      <span aria-hidden="true"> / </span>{current}
+    </p>
+    <h1 class="max-w-4xl text-4xl font-extrabold tracking-tight md:text-5xl">{title}</h1>
+    <p class="mt-4 max-w-3xl text-base leading-8 text-white/80 md:text-lg">{description}</p>
+  </div>
+</section>
