@@ -1,40 +1,39 @@
-# Litcq Functional and Regression Audit Report
+# Litcq Report
 
-- Waktu audit: 2026-08-11T22:50:50.0228317+07:00
-- Base HEAD: `1d6efe103237fb11375fb74ff334f518def806fb`
-- Diff fingerprint: `6bdc574ebbf5718dbe00bd5a8ab1a95b476edaed0a71da55c6d2e2f59b246c4d`
-- Scope: Penghapusan paragraf instruksi direktori dan tiga box ringkasan beserta CSS yatim pada `umkm.html`/`css/style.css`; perpanjangan exit animation filter menjadi 460 ms pada `js/main.js`; regresi filter, FLIP, flip-card, aksesibilitas, no-JS, reduced-motion, referensi/ID/aset, privasi, navigasi, sitemap, dan responsivitas 320/768/1280.
+- Waktu audit: 2026-08-11T23:21:55+07:00
+- Base HEAD: e75c410a801a4715179fc1cdb0799f0bfefc906e
+- Diff fingerprint: ab283fc6ebac5dc69e8a960e710acd3822b34dbdc785437101b6f45c2bc82076
+- Scope: `css/style.css`, `js/main.js`; regresi terkait `umkm.html` dan laporan implementasi Orion
 - Status: PASS_WITH_NOTES
 
 ## Ringkasan
 
-Tidak ditemukan bug fungsional atau regresi yang dapat ditindaklanjuti pada fingerprint ini. Delta memenuhi copy-removal yang diminta, tetap mempertahankan 24 kartu dan hitungan filter 24/7/12/4/1/19/0, serta secara statis mempertahankan progressive enhancement, aksesibilitas kartu/filter, FLIP, reduced-motion, privasi, navigasi, dan sitemap. Konfigurasi exit berubah dari 180 ms menjadi 460 ms. Verifikasi runtime Chromium dan pengukuran pixel overflow tidak dapat diulang secara independen karena tidak ada browser yang tersedia pada sesi audit; keterbatasan ini menjadi satu-satunya catatan.
+Perubahan tepat mengoreksi target durasi: flip dan unflip `.umkm-card__flipper` kini memakai transisi `transform` simetris 1 detik, sedangkan exit filter kembali ke konfigurasi awal 180 ms. Tidak ditemukan bug fungsional atau regresi yang dapat ditindaklanjuti pada diff. Jalur state kartu, keyboard/pointer, ARIA, reduced-motion, pembatalan rapid filter, urutan/kalkulasi jumlah, fallback tanpa JavaScript, referensi lokal, dan breakpoint responsif tetap utuh secara statis. Bukti Chromium Orion juga meliputi seluruh interaksi dan viewport material yang diminta.
 
 ## Temuan
 
-### [note] Runtime Chromium tidak tersedia pada sesi audit
-
-- Bukti: discovery browser resmi mengembalikan daftar kosong; pemeriksaan statis menunjukkan breakpoint grid 1/2/3 kolom pada `css/style.css:703` dan `css/style.css:729`, serta durasi exit 460 ms pada `js/main.js:191`, tetapi elapsed runtime dan `scrollWidth` viewport 320/768/1280 tidak dapat diukur ulang.
-- Dampak: Tidak ada regresi yang teridentifikasi, tetapi rasa durasi aktual, perilaku rapid-toggle di engine browser, reduced-motion runtime, dan overflow pixel belum mendapat pengujian Chromium independen oleh Litcq pada siklus ini.
-- Rekomendasi: Xavier dapat menggabungkan bukti statis Litcq dengan bukti runtime fingerprint-identik dari laporan Orion dan audit visual Lyra; lakukan smoke test Chromium tambahan bila quality gate mengharuskan bukti runtime independen.
+### [note] Browser interaktif Litcq tidak tersedia
+- Bukti: runtime browser auditor mengembalikan daftar backend kosong (`[]`), sehingga Litcq tidak dapat menjalankan pengujian browser independen pada sesi ini.
+- Dampak: computed style, accessibility tree, timing aktual, touch, dan overflow tidak diukur ulang secara independen oleh Litcq.
+- Rekomendasi: Xavier dapat memverifikasi bukti Chromium pada `.agents/reports/orion/latest.md`; Orion mencatat computed duration `1s`, unflip tanpa snap, sinkronisasi ARIA untuk seluruh input, exit terukur 180 ms, rapid-toggle last-input-wins, reduced-motion, no-JS, serta viewport 320/768/1280 px tanpa overflow.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan sesudah audit. Base HEAD `1d6efe103237fb11375fb74ff334f518def806fb` dan fingerprint `6bdc574ebbf5718dbe00bd5a8ab1a95b476edaed0a71da55c6d2e2f59b246c4d` cocok dengan konteks master dan laporan Orion `READY_FOR_AUDIT`; kandidat kode hanya `css/style.css`, `js/main.js`, dan `umkm.html`.
-- Menjalankan `node --check js/main.js` dan `git diff --check`; keduanya lulus tanpa syntax error atau whitespace error.
-- Memastikan paragraf persis “Pilih satu atau beberapa dusun ... Status legalitas mengikuti data sumber.” tidak ada; wrapper/kelas `.umkm-summary`, label “Usaha terdata”, “Dusun teridentifikasi”, dan “Bidang usaha” tidak ada di HTML; tidak ada selector `.umkm-summary`/`.umkm-summary__*` yang tertinggal di CSS (`umkm.html:54`, `umkm.html:65`, `css/style.css:527`).
-- Memeriksa exit WAAPI: `duration: 460`, stagger 24 ms dibatasi 120 ms, easing `cubic-bezier(.4, 0, .6, 1)`, sehingga durasi sumber 280 ms lebih panjang dan 2,56 kali durasi lama 180 ms (`js/main.js:183`).
-- Menelaah keamanan rapid-toggle: setiap run menaikkan `filterRun`, membatalkan seluruh animasi kartu dan membersihkan inline style sebelum pengukuran, menormalisasi target terdahulu melalui `data-filter-visible`, serta menghentikan async run lama setelah `Promise.allSettled` bila token run tidak lagi aktif (`js/main.js:130`, `js/main.js:139`, `js/main.js:199`). Tidak ditemukan jalur stale run yang dapat menimpa input terakhir.
-- Memeriksa reduced-motion/no-WAAPI: `reducedMotion.matches || !Element.prototype.animate` mengambil jalur instan yang langsung menerapkan visibility tanpa exit/reflow/enter; CSS menonaktifkan transisi kartu dan tombol pada preferensi reduce (`js/main.js:163`, `css/style.css:641`).
-- Menghitung markup 24 kartu: 7 Nglarangan, 12 Kenteng Krajan, 4 Kenteng Wetan, dan 1 Belum terverifikasi. Algoritme Set menghasilkan 19 untuk Nglarangan + Kenteng Krajan dan 0 ketika tidak ada kategori; live count dan empty state diperbarui dari target yang sama (`js/main.js:153`, `js/main.js:162`, `js/main.js:175`).
-- Memeriksa lima tombol filter native: seluruhnya `type="button"`, memiliki `aria-controls="umkmGrid"` dan state `aria-pressed`; sinkronisasi Semua mendukung `true`/`mixed`/`false`. Fieldset/legend tetap memberi nama grup, result count tetap `aria-live`, dan kartu tersembunyi menjadi `hidden`, `inert`, `aria-hidden="true"`, serta `tabindex="-1"` (`umkm.html:74`, `umkm.html:95`, `js/main.js:114`, `js/main.js:271`).
-- Memeriksa 24 kartu focusable dan 24 pasangan front/back: JS menetapkan role button, label, `aria-controls`, `aria-expanded`, dan sinkronisasi `aria-hidden`; click, Enter, Spasi, Escape, pointer-outside, dan focusout tetap memiliki handler (`js/main.js:32`).
-- Memeriksa fallback no-JS: filter memiliki atribut `hidden`, seluruh kartu tidak memiliki `hidden`, dan CSS `:focus` tetap membalik flipper saat kelas `.js` tidak ada (`umkm.html:74`, `css/style.css:590`).
-- Memindai delapan halaman HTML: tidak ada referensi lokal atau anchor rusak, ID duplikat, referensi `aria-controls`/`aria-describedby` putus, atau gambar tanpa `alt`. Seluruh halaman tetap memiliki link navbar UMKM dan `sitemap.xml` tetap memuat URL UMKM.
-- Memeriksa privasi UMKM: tidak ada nomor telepon, NIK, email pribadi, label alamat lengkap, pendapatan, atau omzet pada direktori; email yang terdeteksi hanya email resmi desa di footer. Seluruh 24 ilustrasi lokal tersedia.
-- Menelaah responsivitas secara statis: grid memakai tiga kolom `minmax(0, 1fr)`, menjadi dua pada ≤992 px dan satu pada ≤560 px; filter flex-wrap dan berubah menjadi grid satu kolom pada ≤560 px. Ini sesuai target 1280/768/320, tetapi overflow pixel tidak diukur karena keterbatasan browser.
+- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum audit: Base HEAD dan fingerprint cocok dengan laporan Orion; scope kode hanya `css/style.css` dan `js/main.js`.
+- Memeriksa diff: `css/style.css:588` mengubah satu-satunya durasi flipper dari `.7s` menjadi `1s`; karena transition berada pada base rule, arah flip dan unflip memakai durasi/easing yang sama. Selector hover dan state `.is-flipped` tetap mengubah properti `transform` yang sama (`css/style.css:592-596`).
+- Memeriksa exit filter: `js/main.js:191-193` kembali ke `duration: 180`, stagger 18 ms maksimal 90 ms, dan `ease-in`; konfigurasi 460 ms tidak lagi ditemukan. Durasi reflow 540 ms dan enter 440 ms tetap tidak berubah.
+- Menelusuri kontrol kartu pada `js/main.js:35-84`: click/touch, Enter, Spasi, Escape, outside `pointerdown`, dan `focusout` tetap menuju `setCardExpanded`; fungsi yang sama menyinkronkan `.is-flipped`, `aria-expanded`, dan `aria-hidden` kedua muka kartu.
+- Memeriksa aksesibilitas fungsional: 24 kartu tetap memiliki `tabindex="0"`; JavaScript memberi `role="button"`, label, `aria-controls`, dan ID detail unik. Filter tersembunyi memakai `inert`, `tabIndex=-1`, `aria-hidden`, dan `hidden`. Live result count tetap memakai `aria-live="polite"` serta `aria-atomic="true"`.
+- Memeriksa reduced-motion: media query `prefers-reduced-motion: reduce` menghapus transition flipper (`css/style.css:641-644`), dan jalur filter menjadi instan ketika media query cocok atau WAAPI tidak tersedia (`js/main.js:163-178`).
+- Memeriksa filter FLIP dan rapid toggle secara statis: setiap run membatalkan animasi lama, menaikkan token `filterRun`, mengabaikan completion kedaluwarsa, dan mempertahankan urutan DOM melalui array `cards`. Jumlah sumber cocok: 24 total = 7 Nglarangan + 12 Kenteng Krajan + 4 Kenteng Wetan + 1 belum terverifikasi; kombinasi Nglarangan dan Kenteng Krajan adalah 19.
+- Memeriksa fallback no-JS: filter tetap `hidden`; rule `.umkm-card:focus .umkm-card__flipper` tetap membuka detail, sementara override `.js` hanya aktif ketika script berjalan (`css/style.css:590-594`, `js/main.js:4`).
+- Memeriksa responsif secara statis: grid 3 kolom default, 2 kolom pada breakpoint tablet, dan 1 kolom pada breakpoint kecil; `minmax(0, 1fr)`, `min-width: 0`, serta `overflow-wrap` tetap tersedia untuk mencegah overflow.
+- Menjalankan `node --check js/main.js` dan `git diff --check`; keduanya lulus.
+- Memeriksa 33 referensi lokal pada `umkm.html`; semuanya ada. Struktur kartu konsisten: 24 artikel, 24 muka depan, dan 24 muka belakang.
+- Memastikan copy instruksi yang diminta, tiga box statistik, selector `.umkm-summary`, dan konfigurasi exit 460 ms tetap tidak ditemukan.
+- Membaca bukti validasi Chromium Orion pada `.agents/reports/orion/latest.md`: flip/unflip 1 detik tanpa snap; hover/focus/click/touch/Enter/Spasi/Escape/outside/focusout dan ARIA lulus; exit 180 ms; rapid toggle/count 19; reduced-motion/no-JS; viewport 320/768/1280 tanpa overflow.
 
 ## Batasan
 
-- Browser in-app/Chromium tidak tersedia pada discovery sesi ini. Sesuai prosedur browser yang berlaku, Litcq tidak menggantinya dengan backend kontrol browser lain; karena itu elapsed aktual exit sekitar 460 ms, rapid-toggle runtime, reduced-motion runtime, flip interaktif, console/page errors, dan `scrollWidth` 320/768/1280 belum dieksekusi ulang oleh Litcq.
-- Audit runtime hanya dapat mengandalkan pembacaan kode dan bukti worker pada fingerprint yang sama; pengujian lintas-engine, perangkat sentuh fisik, serta pembaca layar manusia tidak dilakukan.
+- Audit browser independen tidak dapat dijalankan karena tidak ada backend browser yang tersedia pada runtime Litcq. Hasil runtime bergantung pada bukti Chromium Orion dan pemeriksaan statis Litcq.
+- Pengujian lintas-engine Firefox/WebKit tidak tersedia.

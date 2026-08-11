@@ -188,9 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
               { opacity: 0, transform: 'scale(.92)' }
             ],
             {
-              duration: 460,
-              delay: Math.min(index * 24, 120),
-              easing: 'cubic-bezier(.4, 0, .6, 1)',
+              duration: 180,
+              delay: Math.min(index * 18, 90),
+              easing: 'ease-in',
               fill: 'forwards'
             }
           );
