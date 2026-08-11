@@ -1,0 +1,26 @@
+---
+import CallToAction from '../components/astro/CallToAction.astro';
+import PageHero from '../components/astro/PageHero.astro';
+import SectionHeading from '../components/astro/SectionHeading.astro';
+import UmkmExplorer from '../components/react/UmkmExplorer';
+import { umkmBusinesses } from '../data/umkm';
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout title="UMKM - Desa Kentengsari" description="Direktori 24 usaha mikro, kecil, dan menengah Desa Kentengsari di bidang kuliner, perdagangan, pertanian, peternakan, kerajinan, dan jasa." activeRoute="umkm" canonicalPath="/umkm.html" skipTarget="#daftar-umkm">
+  <main id="main-content">
+    <PageHero current="UMKM" title="UMKM Desa Kentengsari" description="Kenali usaha warga yang menggerakkan ekonomi lokal melalui produk, keterampilan, dan layanan dari desa." />
+    <section class="py-16 md:py-20" aria-labelledby="umkm-intro-title">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Potensi Ekonomi Desa" title="Tumbuh Bersama Usaha Warga" headingId="umkm-intro-title" />
+      </div>
+    </section>
+    <section class="bg-surface-soft py-16 md:py-20" id="daftar-umkm" aria-labelledby="daftar-umkm-title">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading eyebrow="Direktori Usaha" title="Daftar UMKM" headingId="daftar-umkm-title" />
+        <div class="mt-8"><UmkmExplorer businesses={umkmBusinesses} client:visible /></div>
+      </div>
+    </section>
+    <CallToAction title="Dukung Produk dan Usaha Warga" description="Mari ikut menguatkan ekonomi lokal dengan mengenal dan memilih produk UMKM Desa Kentengsari." href="/kontak.html" label="Hubungi Pemerintah Desa" />
+  </main>
+</SiteLayout>

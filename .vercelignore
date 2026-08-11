@@ -4,8 +4,7 @@
 /assets/Panduan Integrasi Desain Card Flip UMKM.md
 /assets/umkm-card-redesign/
 /assets/umkm-card-redesign.zip
-# Setup Playwright lokal concurrent; jangan unggah ke deployment.
-/.github/workflows/playwright.yml
-/package.json
-/playwright.config.js
-/tests/example.spec.js
+# Artefak lokal tidak diperlukan oleh deployment produksi.
+/test-results/
+/playwright-report/
+/node_modules/

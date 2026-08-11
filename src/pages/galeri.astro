@@ -1,0 +1,64 @@
+---
+import PageHero from '../components/astro/PageHero.astro';
+import SectionHeading from '../components/astro/SectionHeading.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const photos = [
+  { src: '/assets/galeri-1.jpg', alt: 'Hamparan hijau persawahan Desa Kentengsari', label: 'Hamparan Persawahan' },
+  { src: '/assets/galeri-2.jpg', alt: 'Suasana asri permukiman warga di lereng Gunung Sumbing', label: 'Permukiman yang Asri' },
+  { src: '/assets/galeri-3.jpg', alt: 'Panorama alam Desa Kentengsari dari ketinggian', label: 'Panorama dari Ketinggian' },
+  { src: '/assets/kata-sambutan-2.jpg', alt: 'Semangat gotong royong masyarakat Kentengsari', label: 'Gotong Royong Warga' },
+  { src: '/assets/destinasi-image-1.jpg', alt: 'Lanskap persawahan dan pegunungan yang memukau', label: 'Lanskap Sawah & Pegunungan' },
+  { src: '/assets/destinasi-image-2.jpg', alt: 'Keindahan alam sekitar Desa Kentengsari', label: 'Alam Sekitar Desa' },
+] as const;
+---
+
+<SiteLayout title="Galeri — Desa Kentengsari" description="Galeri foto Desa Kentengsari: panorama alam lereng Gunung Sumbing, persawahan, dan kehidupan masyarakat desa." activeRoute="galeri" canonicalPath="/galeri.html">
+  <main id="main-content">
+    <PageHero current="Galeri" title="Galeri Desa" description="Potret keindahan alam dan kehidupan masyarakat Desa Kentengsari. Klik foto untuk memperbesar." />
+    <section class="py-20 md:py-28">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Dokumentasi" title="Momen & Panorama Kentengsari" description="Kumpulan foto suasana desa, kegiatan warga, dan lanskap alam di lereng Gunung Sumbing." />
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {photos.map((photo) => (
+            <button type="button" class="group relative min-h-[300px] overflow-hidden rounded-card bg-kenteng-950 text-left shadow-card" data-lightbox data-src={photo.src} data-caption={photo.alt}>
+              <img class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={photo.src} alt={photo.alt} loading="lazy" />
+              <span class="absolute inset-0 bg-gradient-to-t from-kenteng-950/90 via-transparent to-transparent"></span>
+              <span class="absolute inset-x-0 bottom-0 p-5 text-lg font-extrabold text-white">{photo.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="m-auto w-[min(960px,calc(100%-2rem))] max-w-none rounded-panel bg-kenteng-950 p-3 text-white shadow-raised backdrop:bg-kenteng-950/80" data-gallery-dialog aria-label="Pratinjau foto">
+    <button type="button" class="absolute right-5 top-5 z-10 grid h-11 w-11 place-items-center rounded-full bg-white text-2xl font-bold text-kenteng-950 shadow-raised" aria-label="Tutup pratinjau" data-gallery-close>&times;</button>
+    <img class="max-h-[75vh] w-full rounded-card object-contain" src="/assets/galeri-1.jpg" alt="" data-gallery-image />
+    <p class="p-3 text-center font-bold" data-gallery-caption></p>
+  </dialog>
+
+  <script>
+    const dialog = document.querySelector<HTMLDialogElement>('[data-gallery-dialog]');
+    const dialogImage = document.querySelector<HTMLImageElement>('[data-gallery-image]');
+    const caption = document.querySelector<HTMLElement>('[data-gallery-caption]');
+    let trigger: HTMLButtonElement | null = null;
+
+    document.querySelectorAll<HTMLButtonElement>('[data-lightbox]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!dialog || !dialogImage || !caption) return;
+        trigger = button;
+        dialogImage.src = button.dataset.src ?? '';
+        dialogImage.alt = button.dataset.caption ?? 'Pratinjau foto';
+        caption.textContent = button.dataset.caption ?? '';
+        dialog.showModal();
+      });
+    });
+
+    document.querySelector('[data-gallery-close]')?.addEventListener('click', () => dialog?.close());
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog?.addEventListener('close', () => trigger?.focus());
+  </script>
+</SiteLayout>

@@ -1,0 +1,102 @@
+---
+import CallToAction from '../components/astro/CallToAction.astro';
+import DestinationCard from '../components/astro/DestinationCard.astro';
+import SectionHeading from '../components/astro/SectionHeading.astro';
+import StatGrid from '../components/astro/StatGrid.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const stats = [
+  { value: '309', label: 'Jiwa', note: 'Total penduduk (2025)' },
+  { value: '92', label: 'Kepala Keluarga', note: 'Tersebar di seluruh dusun' },
+  { value: '5', label: 'Dusun', note: 'Krajan 1–3, Kenteng Wetan, Nglarangan' },
+  { value: '8', label: 'RT / 2 RW', note: 'Wilayah administrasi' },
+] as const;
+---
+
+<SiteLayout
+  title="Desa Kentengsari — Website Resmi"
+  description="Website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Jelajahi keindahan alam lereng Gunung Sumbing, potensi pertanian, dan masyarakat yang guyub rukun."
+  activeRoute="beranda"
+  canonicalPath="/index.html"
+>
+  <main id="main-content">
+    <section class="relative isolate grid min-h-[680px] place-items-center overflow-hidden bg-kenteng-950 text-center text-white">
+      <img class="absolute inset-0 -z-20 h-full w-full object-cover" src="/assets/hero-background.jpg" alt="" />
+      <div class="absolute inset-0 -z-10 bg-kenteng-950/65"></div>
+      <div class="mx-auto w-[min(900px,calc(100%-2rem))] py-24">
+        <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-kenteng-100">Website Resmi Desa Kentengsari</p>
+        <h1 class="mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:text-7xl">Jelajahi Keindahan Di Desa Kentengsari</h1>
+        <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-white/85">Rasakan kesejukan udara dan panorama menakjubkan lereng Gunung Sumbing yang menjadikan desa kami begitu istimewa.</p>
+        <a class="mt-8 inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-white px-6 py-3 font-extrabold transition-colors hover:bg-white hover:text-kenteng-900" href="#sambutan">
+          Jelajahi
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="py-20 md:py-28" id="sambutan">
+      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
+        <div>
+          <SectionHeading eyebrow="Kata Sambutan" title="Selamat Datang Di Desa Kentengsari" />
+          <div class="mt-6 grid gap-4 leading-8 text-muted">
+            <p><em>Assalamu'alaikum Warahmatullahi Wabarakatuh,</em></p>
+            <p>Selamat datang di website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Desa Kentengsari merupakan desa terkecil di Kecamatan Windusari, namun memiliki kekayaan alam yang luar biasa. Berada di ketinggian 750 mdpl di lereng Gunung Sumbing, tanah kami yang subur memungkinkan masyarakat untuk bertani padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
+            <p>Website ini kami hadirkan sebagai media informasi dan komunikasi bagi warga desa maupun masyarakat luar. Kami berharap melalui platform ini, kearifan lokal, suasana asri, dan semangat gotong royong masyarakat Desa Kentengsari dapat lebih dikenal luas.</p>
+            <p>Terima kasih atas kunjungan Anda.</p>
+            <p class="font-extrabold text-kenteng-800">— Kepala Desa Kentengsari</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <img class="mt-10 h-[360px] w-full rounded-panel object-cover shadow-card" src="/assets/kata-sambutan-1.jpg" alt="Perangkat Desa Kentengsari" loading="lazy" />
+          <img class="h-[360px] w-full rounded-panel object-cover shadow-card" src="/assets/kata-sambutan-2.jpg" alt="Kegiatan gotong royong masyarakat Desa Kentengsari" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-surface-soft py-20 md:py-28" id="berita-terkini">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Berita Terkini" title="Kabar & Kegiatan Desa" description="Ikuti perkembangan terbaru seputar kegiatan, pembangunan, dan kehidupan masyarakat Desa Kentengsari." />
+        <div class="mx-auto mt-10 max-w-2xl rounded-panel border border-line bg-white p-10 text-center shadow-card">
+          <div class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-kenteng-50 text-kenteng-700">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6Z"/></svg>
+          </div>
+          <h3 class="mt-5 text-xl font-extrabold text-kenteng-950">Belum Ada Berita</h3>
+          <p class="mt-2 leading-7 text-muted">Informasi dan berita seputar kegiatan Desa Kentengsari akan segera hadir di halaman ini.</p>
+        </div>
+        <div class="mt-8 text-center"><a class="inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/berita.html">Lihat Semua Berita</a></div>
+      </div>
+    </section>
+
+    <section class="py-20 md:py-28" id="profil">
+      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
+        <div>
+          <SectionHeading eyebrow="Profil Desa" title="Mengenal Desa Kentengsari" />
+          <div class="mt-6 grid gap-4 leading-8 text-muted">
+            <p>Desa Kentengsari adalah sebuah desa di Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah, Indonesia. Nama desa ini merupakan penggabungan dari dua nama desa pendahulunya, yaitu Desa Kenteng dan Desa Sari. Desa Kentengsari berjarak sekitar 2,5 Km dari ibu kota kecamatan dan 29 Km dari ibu kota kabupaten melalui Bandongan.</p>
+            <p>Wilayah desa berada di lereng Gunung Sumbing dengan ketinggian 750 mdpl, menjadikan udaranya sejuk dengan tanah yang subur. Mayoritas penduduknya bermata pencaharian sebagai petani — memanfaatkan tanah yang subur untuk menanam padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
+            <p>Desa ini terdiri dari lima dusun: Krajan 1, Krajan 2, Krajan 3, Kenteng Wetan, dan Nglarangan, dengan penduduk yang dikenal guyub rukun dan menjunjung tinggi gotong royong.</p>
+          </div>
+          <a class="mt-7 inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/profil-desa.html">Selengkapnya</a>
+        </div>
+        <figure class="relative">
+          <img class="h-[460px] w-full rounded-panel object-cover shadow-raised" src="/assets/profil-desa-image.jpg" alt="Panorama persawahan dan permukiman Desa Kentengsari" loading="lazy" />
+          <figcaption class="absolute -bottom-5 left-5 rounded-card bg-white p-5 shadow-raised"><strong class="block text-3xl text-kenteng-700">750</strong><span class="text-sm font-bold text-muted">Meter di atas permukaan laut</span></figcaption>
+        </figure>
+      </div>
+      <div class="mx-auto mt-20 w-[min(1120px,calc(100%-2rem))]"><StatGrid stats={stats} /></div>
+    </section>
+
+    <section class="bg-surface-soft py-20 md:py-28" id="destinasi">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Destinasi" title="Jelajahi Keindahan Alam Desa" description="Nikmati panorama lereng Gunung Sumbing, hamparan sawah yang hijau, dan udara pegunungan yang menyegarkan." />
+        <div class="mt-10 grid gap-6 md:grid-cols-2">
+          <DestinationCard image="/assets/destinasi-image-1.jpg" alt="Hamparan persawahan terasering di Desa Kentengsari" tag="Alam" title="Hamparan Sawah Terasering" description="Pemandangan sawah berundak yang hijau membentang di kaki Gunung Sumbing, memukau di setiap musim." />
+          <DestinationCard image="/assets/destinasi-image-2.jpg" alt="Panorama Gunung Sumbing dilihat dari Desa Kentengsari" tag="Panorama" title="Panorama Gunung Sumbing" description="Spot terbaik menikmati megahnya Gunung Sumbing dengan udara sejuk khas ketinggian 750 mdpl." />
+        </div>
+        <div class="mt-8 text-center"><a class="inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/destinasi.html">Lihat Semua Destinasi</a></div>
+      </div>
+    </section>
+
+    <CallToAction title="Kenali Desa Kentengsari Lebih Dekat" description="Terhubung dengan kami untuk informasi layanan, kegiatan, dan perkembangan desa." href="/kontak.html" label="Hubungi Kami" />
+  </main>
+</SiteLayout>

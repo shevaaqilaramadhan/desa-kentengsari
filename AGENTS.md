@@ -5,7 +5,9 @@ Repositori ini memakai pola master-worker untuk setiap perubahan website.
 ## Peran
 
 - **Master**: menerima permintaan, mengoordinasikan handoff antaragent, dan hanya melakukan push ke GitHub setelah Xavier memberi keputusan `PUSH`. Master tidak mengedit website, memperbaiki temuan, atau menggantikan keputusan QA Xavier.
-- **Orion**: satu-satunya agent implementasi dan perbaikan kode. Orion menerima permintaan awal atau temuan `DO_NOT_PUSH` dari Xavier, mengubah website, memvalidasi hasilnya, lalu menyerahkan diff kepada Lyra dan Litcq. Instruksi lengkap ada di `.agents/orion.md`.
+- **Orion**: pemilik arsitektur, fondasi bersama, integrasi, dan perbaikan akhir. Untuk perubahan biasa Orion tetap menjadi implementer tunggal. Untuk migrasi besar yang diaktifkan eksplisit oleh master, Orion menyiapkan fondasi lalu mengintegrasikan hasil Vega dan Nova. Instruksi lengkap ada di `.agents/orion.md`.
+- **Vega**: implementer migrasi halaman dan konten statis pada worktree terisolasi. Instruksi lengkap ada di `.agents/vega.md`.
+- **Nova**: implementer React islands, interaksi, dan motion pada worktree terisolasi. Instruksi lengkap ada di `.agents/nova.md`.
 - **Lyra**: auditor visual dan design system. Instruksi lengkap ada di `.agents/lyra.md`.
 - **Litcq**: auditor fungsi teknis dan regresi. Instruksi lengkap ada di `.agents/litcq.md`.
 - **Xavier**: quality gate yang memverifikasi diff serta laporan Lyra dan Litcq, lalu menentukan boleh push atau tidak. Instruksi lengkap ada di `.agents/xavier.md`.
@@ -22,11 +24,28 @@ Repositori ini memakai pola master-worker untuk setiap perubahan website.
 8. Jika keputusan Xavier `DO_NOT_PUSH`, master menyerahkan seluruh temuan kepada Orion. Orion memperbaiki kode dan menghasilkan laporan serta fingerprint baru; setelah itu Lyra, Litcq, dan Xavier wajib mengulang seluruh siklus audit.
 9. Master hanya boleh push jika keputusan Xavier adalah `PUSH` dan tidak ada perubahan file setelah scope/diff yang disetujui Xavier.
 
+## Alur migrasi besar paralel
+
+Alur ini hanya aktif jika master menyatakan pekerjaan sebagai migrasi besar dan memberikan kontrak file yang terpisah.
+
+1. Master membuat branch integrasi terisolasi dari `main` dan mencatat Base HEAD serta acceptance criteria migrasi.
+2. Orion membangun fondasi bersama: dependency, konfigurasi, routing, layout, design tokens, kontrak data, dan titik integrasi komponen. Orion menghasilkan laporan checkpoint fondasi.
+3. Master boleh membuat commit checkpoint lokal dan worktree/branch turunan untuk koordinasi. Commit checkpoint bukan izin push dan tidak menggantikan gate Xavier.
+4. Vega dan Nova bekerja paralel pada worktree berbeda dari checkpoint yang sama. Mereka tidak boleh mengedit file yang dimiliki agent lain atau file bersama yang dimiliki Orion.
+5. Vega menulis `.agents/reports/vega/latest.md`; Nova menulis `.agents/reports/nova/latest.md`. Laporan worker mencatat Base HEAD worktree, scope kepemilikan, file berubah, validasi, dan status `READY_FOR_INTEGRATION` atau `BLOCKED`.
+6. Master boleh membuat commit checkpoint lokal dari hasil worker dan menggabungkannya secara mekanis ke branch integrasi. Master tidak boleh memperbaiki kode atau menyelesaikan konflik semantik; konflik dikembalikan kepada Orion.
+7. Orion mengintegrasikan, memperbaiki konflik/regresi, menjalankan validasi lengkap, menghitung fingerprint kandidat final, dan menulis laporan Orion berstatus `READY_FOR_AUDIT` atau `BLOCKED`.
+8. Lyra dan Litcq mengaudit secara paralel hanya terhadap kandidat integrasi final dan fingerprint Orion yang sama. Xavier kemudian menjalankan gate seperti alur biasa.
+9. Tidak ada push, merge ke `main`, atau deployment sebelum Xavier memberi keputusan `PUSH` untuk fingerprint final yang tidak berubah.
+
 Jika pekerjaan hanya berupa diskusi, dokumentasi internal agent, atau tidak mengubah website, audit tidak wajib dijalankan. Push tetap memerlukan gate Xavier untuk diff yang akan dikirim.
 
 ## Aturan bersama
 
-- Orion adalah satu-satunya agent yang boleh mengimplementasikan atau memperbaiki kode website. Orion tidak boleh commit atau push.
+- Untuk perubahan biasa, Orion adalah satu-satunya implementer. Dalam alur migrasi besar, Orion, Vega, dan Nova boleh mengimplementasikan hanya pada scope dan worktree yang ditetapkan master.
+- Orion, Vega, dan Nova tidak boleh commit atau push. Master boleh membuat commit checkpoint lokal untuk orkestrasi, tetapi tetap tidak boleh mengedit atau memperbaiki kode website.
+- File bersama seperti dependency manifest, lockfile, konfigurasi build, layout utama, design tokens, dan global stylesheet dimiliki Orion kecuali handoff tertulis menyatakan lain.
+- Vega dan Nova tidak boleh bekerja pada working directory yang sama; masing-masing wajib memakai worktree terisolasi dengan daftar file milik yang tidak tumpang tindih.
 - Master, Lyra, Litcq, dan Xavier tidak boleh mengubah atau memperbaiki kode website.
 - Lyra, Litcq, dan Xavier bersifat audit-only.
 - Setiap auditor hanya menulis laporan miliknya sendiri agar tidak terjadi konflik antarsubagent.
@@ -39,6 +58,34 @@ Jika pekerjaan hanya berupa diskusi, dokumentasi internal agent, atau tidak meng
 - Identitas calon push dihitung oleh `.agents/get-change-fingerprint.ps1`: Base HEAD, daftar file berubah/untracked, dan SHA-256 kontennya. `.agents/reports/**` dikecualikan karena merupakan artefak audit.
 - Laporan menjadi kedaluwarsa jika fingerprint calon push berubah setelah audit. Perubahan pada `.agents/reports/**` tidak mengubah fingerprint; perubahan file lain sekecil apa pun membatalkan izin push dan mewajibkan siklus baru.
 - Master tidak boleh mengubah keputusan `DO_NOT_PUSH` menjadi `PUSH`.
+
+## Kontrak laporan worker migrasi
+
+Setiap pekerjaan Vega atau Nova wajib menghasilkan laporan miliknya sendiri dengan format minimal:
+
+```markdown
+# <Nama Agent> Migration Report
+
+- Waktu implementasi: <ISO-8601 dengan zona waktu>
+- Base HEAD worktree: <commit hash>
+- Branch/worktree: <nama dan path>
+- Scope kepemilikan: <direktori/file>
+- Status: READY_FOR_INTEGRATION | BLOCKED
+
+## Ringkasan Perubahan
+...
+
+## File yang Berubah
+- `path/file`
+
+## Validasi
+- ...
+
+## Risiko dan Batasan
+- ...
+```
+
+Laporan Vega/Nova adalah bukti checkpoint dan tidak memberikan izin push. Fingerprint final tetap dihitung Orion setelah integrasi, lalu harus identik pada laporan Lyra, Litcq, dan Xavier.
 
 ## Kontrak laporan Orion
 

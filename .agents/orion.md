@@ -2,7 +2,7 @@
 
 ## Misi
 
-Menjadi satu-satunya agent yang mengimplementasikan permintaan dan memperbaiki kode website. Orion menerima scope awal dari master atau temuan `DO_NOT_PUSH` dari Xavier, menghasilkan diff yang teruji, lalu menyerahkannya untuk audit independen oleh Lyra dan Litcq.
+Menjadi pemilik implementasi untuk perubahan biasa serta pemilik arsitektur, fondasi bersama, integrasi, dan perbaikan akhir untuk migrasi besar. Orion menerima scope awal dari master atau temuan `DO_NOT_PUSH` dari Xavier, menghasilkan kandidat terintegrasi yang teruji, lalu menyerahkannya untuk audit independen oleh Lyra dan Litcq.
 
 ## Tanggung jawab
 
@@ -12,6 +12,7 @@ Menjadi satu-satunya agent yang mengimplementasikan permintaan dan memperbaiki k
 - Menjalankan validasi dasar yang relevan sebelum handoff.
 - Menghitung fingerprint setelah perubahan terakhir dan menulis `.agents/reports/orion/latest.md`.
 - Menyerahkan status `READY_FOR_AUDIT` kepada master agar Lyra dan Litcq dapat dijalankan, atau `BLOCKED` dengan alasan yang dapat ditindaklanjuti.
+- Dalam migrasi besar, menetapkan kontrak komponen/data bersama, menjaga file shared, memeriksa laporan Vega/Nova, dan mengintegrasikan hasil mereka tanpa mengambil alih scope worker sebelum fase integrasi.
 
 ## Batas wewenang
 
@@ -31,6 +32,14 @@ Menjadi satu-satunya agent yang mengimplementasikan permintaan dan memperbaiki k
 6. Setelah perubahan terakhir, jalankan `.agents/get-change-fingerprint.ps1`.
 7. Tulis hanya `.agents/reports/orion/latest.md` sesuai kontrak di `AGENTS.md` dengan status `READY_FOR_AUDIT` atau `BLOCKED`.
 8. Serahkan kepada master. Setiap perubahan Orion membatalkan audit lama; Lyra dan Litcq harus mengaudit fingerprint terbaru sebelum Xavier dijalankan kembali.
+
+## Mode migrasi besar
+
+1. Bangun fondasi bersama lebih dahulu dan berhenti pada checkpoint yang dapat dipakai worktree turunan.
+2. Tulis kontrak eksplisit untuk route, props, schema data, design tokens, dan titik mount React island.
+3. Jangan mengedit file milik Vega/Nova saat mereka masih berjalan.
+4. Setelah master menggabungkan checkpoint worker, lakukan integrasi semantik, perbaiki konflik, dan validasi seluruh situs.
+5. Hanya laporan Orion setelah integrasi final yang boleh berstatus `READY_FOR_AUDIT` untuk memicu Lyra dan Litcq.
 
 ## Kriteria status
 

@@ -1,65 +1,53 @@
-# Website Profil Desa Kentengsari
+# Website Resmi Desa Kentengsari
 
-Website statis resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah. Struktur dan tata letak mengadaptasi kutavillage.com dengan identitas visual putih bersih dan aksen hijau yang merepresentasikan alam serta pertanian desa.
+Website statis Desa Kentengsari dibangun dengan Astro, React islands, Tailwind CSS, Motion, dan TypeScript. Astro menghasilkan delapan URL publik berekstensi `.html` ke `dist/`; Vercel hanya menerbitkan direktori tersebut.
 
-## Teknologi
+## Prasyarat
 
-HTML5, CSS3, dan JavaScript murni — tanpa framework atau proses build. Cukup buka di browser atau sajikan dengan server statis apa pun.
+- Node.js 22.12 atau lebih baru
+- npm (lockfile `package-lock.json` wajib dipakai)
 
-## Struktur Proyek
-
-```
-testing-web-cline/
-├── index.html          Beranda (hero, kata sambutan, berita, profil, destinasi)
-├── profil-desa.html    Sejarah, statistik, landmark, visi-misi, struktur organisasi
-├── berita.html         Berita desa (empty state — siap diisi konten)
-├── galeri.html         Galeri foto dengan lightbox
-├── dusun.html          5 dusun: Krajan 1/2/3, Kenteng Wetan, Nglarangan
-├── destinasi.html      Destinasi wisata + tips berkunjung
-├── kontak.html         Info kontak, peta lokasi, formulir kontak
-├── css/style.css       Seluruh styling (design system hijau-putih, responsif)
-├── js/main.js          Navbar sticky, menu mobile, reveal on scroll, lightbox,
-│                       scroll-to-top, formulir kontak (mailto)
-├── assets/             Logo dan foto desa (sudah dioptimasi untuk web)
-├── robots.txt          Izin crawling mesin pencari
-├── sitemap.xml         Peta situs (ganti domain sesuai domain produksi)
-└── optimize_assets.py  Skrip kompresi ulang aset gambar (opsional)
-```
-
-## Menjalankan Secara Lokal
+## Menjalankan proyek
 
 ```powershell
-python -m http.server 8000 --directory D:\testing-web-cline
+npm ci
+npm run dev
 ```
 
-Lalu buka `http://localhost:8000`. Alternatif: klik dua kali `index.html` langsung di browser.
-
-## Multi-Agent Orchestrator
-
-Proyek ini memiliki protokol implementasi dan QA master-worker di `AGENTS.md`:
-
-- **Orion** adalah satu-satunya implementer dan bug fixer. Orion menerima permintaan atau temuan `DO_NOT_PUSH`, mengubah kode tanpa commit/push, lalu menulis `.agents/reports/orion/latest.md` berdasarkan `.agents/orion.md`.
-- **Lyra** memeriksa visual dan design system berdasarkan `.agents/lyra.md`, lalu menulis `.agents/reports/lyra/latest.md`.
-- **Litcq** memeriksa fungsi teknis dan regresi berdasarkan `.agents/litcq.md`, lalu menulis `.agents/reports/litcq/latest.md`.
-- **Xavier** memverifikasi diff serta laporan Orion, Lyra, dan Litcq berdasarkan `.agents/xavier.md`, lalu menulis keputusan `PUSH` atau `DO_NOT_PUSH` ke `.agents/reports/xavier/latest.md`.
-
-Lyra, Litcq, dan Xavier bersifat audit-only. Master tidak mengubah website, memperbaiki kode, atau mengambil keputusan QA; master hanya mengoordinasikan siklus dan melakukan push ke GitHub jika Xavier memberi keputusan `PUSH` untuk diff yang masih sama. Jika Xavier memilih `DO_NOT_PUSH`, master mengembalikan temuan kepada Orion, lalu seluruh audit diulang setelah Orion menghasilkan fingerprint baru.
-
-Kesegaran audit diverifikasi dengan fingerprint SHA-256 dari `.agents/get-change-fingerprint.ps1`. Artefak `.agents/reports/**` dikecualikan agar penulisan laporan tidak membatalkan gate; perubahan pada file lain tetap mewajibkan audit ulang.
-
-## Mengoptimasi Ulang Aset Gambar
-
-Jika ada foto baru berukuran besar, jalankan:
+Server pengembangan Astro menampilkan URL lokal di terminal. Perintah lain:
 
 ```powershell
-python optimize_assets.py
+npm run check    # validasi Astro dan TypeScript
+npm run build    # build produksi ke dist/
+npm run preview  # pratinjau build produksi
+npm test         # build lalu regresi Playwright
 ```
 
-Membutuhkan Pillow: `python -m pip install Pillow`.
+Playwright memerlukan browser Chromium lokal. Jika belum tersedia, jalankan `npx playwright install chromium` satu kali.
 
-## Catatan Pemeliharaan
+## Struktur utama
 
-- **Berita**: ganti blok `.empty-state` di `berita.html` dan `index.html` dengan kartu berita (kelas `.news-grid` / `.news-card` sudah tersedia di CSS).
-- **Struktur organisasi**: nama jabatan masih generik — ganti dengan nama perangkat desa resmi di `profil-desa.html`.
-- **Formulir kontak**: memakai `mailto:` agar berfungsi tanpa backend. Untuk pengiriman langsung, integrasikan layanan formulir statis (mis. Formspree) pada atribut `action`.
-- **Domain**: perbarui URL pada `sitemap.xml` dan `robots.txt` saat domain produksi ditentukan.
+```text
+src/pages/              delapan halaman Astro
+src/layouts/            layout, navigasi, footer, dan metadata bersama
+src/components/astro/   komponen konten statis
+src/components/react/   island interaktif UMKM dan Motion
+src/data/umkm.ts        sumber canonical 24 UMKM
+src/styles/global.css   Tailwind 4 dan design tokens Kentengsari
+public/assets/          aset yang diterbitkan apa adanya
+tests/                  parity, aksesibilitas, responsif, dan regresi interaksi
+dist/                   output build (tidak di-track)
+```
+
+URL produksi yang dipertahankan: `/index.html`, `/profil-desa.html`, `/berita.html`, `/galeri.html`, `/dusun.html`, `/destinasi.html`, `/umkm.html`, dan `/kontak.html`.
+
+## Data dan aset
+
+- Aset deploy berada di `public/assets/`; social card berada di `public/og.png`.
+- `optimize_assets.py` mengoptimasi foto JPEG/PNG langsung di `public/assets/` dan memerlukan Pillow.
+- PDF survei, panduan desain, arsip, dan working source UMKM di root `assets/` bersifat privat. Path tersebut di-ignore secara eksplisit dan tidak boleh disalin ke `public/` atau `dist/`.
+- Formulir kontak mempertahankan fallback `mailto:` karena situs tidak memiliki backend.
+
+## Deployment dan QA
+
+`vercel.json` menjalankan `npm run build` dan menerbitkan hanya `dist/` dengan `cleanUrls: false`. Perubahan website mengikuti alur master-worker di `AGENTS.md`: Orion mengintegrasikan, Lyra dan Litcq mengaudit, Xavier memberi gate, lalu hanya Master yang boleh commit/push/deploy setelah keputusan `PUSH` untuk fingerprint yang sama.
