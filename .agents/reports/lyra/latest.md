@@ -1,14 +1,14 @@
-# Lyra Report
+# Lyra Visual and Design System Report
 
-- Waktu audit: 2026-08-11T22:08:19.0907336+07:00
-- Base HEAD: `0321c1ded8a258c99eb30cc97c98ad7507171c20`
-- Diff fingerprint: `35e3cac46f00d170a28657944e781434e1b3ecb3da642a8ccc0f842fdd615f23`
-- Scope: Audit visual/design system perubahan filter UMKM dari checkbox menjadi lima tombol toggle pada `umkm.html`, `css/style.css`, dan `js/main.js`: penghilangan checkbox/checkmark serta copy status aktif, pembeda state aktif/nonaktif/parsial Semua, focus-visible, wrapping desktop/mobile, live count, empty state, dan kerapian reflow kartu.
+- Waktu audit: 2026-08-11T22:49:13.2670862+07:00
+- Base HEAD: 1d6efe103237fb11375fb74ff334f518def806fb
+- Diff fingerprint: 6bdc574ebbf5718dbe00bd5a8ab1a95b476edaed0a71da55c6d2e2f59b246c4d
+- Scope: `umkm.html`, `css/style.css`, dan `js/main.js`; khusus hierarchy/spacing setelah penghapusan paragraf bantuan dan tiga kartu ringkasan, serta motion exit/reflow/enter dan konsistensi responsif 320/768/1280 px.
 - Status: PASS
 
 ## Ringkasan
 
-Filter UMKM kini tampil sebagai lima tombol pill tanpa checkbox, checkmark, atau suffix teks “aktif/tidak aktif/sebagian aktif”. State aktif memakai hijau solid, state nonaktif memakai permukaan hijau muda/putih dengan border hijau, dan state parsial tombol Semua memakai aksen kuning yang terbaca sebagai state khusus tanpa menyerupai tombol aktif. Komponen tetap konsisten dengan palet, radius, bayangan, tipografi, serta focus ring situs. Render desktop dan mobile memperlihatkan wrapping rapi tanpa overflow; live count, kartu hasil, dan empty state tetap menjaga hierarchy dan spacing yang baik.
+Paragraf bantuan direktori dan tiga kartu ringkasan telah hilang sepenuhnya tanpa meninggalkan selector presentasional yatim atau kontainer kosong yang membentuk ruang tambahan. Hierarchy intro ke bagian direktori tetap jelas; heading direktori, garis pemisah, filter, live result count, dan grid mempertahankan ritme spacing yang konsisten. Exit 460 ms memakai animasi kompositor `opacity` dan `transform`, easing yang halus, serta stagger terbatas 120 ms; secara desain motion durasi ini terasa lebih terbaca daripada 180 ms lama dan tetap selaras dengan enter 440 ms serta reflow 540 ms.
 
 ## Temuan
 
@@ -16,18 +16,16 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan setelah audit. Base HEAD serta fingerprint cocok dengan scope yang diberikan: `css/style.css`, `js/main.js`, dan `umkm.html`.
-- Membaca diff terhadap Base HEAD. Lima kontrol kini berupa elemen `button` dengan `aria-pressed`, tanpa elemen checkbox pada `umkm.html:93-107`.
-- Memeriksa state visual di `css/style.css:561-584`: aktif memakai hijau solid, teks putih, shadow, dan elevasi 1 px; parsial memakai latar kuning muda dan border emas; nonaktif kembali ke permukaan hijau muda dengan border. Tidak ada pseudo-element copy status atau checkmark.
-- Render desktop 1440 px menampilkan kelima tombol dalam satu baris dengan tinggi seragam 44 px. Pemeriksaan computed style memastikan `span::after` bernilai `none` pada semua tombol, sehingga copy “Belum terverifikasi aktif” dan suffix status lain tidak muncul.
-- Mengubah satu kategori pada runtime menghasilkan tombol Semua ber-state parsial, satu tombol nonaktif, dan kategori lain tetap aktif. Screenshot menunjukkan state parsial Semua terpisah jelas dari hijau aktif dan outline hijau nonaktif tanpa mengganggu hierarchy panel.
-- Memeriksa focus-visible melalui navigasi Tab. Tombol Semua memperoleh outline kuning solid 3 px dengan offset 3 px sesuai `css/style.css:584`; ring tampak utuh dan tidak terpotong oleh panel.
-- Render mobile 390 px menunjukkan lima tombol menjadi satu kolom penuh melalui `css/style.css:749-752`; seluruh tombol memiliki lebar 316 px, badge jumlah rata kanan, dan panel `scrollWidth` sama dengan `clientWidth` 348 px, sehingga tidak ada overflow horizontal.
-- Memeriksa live result count dan reflow visual setelah kategori dinonaktifkan. `js/main.js:139-176` menata ulang visibility serta jumlah hasil; screenshot runtime memperlihatkan count tetap tepat di atas grid dan tiga kolom kartu tetap sejajar tanpa celah kosong.
-- Memeriksa empty state setelah seluruh filter dimatikan. Runtime menghasilkan “0 usaha ditampilkan”, menyembunyikan semua kartu, dan menampilkan panel empty state terpusat dengan border dashed, spacing, serta tipografi yang konsisten (`js/main.js:175-176`, `css/style.css:585-592`).
-- Memeriksa reduced-motion pada `css/style.css:656-659`; transisi tombol tetap dinonaktifkan ketika preferensi reduced motion aktif.
+- Menjalankan `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint identik dengan laporan Orion serta nilai yang diberikan master.
+- Memeriksa diff penuh tiga file scope dan memastikan perubahan presentasional hanya menghapus `.umkm-summary`, paragraf `.umkm-directory__head > p`, selector responsif terkait, serta memperpanjang parameter exit.
+- Memastikan copy `Pilih satu atau beberapa dusun...`, `24 Usaha terdata`, `3 Dusun teridentifikasi`, dan `6+ Bidang usaha` tidak lagi muncul pada markup; `.umkm-summary*` juga tidak tersisa di CSS.
+- Memeriksa hierarchy `umkm.html:54-104`: intro berakhir langsung setelah deskripsi utama, direktori dimulai dengan label dan heading, lalu filter pada jarak yang ditentukan tanpa wrapper kosong atau spacer tambahan.
+- Memeriksa spacing `css/style.css:527-578`: intro menggunakan padding section yang konsisten, header direktori mempertahankan separator dan `padding-bottom: 2rem`, filter memakai `margin-top: 2rem`, result count `margin-bottom: 1rem`, dan grid `gap: 1.25rem`.
+- Memeriksa breakpoint `css/style.css:703-736`: grid tetap 3/2/1 kolom pada 1280/768/320 px; penghapusan summary tidak meninggalkan rule mobile yatim; filter tetap menjadi satu kolom pada 320 px dan dua/lebih tombol terbungkus alami pada viewport yang lebih lebar.
+- Memeriksa motion `js/main.js:183-261`: exit 460 ms + stagger maksimum 120 ms menggunakan `opacity/scale` dan `will-change`, reflow 540 ms serta enter 440 ms tidak diubah, sehingga urutan exit lalu pergeseran grid tetap terbaca dan durasi antarfase konsisten.
+- Meninjau bukti validasi Chromium headless Orion: 1/2/3 kolom pada 320/768/1280 px tanpa overflow horizontal, ruang bawah intro 61/72/72 px, exit aktual 463 ms, dan tidak ada animasi/inline style tersisa setelah transisi.
 
 ## Batasan
 
-- Browser terintegrasi tidak tersedia pada sesi ini. Audit runtime dan screenshot dilakukan dengan Chromium headless lokal melalui Playwright pada viewport 1440×1000 dan 390×844.
-- Validitas state ARIA, handler keyboard, akurasi logika filter, serta regresi teknis merupakan scope Litcq/Xavier; Lyra menilai hasil visual dan konsistensi design system.
+- In-app browser tidak tersedia pada sesi audit Lyra (`agent.browsers.list()` kosong), sehingga screenshot visual independen tidak dapat diambil. Penilaian dilakukan melalui diff/CSS/markup, karakteristik animasi WAAPI, dan bukti render Chromium headless pada laporan Orion.
+- Audit ini terbatas pada bahasa visual, hierarchy, spacing, motion, dan responsivitas dalam scope perubahan. Perilaku state, keyboard, ARIA, dan regresi fungsi merupakan lingkup Litcq.
