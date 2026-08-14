@@ -50,7 +50,9 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
   const rotation = useMotionValue(flipped ? 180 : 0);
   const edgeDistance = useTransform(rotation, (value) => Math.abs(90 - value) / 90);
   const cardScale = useTransform(edgeDistance, [0, 1], [0.955, 1]);
-  const lightOpacity = useTransform(edgeDistance, [0, 0.55, 1], [0.36, 0.08, 0]);
+  const cardDepth = useTransform(edgeDistance, [0, 0.45, 1], [34, 12, 0]);
+  const cardTilt = useTransform(rotation, [0, 45, 90, 135, 180], [0, -1.5, 0, 1.5, 0]);
+  const lightOpacity = useTransform(edgeDistance, [0, 0.55, 1], [0.48, 0.12, 0]);
   const cardShadow = useTransform(edgeDistance, [0, 0.55, 1], [
     '0 26px 48px rgba(13, 47, 27, 0.30)',
     '0 18px 38px rgba(13, 47, 27, 0.21)',
@@ -121,7 +123,7 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
   return (
     <div
       data-umkm-card-shell
-      className="relative h-full [perspective:1400px]"
+      className="relative h-full [perspective:1100px] [perspective-origin:50%_48%]"
       onPointerEnter={enhanced ? handlePointerEnter : undefined}
       onPointerLeave={enhanced ? handlePointerLeave : undefined}
     >
@@ -137,11 +139,15 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
           enhanced
             ? {
                 rotateY: rotation,
+                rotateX: shouldReduceMotion ? 0 : cardTilt,
+                z: shouldReduceMotion ? 0 : cardDepth,
                 scale: shouldReduceMotion ? 1 : cardScale,
                 boxShadow: shouldReduceMotion
                   ? '0 8px 24px rgba(13, 47, 27, 0.12)'
                   : cardShadow,
                 transformStyle: 'preserve-3d',
+                transformOrigin: '50% 50%',
+                willChange: 'transform',
               }
             : undefined
         }
@@ -150,7 +156,7 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
           data-umkm-face="front"
           aria-hidden={enhanced ? flipped : undefined}
           className={`${faceBase} ${uncertainBorder}`}
-          style={enhanced ? { transform: 'translateZ(1px)' } : undefined}
+          style={enhanced ? { transform: 'rotateY(0deg) translateZ(2px)', backfaceVisibility: 'hidden' } : undefined}
         >
           <div className="relative overflow-hidden bg-kenteng-50">
             <img
@@ -183,7 +189,10 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
           </div>
           {enhanced && (
             <span className="mt-auto flex items-center gap-2 px-5 pb-5 text-xs font-bold text-muted" aria-hidden="true">
-              <span className="text-base leading-none text-kenteng-700">↻</span>
+              <svg className="text-kenteng-700" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 7v5h-5" />
+                <path d="M19 12a7 7 0 1 1-2.05-4.95L20 10" />
+              </svg>
               Putar kartu untuk detail
             </span>
           )}
@@ -196,7 +205,7 @@ function UmkmCard({ business, enhanced, flipped, onFlipChange }: UmkmCardProps) 
           className={`${faceBase} ${uncertainBorder} ${
             enhanced ? 'bg-surface-soft' : 'mt-3 bg-surface-soft'
           }`}
-          style={enhanced ? { transform: 'rotateY(180deg) translateZ(1px)' } : undefined}
+          style={enhanced ? { transform: 'rotateY(180deg) translateZ(2px)', backfaceVisibility: 'hidden' } : undefined}
         >
           <div className="flex min-h-full flex-1 flex-col p-6">
             <span
@@ -345,7 +354,12 @@ export default function UmkmExplorer({ businesses, initialFilters }: UmkmExplore
     : { type: 'spring' as const, stiffness: 360, damping: 34, mass: 0.75 };
 
   return (
-    <section aria-label="Direktori UMKM Desa Kentengsari" className="min-w-0">
+    <section
+      aria-label="Direktori UMKM Desa Kentengsari"
+      className="min-w-0"
+      data-umkm-explorer
+      data-motion-ready={enhanced ? 'true' : 'false'}
+    >
       <fieldset className="rounded-card border border-line bg-white p-4 shadow-card sm:p-5">
         <legend className="px-2 text-sm font-extrabold text-kenteng-950">
           Saring UMKM berdasarkan dusun

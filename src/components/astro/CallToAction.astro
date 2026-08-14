@@ -9,7 +9,9 @@ interface Props {
 const { title, description, href, label } = Astro.props;
 ---
 
-<section class="bg-kenteng-800 py-16 text-center text-white">
+<section data-call-to-action class="relative isolate overflow-hidden bg-kenteng-900 py-16 text-center text-white">
+  <img class="absolute inset-0 -z-20 h-full w-full object-cover" src="/assets/hero-background.jpg" alt="" loading="lazy" />
+  <div class="absolute inset-0 -z-10 bg-kenteng-800/90"></div>
   <div class="mx-auto w-[min(760px,calc(100%-2rem))]">
     <h2 class="text-3xl font-extrabold tracking-tight md:text-4xl">{title}</h2>
     <p class="mt-4 leading-8 text-white/80">{description}</p>

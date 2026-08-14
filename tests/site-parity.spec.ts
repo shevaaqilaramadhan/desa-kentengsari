@@ -70,7 +70,7 @@ const routes = [
   },
 ] as const;
 
-test('eight legacy routes preserve metadata, navigation, material content, and local references', async ({ page, request }) => {
+test('eight public routes preserve metadata, navigation, material content, and local references', async ({ page, request }) => {
   for (const route of routes) {
     const response = await page.goto(route.path);
     expect(response?.ok(), route.path).toBeTruthy();
@@ -181,7 +181,7 @@ test('contact form keeps its no-JS mailto fallback and enhanced status', async (
   await expect(page.locator('#formNote')).toContainText('Aplikasi email Anda akan terbuka');
 });
 
-test('mobile navigation and every page remain overflow-free at target widths', async ({ page }) => {
+test('mobile navigation and every page remain overflow-free at target widths', async ({ page, browser }) => {
   for (const width of [320, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     for (const route of routes) {
@@ -194,16 +194,169 @@ test('mobile navigation and every page remain overflow-free at target widths', a
   await page.goto('/index.html');
   const toggle = page.locator('[data-nav-toggle]');
   const navigation = page.getByRole('navigation', { name: 'Navigasi utama' });
+  const menuIconState = () => toggle.evaluate((button) => {
+    const line = (name: string) => button.querySelector<SVGPathElement>(`[data-menu-icon-line="${name}"]`)!;
+    return {
+      topTransform: getComputedStyle(line('top')).transform,
+      middleOpacity: getComputedStyle(line('middle')).opacity,
+      bottomTransform: getComputedStyle(line('bottom')).transform,
+    };
+  });
+  await expect(toggle).toBeVisible();
+  await expect(navigation).toBeHidden();
+  await expect(toggle).toHaveAccessibleName('Buka menu navigasi');
+  expect(await menuIconState()).toEqual({
+    topTransform: 'none',
+    middleOpacity: '1',
+    bottomTransform: 'none',
+  });
+  await toggle.click();
+  await expect(navigation).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(toggle).toHaveAccessibleName('Tutup menu navigasi');
+  await expect.poll(async () => (await menuIconState()).middleOpacity).toBe('0');
+  const openIcon = await menuIconState();
+  expect(openIcon.topTransform).not.toBe('none');
+  expect(openIcon.bottomTransform).not.toBe('none');
+  expect(openIcon.topTransform).not.toBe(openIcon.bottomTransform);
+  const mobileMenuGeometry = await navigation.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      position: getComputedStyle(element).position,
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      bodyOverflow: getComputedStyle(document.body).overflow,
+    };
+  });
+  expect(mobileMenuGeometry).toEqual({
+    position: 'fixed',
+    width: 320,
+    height: 800,
+    bodyOverflow: 'hidden',
+  });
+
+  // The visible close toggle must stay above the fullscreen overlay for pointer users.
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(toggle).toHaveAccessibleName('Buka menu navigasi');
+  await expect(navigation).toBeHidden();
+  await expect.poll(async () => (await menuIconState()).middleOpacity).toBe('1');
+  expect(await menuIconState()).toEqual({
+    topTransform: 'none',
+    middleOpacity: '1',
+    bottomTransform: 'none',
+  });
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+
+  await toggle.click();
+  await page.keyboard.press('Escape');
+  await expect(navigation).toBeHidden();
+  await expect(toggle).toBeFocused();
+
+  // A real pointer press on the empty overlay backdrop also dismisses safely.
+  await toggle.click();
+  await navigation.click({ position: { x: 10, y: 700 } });
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(navigation).toBeHidden();
+  await expect(toggle).toBeFocused();
+
+  await page.setViewportSize({ width: 768, height: 800 });
   await expect(toggle).toBeVisible();
   await expect(navigation).toBeHidden();
   await toggle.click();
   await expect(navigation).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await page.keyboard.press('Escape');
-  await expect(navigation).toBeHidden();
-  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAccessibleName('Tutup menu navigasi');
+  await expect.poll(async () => (await menuIconState()).middleOpacity).toBe('0');
+  const tabletMenuGeometry = await navigation.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { width: Math.round(rect.width), height: Math.round(rect.height) };
+  });
+  expect(tabletMenuGeometry).toEqual({ width: 768, height: 800 });
 
-  await page.setViewportSize({ width: 768, height: 800 });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(toggle).toHaveAccessibleName('Buka menu navigasi');
+  await expect.poll(async () => (await menuIconState()).middleOpacity).toBe('1');
+  expect((await menuIconState()).topTransform).toBe('none');
+  expect((await menuIconState()).bottomTransform).toBe('none');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+  // Crossing the 861px desktop breakpoint closes state and releases scroll lock.
+  await page.setViewportSize({ width: 861, height: 800 });
   await expect(toggle).toBeHidden();
   await expect(navigation).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+  await page.setViewportSize({ width: 768, height: 800 });
+  await expect(toggle).toBeVisible();
+  await expect(navigation).toBeHidden();
+
+  // Touch must be able to tap the same visible toggle to open and close.
+  const touchContext = await browser.newContext({
+    baseURL: 'http://127.0.0.1:4321',
+    hasTouch: true,
+    viewport: { width: 320, height: 800 },
+  });
+  const touchPage = await touchContext.newPage();
+  await touchPage.goto('/index.html');
+  const touchToggle = touchPage.locator('[data-nav-toggle]');
+  const touchNavigation = touchPage.getByRole('navigation', { name: 'Navigasi utama' });
+  await touchToggle.tap();
+  await expect(touchToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(touchNavigation).toBeVisible();
+  await expect.poll(() => touchPage.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden');
+  await touchToggle.tap();
+  await expect(touchToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(touchNavigation).toBeHidden();
+  await expect.poll(() => touchPage.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+  await touchContext.close();
+});
+
+test('published surface does not expose the removed legacy CSS or JavaScript entrypoint', async ({ request }) => {
+  expect((await request.get('/css/style.css')).ok()).toBe(false);
+  expect((await request.get('/js/main.js')).ok()).toBe(false);
+});
+
+test('pre-migration visual hierarchy is retained by the shared header, photographic heroes, and CTA', async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/index.html');
+
+  const header = page.locator('[data-site-header]');
+  const homeHero = page.locator('[data-home-hero]');
+  await expect(header).toHaveAttribute('data-scrolled', 'false');
+  const initialHeader = await header.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { position: style.position, color: style.color, background: style.backgroundColor };
+  });
+  expect(initialHeader.position).toBe('fixed');
+  expect(initialHeader.color).toBe('rgb(255, 255, 255)');
+  expect(initialHeader.background).toBe('rgba(0, 0, 0, 0)');
+  expect(await homeHero.evaluate((element) => Math.round(element.getBoundingClientRect().height))).toBeGreaterThanOrEqual(898);
+  await expect(homeHero.locator('img[src="/assets/hero-background.jpg"]')).toHaveCount(1);
+  await expect(page.locator('[data-call-to-action] img[src="/assets/hero-background.jpg"]')).toHaveCount(1);
+
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await expect(header).toHaveAttribute('data-scrolled', 'true');
+  await expect.poll(() => header.evaluate((element) => getComputedStyle(element).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
+
+  for (const [width, expectedMinimum, expectedMaximum] of [
+    [320, 460, 470],
+    [768, 380, 390],
+    [1280, 380, 390],
+  ] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes.filter(({ path }) => path !== '/index.html')) {
+      await page.goto(route.path);
+      const hero = page.locator('[data-page-hero]');
+      const height = await hero.evaluate((element) => Math.round(element.getBoundingClientRect().height));
+      expect(height, `${width}px ${route.path}`).toBeGreaterThanOrEqual(expectedMinimum);
+      expect(height, `${width}px ${route.path}`).toBeLessThanOrEqual(expectedMaximum);
+      await expect(hero.locator('img[src="/assets/hero-background.jpg"]')).toHaveCount(1);
+      const alignment = await hero.evaluate((element) => getComputedStyle(element).textAlign);
+      expect(alignment).toBe('center');
+    }
+  }
 });

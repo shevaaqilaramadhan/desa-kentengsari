@@ -23,6 +23,10 @@ npm run preview  # pratinjau build produksi
 npm test         # build lalu regresi Playwright
 ```
 
+Gunakan hanya server Astro (`npm run dev`) atau preview hasil build (`npm run build` lalu `npm run preview`) untuk melihat website. Jangan membuka berkas HTML langsung dengan Live Server/static root: source canonical berada di `src/pages/`, sedangkan delapan berkas HTML publik baru dihasilkan ke `dist/` saat build.
+
+Implementasi HTML/CSS/JavaScript sebelum migrasi sengaja tidak dipertahankan sebagai entrypoint kedua di root agar browser tidak memuat UI dan flip-card lama. Baseline tersebut tetap dapat dipulihkan secara penuh dari commit `7a72f2d657c091666ad218b1f91fe2ee2db3c3ed` untuk keperluan audit visual.
+
 Playwright memerlukan browser Chromium lokal. Jika belum tersedia, jalankan `npx playwright install chromium` satu kali.
 
 ## Struktur utama
