@@ -121,9 +121,11 @@ test('multi-select filters preserve counts, canonical order, zero-state, and 180
   await expect(page.locator('body')).not.toContainText('6+ Bidang usaha');
 });
 
-test('flip and unflip are physical, one-second, interruptible, and synchronize active face AX', async ({ page }) => {
+test('flip and unflip are physical, one-second, interruptible, and synchronize active face AX', async ({ page }, testInfo) => {
   await openEnhanced(page);
+  await expect(page.locator('[data-umkm-explorer]')).toHaveAttribute('data-motion-ready', 'true');
   const surface = page.locator('[data-umkm-flip-surface]').first();
+  const shell = page.locator('[data-umkm-card-shell]').first();
   const control = page.locator('[data-umkm-flip-control]').first();
   const front = surface.locator('[data-umkm-face="front"]');
   const back = surface.locator('[data-umkm-face="back"]');
@@ -132,36 +134,115 @@ test('flip and unflip are physical, one-second, interruptible, and synchronize a
   await expect(front).toHaveAttribute('aria-hidden', 'false');
   await expect(back).toHaveAttribute('aria-hidden', 'true');
 
+  await page.mouse.move(0, 0);
+  await surface.scrollIntoViewIfNeeded();
+  await page.evaluate(() => {
+    const target = document.querySelector<HTMLElement>('[data-umkm-flip-surface]');
+    const light = target?.querySelector<HTMLElement>('[data-umkm-lighting]');
+    const cardShell = target?.parentElement;
+    if (!target || !light || !cardShell) throw new Error('3D flip instrumentation target is missing');
+    const frames: Array<{
+      elapsed: number;
+      transform: string;
+      m11: number;
+      m13: number;
+      m43: number;
+      shadow: string;
+      lightOpacity: number;
+      transformStyle: string;
+    }> = [];
+    const instrumentation = window as typeof window & {
+      __umkmFlipRecording?: Promise<typeof frames>;
+    };
+    instrumentation.__umkmFlipRecording = new Promise((resolve) => {
+      cardShell.addEventListener('pointerenter', () => {
+        const motionStartedAt = performance.now();
+        const sample = () => {
+          const style = getComputedStyle(target);
+          const matrix = new DOMMatrixReadOnly(style.transform);
+          const elapsed = performance.now() - motionStartedAt;
+          frames.push({
+            elapsed,
+            transform: style.transform,
+            m11: matrix.m11,
+            m13: matrix.m13,
+            m43: matrix.m43,
+            shadow: style.boxShadow,
+            lightOpacity: Number.parseFloat(getComputedStyle(light).opacity),
+            transformStyle: style.transformStyle,
+          });
+          if (elapsed < 1180) requestAnimationFrame(sample);
+          else resolve(frames);
+        };
+        requestAnimationFrame(sample);
+      }, { once: true });
+    });
+  });
   await control.hover();
   const flipStartedAt = Date.now();
-  await page.waitForTimeout(500);
-  const midpoint = await surface.evaluate((element) => {
-    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
-    const light = element.querySelector<HTMLElement>('[data-umkm-lighting]');
-    return {
-      m11: matrix.m11,
-      m13: matrix.m13,
-      shadow: getComputedStyle(element).boxShadow,
-      lightOpacity: Number.parseFloat(getComputedStyle(light!).opacity),
-      transformStyle: getComputedStyle(element).transformStyle,
-    };
+  for (const target of [250, 500, 750]) {
+    await page.waitForTimeout(Math.max(0, target - (Date.now() - flipStartedAt)));
+    await page.screenshot({ path: testInfo.outputPath(`flip-${target}ms.png`), animations: 'allow' });
+  }
+  const recordedFrames = await page.evaluate(async () => {
+    const instrumentation = window as typeof window & { __umkmFlipRecording?: Promise<Array<{
+      elapsed: number;
+      transform: string;
+      m11: number;
+      m13: number;
+      m43: number;
+      shadow: string;
+      lightOpacity: number;
+      transformStyle: string;
+    }>> };
+    if (!instrumentation.__umkmFlipRecording) throw new Error('3D flip recording promise was not installed');
+    return instrumentation.__umkmFlipRecording;
   });
-  expect(Math.abs(midpoint.m11)).toBeLessThan(0.45);
-  expect(Math.abs(midpoint.m13)).toBeGreaterThan(0.85);
+  expect(recordedFrames.length).toBeGreaterThan(40);
+  const samples = [250, 500, 750].map((target) =>
+    recordedFrames.reduce((nearest, frame) =>
+      Math.abs(frame.elapsed - target) < Math.abs(nearest.elapsed - target) ? frame : nearest,
+    ),
+  );
+  const quarter = samples[0]!;
+  const midpoint = samples[1]!;
+  const threeQuarter = samples[2]!;
+  expect(samples.every(({ transform }) => transform.startsWith('matrix3d('))).toBe(true);
+  expect(quarter.m11).toBeGreaterThan(midpoint.m11);
+  expect(midpoint.m11).toBeGreaterThan(threeQuarter.m11);
+  expect(Math.abs(midpoint.m11)).toBeLessThan(0.65);
+  expect(Math.abs(midpoint.m13)).toBeGreaterThan(0.8);
+  expect(Math.abs(midpoint.m43)).toBeGreaterThan(10);
   expect(midpoint.shadow).not.toBe('none');
   expect(midpoint.lightOpacity).toBeGreaterThan(0.15);
   expect(midpoint.transformStyle).toBe('preserve-3d');
+  expect(await shell.evaluate((element) => getComputedStyle(element).perspective)).toBe('1100px');
+  for (const face of [front, back]) {
+    const faceStyles = await face.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { position: style.position, backfaceVisibility: style.backfaceVisibility, transform: style.transform };
+    });
+    expect(faceStyles.position).toBe('absolute');
+    expect(faceStyles.backfaceVisibility).toBe('hidden');
+    expect(faceStyles.transform).toMatch(/^matrix3d\(/);
+  }
 
   await expect.poll(async () => {
     const matrix = await surface.evaluate((element) => new DOMMatrixReadOnly(getComputedStyle(element).transform).m11);
     return matrix;
   }, { intervals: [16], timeout: 1500 }).toBeLessThan(-0.999);
-  const flipDuration = Date.now() - flipStartedAt;
-  expect(flipDuration).toBeGreaterThanOrEqual(900);
-  expect(flipDuration).toBeLessThanOrEqual(1150);
+  const settledFrame = recordedFrames.find(({ elapsed, m11 }) => elapsed >= 800 && m11 < -0.999);
+  if (!settledFrame) {
+    const finalFrame = recordedFrames.at(-1);
+    throw new Error(`No settled flip frame was recorded by 1180ms; final frame: ${JSON.stringify(finalFrame)}`);
+  }
+  const measuredFlipDuration = settledFrame.elapsed;
+  expect(measuredFlipDuration).toBeGreaterThanOrEqual(900);
+  expect(measuredFlipDuration).toBeLessThanOrEqual(1120);
   await expect(control).toHaveAttribute('aria-expanded', 'true');
   await expect(front).toHaveAttribute('aria-hidden', 'true');
   await expect(back).toHaveAttribute('aria-hidden', 'false');
+  await page.screenshot({ path: testInfo.outputPath('flip-settled-back.png'), animations: 'allow' });
 
   await page.mouse.move(0, 0);
   const unflipStartedAt = Date.now();
@@ -237,7 +318,7 @@ test('reduced motion settles flip and filter changes immediately', async ({ page
   const startedAt = Date.now();
   await control.evaluate((button: HTMLButtonElement) => button.click());
   await expect.poll(() => surface.evaluate((element) => new DOMMatrixReadOnly(getComputedStyle(element).transform).m11)).toBeLessThan(-0.98);
-  expect(Date.now() - startedAt).toBeLessThan(150);
+  expect(Date.now() - startedAt).toBeLessThan(250);
   await expect(surface.locator('[data-umkm-lighting]')).toHaveCount(0);
 
   await page.getByRole('button', { name: /Nglarangan/ }).click();

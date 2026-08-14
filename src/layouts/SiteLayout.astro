@@ -57,11 +57,11 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
       Lewati ke konten utama
     </a>
 
-    <header class="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur" data-site-header>
-      <div class="mx-auto flex min-h-20 w-[min(1120px,calc(100%-2rem))] items-center justify-between gap-5">
-        <a class="flex items-center gap-3 font-extrabold text-kenteng-950" href="/index.html">
+    <header class="site-header" data-site-header data-scrolled="false">
+      <div class="site-header__inner">
+        <a class="site-header__brand" href="/index.html">
           <img
-            class="h-12 w-12 object-contain"
+            class="site-header__logo"
             src="/assets/kentengsari-logo.png"
             alt="Logo Desa Kentengsari"
             width="48"
@@ -71,19 +71,23 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
         </a>
 
         <button
-          class="grid min-h-11 min-w-11 place-items-center rounded-lg border border-kenteng-100 text-kenteng-900 md:hidden"
+          class="site-header__toggle"
           type="button"
           aria-controls="site-navigation"
           aria-expanded="false"
           aria-label="Buka menu navigasi"
           data-nav-toggle
         >
-          <span aria-hidden="true" class="text-2xl leading-none">☰</span>
+          <svg class="site-menu-icon" data-menu-icon aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path class="site-menu-icon__line site-menu-icon__line--top" data-menu-icon-line="top" d="M4 7h16" />
+            <path class="site-menu-icon__line site-menu-icon__line--middle" data-menu-icon-line="middle" d="M4 12h16" />
+            <path class="site-menu-icon__line site-menu-icon__line--bottom" data-menu-icon-line="bottom" d="M4 17h16" />
+          </svg>
         </button>
 
         <nav
           id="site-navigation"
-          class="site-nav absolute inset-x-0 top-full hidden max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto border-b border-line bg-white p-4 shadow-card md:static md:flex md:max-h-none md:flex-row md:items-center md:border-0 md:bg-transparent md:p-0 md:shadow-none"
+          class="site-nav"
           aria-label="Navigasi utama"
           data-site-nav
           data-open="false"
@@ -94,10 +98,10 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
                 href={item.href}
                 aria-current={item.id === activeRoute ? 'page' : undefined}
                 class:list={[
-                  'rounded-lg px-3 py-2 text-sm font-bold transition-colors',
+                  'site-nav__link',
                   item.id === activeRoute
-                    ? 'bg-kenteng-50 text-kenteng-800'
-                    : 'text-ink hover:bg-kenteng-50 hover:text-kenteng-800',
+                    ? 'site-nav__link--active'
+                    : '',
                 ]}
               >
                 {item.label}
@@ -164,6 +168,12 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
         toggle.setAttribute('aria-expanded', String(open));
         toggle.setAttribute('aria-label', open ? 'Tutup menu navigasi' : 'Buka menu navigasi');
         navigation.dataset.open = String(open);
+        document.body.classList.toggle('site-menu-open', open);
+      };
+
+      const updateHeader = () => {
+        const header = document.querySelector<HTMLElement>('[data-site-header]');
+        if (header) header.dataset.scrolled = String(window.scrollY > 40);
       };
 
       toggle?.addEventListener('click', () => {
@@ -172,11 +182,18 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
 
       navigation?.addEventListener('click', (event) => {
         if ((event.target as Element).closest('a')) setNavigation(false);
+        else if (event.target === navigation) {
+          setNavigation(false);
+          toggle?.focus();
+        }
       });
 
       window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) setNavigation(false);
+        if (window.innerWidth >= 861) setNavigation(false);
       });
+
+      updateHeader();
+      window.addEventListener('scroll', updateHeader, { passive: true });
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
@@ -189,7 +206,7 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
 </html>
 
 <style is:global>
-  @media (max-width: 767px) {
+  @media (max-width: 860px) {
     .site-nav[data-open='true'] {
       display: flex;
     }

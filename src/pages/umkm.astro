@@ -18,7 +18,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
     <section class="bg-surface-soft py-16 md:py-20" id="daftar-umkm" aria-labelledby="daftar-umkm-title">
       <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
         <SectionHeading eyebrow="Direktori Usaha" title="Daftar UMKM" headingId="daftar-umkm-title" />
-        <div class="mt-8"><UmkmExplorer businesses={umkmBusinesses} client:visible /></div>
+        <div class="mt-8"><UmkmExplorer businesses={umkmBusinesses} client:load /></div>
       </div>
     </section>
     <CallToAction title="Dukung Produk dan Usaha Warga" description="Mari ikut menguatkan ekonomi lokal dengan mengenal dan memilih produk UMKM Desa Kentengsari." href="/kontak.html" label="Hubungi Pemerintah Desa" />
