@@ -3,7 +3,7 @@ import type { NavItem } from '../types/site';
 export const SITE = {
   name: 'Desa Kentengsari',
   shortName: 'Kentengsari',
-  origin: 'https://www.kentengsari.desa.id',
+  origin: 'https://www.desakentengsari.web.id',
   locale: 'id_ID',
   email: 'pemdeskentengsari@gmail.com',
   address: [

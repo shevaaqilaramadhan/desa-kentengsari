@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const origin = 'https://www.kentengsari.desa.id';
+const origin = 'https://www.desakentengsari.web.id';
 const socialImage = `${origin}/og.png`;
 
 const routes = [
@@ -127,6 +127,14 @@ test('sitemap and social card cover the production surface', async ({ page, requ
   expect(sitemap.ok()).toBeTruthy();
   const sitemapText = await sitemap.text();
   for (const route of routes) expect(sitemapText).toContain(`${origin}${route.path}`);
+
+  const robots = await request.get('/robots.txt');
+  expect(robots.ok()).toBeTruthy();
+  expect(robots.headers()['content-type']).toMatch(/^(?:text\/plain|application\/octet-stream)(?:;|$)/);
+  const robotsText = await robots.text();
+  expect(robotsText).toContain('User-agent: *');
+  expect(robotsText).toContain('Allow: /');
+  expect(robotsText).toContain(`Sitemap: ${origin}/sitemap.xml`);
 
   const imageResponse = await request.get('/og.png');
   expect(imageResponse.ok()).toBeTruthy();
