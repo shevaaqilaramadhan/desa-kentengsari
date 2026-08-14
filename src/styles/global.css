@@ -236,7 +236,7 @@
     gap: 0.35rem;
     overflow-y: auto;
     color: white;
-    background: rgb(13 47 27 / 0.985);
+    background: rgb(13 47 27);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);

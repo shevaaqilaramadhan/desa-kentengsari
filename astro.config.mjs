@@ -3,7 +3,7 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://www.kentengsari.desa.id',
+  site: 'https://www.desakentengsari.web.id',
   output: 'static',
   build: {
     format: 'file',
