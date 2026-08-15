@@ -1,14 +1,14 @@
-# Lyra Report
+# Lyra Report — Audit Round 2
 
-- Waktu audit: 2026-08-15T23:47:08.5496798+07:00
-- Base HEAD: `58a0293588c54cb380ef67dc03446734208c9b96`
-- Diff fingerprint: `f135316ef22f310f2998c5cbba861b7f43225003242395b27671355f376f432d`
-- Scope: `src/layouts/SiteLayout.astro`, `src/pages/profil-desa.astro`, `src/styles/global.css`, `tests/site-parity.spec.ts`
+- Waktu audit: 2026-08-16T00:22:16.0429469+07:00
+- Base HEAD: `32ad61ae099ff41841dad020920468667e7310aa`
+- Diff fingerprint: `d5938c045c2fca314c2ecca85d74d90442323cb971712fe8217851b7e374e26e`
+- Scope: `src/pages/profil-desa.astro`, `tests/site-parity.spec.ts`
 - Status: PASS
 
 ## Ringkasan
 
-Kandidat final secara visual telah mengikuti struktur dan proporsi utama referensi [Kuta Village](https://www.kutavillage.com/profile-desa): hero penuh viewport, header transparan, blok sejarah putih yang ringkas, kolase landmark, blok Visi/Misi biru muda, bagan organisasi putih, dan footer terang khusus halaman profil. Hierarki sans-serif, warna, whitespace, dan perilaku mobile konsisten dengan arah referensi serta konten Kentengsari.
+Audit visual round 2 lulus. Penggantian breakpoint spacing yang keras dengan nilai `clamp()` fluid menghasilkan transisi padding dan geometri section yang halus pada 1023/1024/1025px. Seluruh layout tetap teratur pada 390, 768, 1023, 1024, 1025, dan 1440px tanpa whitespace ekstrem, clipping, overlap, atau horizontal overflow. Hero, collage, card Visi/Misi, bagan organisasi, dan footer mempertahankan hierarchy visual Kentengsari/Kuta.
 
 ## Temuan
 
@@ -16,18 +16,22 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint sama persis dengan kandidat yang diberikan.
-- Meninjau markup dan CSS presentasional pada file scope, termasuk selector `.profile-hero`, `.profile-history`, `.profile-landmark`, `.profile-vision`, `.profile-structure`, breakpoint `max-width: 760px`, dan aturan `prefers-reduced-motion`.
-- Mengambil screenshot Playwright halaman `/profil-desa` pada 1440×1000, 768×900, dan 390×844.
-- Hasil layout: hero 1000px, 900px, dan 844px; tidak ada horizontal overflow pada ketiga breakpoint.
-- Desktop: section tersusun sebagai hero → sejarah/statistik → landmark → Visi/Misi → struktur → footer dengan layout dua kolom dan whitespace yang sebanding dengan referensi.
-- Mobile: hero tetap penuh viewport; gambar sejarah muncul sebelum teks; kolase, kartu Visi/Misi, bagan organisasi, dan footer tersusun satu kolom tanpa clipping atau wrapping yang merusak hierarchy.
-- Memastikan tidak ada elemen lama berbasis rail, endcap, atau editorial ornament pada DOM kandidat.
-- Memastikan tidak ada kecocokan mojibake (`â`, `Â`, `�`) pada file visual scope.
-- Memastikan scoping visual: `/profil-desa` memakai `profile-route` dan `profile-site-footer`, sementara `/` dan `/kontak` tetap memakai footer global.
-- Menjalankan `git diff --check`; tidak ada whitespace error.
+- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan setelah audit; Base HEAD serta fingerprint identik dengan kandidat round 2.
+- Meninjau diff presentasional pada `src/pages/profil-desa.astro`, khususnya fluid spacing, gap, tinggi image/collage, margin card, margin bagan, penghapusan forced `min-height`, dan mobile spacing.
+- Mengambil dan memeriksa screenshot full-page Chromium Playwright pada 390x844, 768x900, 1023x900, 1024x900, 1025x900, dan 1440x1000 dengan `prefers-reduced-motion: reduce`.
+- Hero terukur tepat satu viewport: 844px pada mobile, 900px pada 768–1025px, dan 1000px pada desktop 1440px.
+- Seluruh section memiliki `min-height: 0`, continuity antar-section 0px, dan tidak ada horizontal overflow pada keenam viewport.
+- Padding 1023/1024/1025 bergerak fluid tanpa lonjakan: history 84.143/84.191/84.238px; landmark 80.143/80.191/80.238px; vision 81.107/81.142/81.178px; structure 86.625/86.667/86.709px.
+- Tinggi section 1023/1024/1025 juga berubah mulus: history 798.11/798.28/798.45px; landmark 740.70/740.94/741.17px; vision 744.42/744.58/744.69px; structure 817.41/817.53/817.67px.
+- History image-content dan landmark collage-content tetap sejajar pada tablet/desktop; mobile tersusun satu kolom dengan gambar lebih dahulu dan gap yang konsisten.
+- Ketiga image collage memiliki ukuran positif dan grid yang stabil pada semua viewport; crop gambar konsisten tanpa distorsi visual.
+- Kedua card Visi/Misi sejajar dan sama tinggi pada 768–1440px; pada 390px keduanya menjadi satu kolom dengan lebar identik dan spacing teratur.
+- Tiga node organisasi sejajar dan sama tinggi pada 768–1440px; pada 390px menjadi satu kolom dengan lebar identik. Head node, connector, territory chips, dan dua notes tetap terpusat dan tidak terpotong.
+- Footer beralih dari grid dua kolom pada 1023px menjadi empat kolom pada 1024px sesuai breakpoint `lg`. Tingginya berubah dari 525.16px menjadi 376.67px, tetapi reflow terlihat teratur, tidak menggeser section profile, dan tidak menimbulkan overlap, clipping, atau whitespace abnormal; 1024 dan 1025 identik secara visual.
+- Tidak terlihat mojibake/karakter UTF-8 rusak, teks terpotong, card acak, border tidak sejajar, atau transisi warna section yang membingungkan.
+- `git diff --check` lulus tanpa whitespace error.
 
 ## Batasan
 
-- Audit ini visual/design-only; validasi fungsi, route, aksesibilitas fungsional, dan regresi teknis menjadi tanggung jawab Litcq.
-- Screenshot referensi dan kandidat dibandingkan secara visual pada breakpoint yang sama; audit tidak menilai kesamaan pixel-per-pixel atau aset yang tidak dimiliki proyek.
+- Browser terintegrasi tidak tersedia pada sesi ini; audit dilakukan pada preview lokal terbaru menggunakan Chromium Playwright standalone.
+- Audit ini visual/design-only. Validasi fungsi runtime, link/aset, HTTP, SEO, keyboard, dan ARIA fungsional berada di luar scope Lyra.

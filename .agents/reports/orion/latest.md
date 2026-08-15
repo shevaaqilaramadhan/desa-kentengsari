@@ -1,57 +1,65 @@
 # Orion Implementation Report
 
-- Waktu implementasi: 2026-08-15T23:40:18.8804279+07:00
-- Base HEAD: 58a0293588c54cb380ef67dc03446734208c9b96
-- Diff fingerprint: f135316ef22f310f2998c5cbba861b7f43225003242395b27671355f376f432d
-- Permintaan/scope: Revisi visual kedua halaman Profil Desa agar mengikuti struktur, proporsi, urutan section, spacing, warna permukaan, dan perilaku responsif referensi Kuta dengan aset/copy/data Kentengsari; menghapus desain editorial lama; mempertahankan data, aksesibilitas, no-JS, reduced-motion, tujuh route, dan stabilisasi UMKM.
+- Waktu implementasi: 2026-08-16T00:16:18.4054087+07:00
+- Base HEAD: 32ad61ae099ff41841dad020920468667e7310aa
+- Diff fingerprint: d5938c045c2fca314c2ecca85d74d90442323cb971712fe8217851b7e374e26e
+- Permintaan/scope: Menindaklanjuti audit round 1 dengan menghaluskan lonjakan spacing 1023→1024px pada halaman Profil Desa, menambah regresi breakpoint eksplisit, dan memvalidasi ulang seluruh situs tanpa mengubah data, route, atau fungsi.
 - Status: READY_FOR_AUDIT
 
 ## Ringkasan Perubahan
 
-- Mengganti hero Profil Desa menjadi foto Kentengsari full-bleed setinggi tepat satu viewport dengan overlay biru-hijau ringan, heading sans kiri, dan header transparan fixed. Rail, aside 750 mdpl, scroll label, CTA pill, grid overlay, serta ornamen editorial dihapus.
-- Menyatukan sejarah, statistik 2025, dua wilayah administratif, tiga sebutan warga, dan riwayat Krajan dalam satu area putih compact. Desktop memakai copy + empat stat card di kiri dan foto portrait di kanan; mobile menempatkan foto sebelum copy.
-- Mengubah area landmark menjadi collage tiga foto Kentengsari dan copy di sampingnya, dengan lima sarana berbentuk chips serta tepat satu entri `Drainase & Irigasi`.
-- Menyederhanakan Visi & Misi menjadi dua kartu putih pada latar powder blue, mempertahankan lima poin misi penting tanpa panel gelap, serif, shadow, atau padding berlebihan.
-- Menyederhanakan bagan nyata Kepala Desa → Sekretaris Desa/Kaur & Kasi/Kepala Kewilayahan → Kentengsari 1/2, tanpa mengarang nama pejabat, serta menambahkan dua catatan compact.
-- Memberi header 96px desktop/80px mobile dan footer biru-abu muda khusus route Profil Desa; route lain tidak berubah.
-- Menghapus CSS global Profil Desa lama dan memperbarui assertion parity yang sebelumnya mengunci rail/editorial, tanpa mengubah `tests/umkm.spec.ts`.
+- Mengganti empat nilai padding section tablet/desktop yang terpisah breakpoint menjadi interpolasi `clamp()` fluid dari 768px sampai 1440px. Nilai desain pada 768 dan 1440 tetap sama, sedangkan perubahan per satu piksel viewport kini hanya sekitar 0,04–0,05px.
+- Setelah screenshot awal round perbaikan menunjukkan tinggi kolase lama masih melonjak 96px pada 1024px, Orion turut membuat tinggi gambar sejarah, tinggi kolase landmark, gap layout sejarah/landmark, margin kartu Visi–Misi, dan margin bagan organisasi fluid pada rentang yang sama.
+- Menghapus media query 761–1023px yang sebelumnya menjadi sumber perubahan geometri mendadak. Aturan mobile ≤760px tetap eksplisit dan tidak berubah secara visual.
+- Mempertahankan pengurangan whitespace round sebelumnya, hero satu viewport, hierarchy/data, kartu equal-height, node organisasi, dan komposisi Kuta/Kentengsari.
+- Memperluas regresi Playwright dengan viewport 1023/1024/1025: padding setiap section wajib memiliki delta ≤1px, tinggi section delta ≤4px, dan tidak boleh terjadi overflow.
 
 ## File yang Berubah
 
 - `src/pages/profil-desa.astro`
-- `src/layouts/SiteLayout.astro`
-- `src/styles/global.css`
 - `tests/site-parity.spec.ts`
 - `.agents/reports/orion/latest.md` (artefak laporan; dikecualikan dari fingerprint)
 
+Laporan Lyra dan Litcq round 1 tidak diubah oleh Orion.
+
 ## Validasi
 
-- `npm run check` — PASS; 25 file, 0 error, 0 warning, 0 hint.
-- `npm test` — PASS; build Astro 7 halaman dan Playwright 15/15.
-- `npx playwright test tests/site-parity.spec.ts` — PASS; 9/9.
-- `git diff --check` — PASS; tidak ada whitespace error (hanya warning normalisasi LF/CRLF Git).
-- Screenshot full-page final — PASS secara visual:
-  - 1440×1000: scrollHeight 6.799px, hero 1.000px, tanpa overflow.
-  - 768×900: scrollHeight 5.376px, hero 900px, tanpa overflow.
-  - 390×844: scrollHeight 6.234px, hero 844px, tanpa overflow.
-  - Screenshot sementara telah diinspeksi dan dihapus sebelum fingerprint agar tidak masuk kandidat diff.
-- No-JS — PASS melalui test Playwright; statistik, struktur, dan konten utama tetap visible.
-- Reduced-motion — PASS melalui CSS profile-scoped dan suite regresi.
-- Data/copy — PASS: 1.201, 626, 575, 390; Kentengsari 1/2; Nglarangan, Kentengsari, Kenteng Wetan; Krajan 1/2/3; satu `Drainase & Irigasi`; UTF-8 tampil benar.
-- `.agents/get-change-fingerprint.ps1` — PASS; output final:
+- `npm run check` — PASS setelah artefak QA dibersihkan; 25 file, 0 error, 0 warning, 0 hint.
+- `npm test` final — PASS; build Astro 7 halaman dan Playwright 16/16.
+- Full suite juga dijalankan satu kali sebelum penyempurnaan geometri tambahan dan lulus 16/16. Seluruh test UMKM lulus pada percobaan pertama dan final; tidak ada flake pada implementasi round ini.
+- `git diff --check` — PASS; tidak ada whitespace error. Git hanya menampilkan warning normalisasi LF/CRLF pada working copy Windows.
+- Screenshot Playwright full-page dan metric DOM — PASS pada 390×844, 768×900, 1023×900, 1024×900, 1025×900, dan 1440×1000. Tidak ada horizontal overflow pada keenam viewport; screenshot/temp test telah dihapus sebelum fingerprint.
+- Padding 1023 → 1024 → 1025px:
+  - History: 84,143 → 84,191 → 84,238px; rentang 0,095px.
+  - Landmark: 80,143 → 80,191 → 80,238px; rentang 0,095px.
+  - Vision: 81,107 → 81,142 → 81,178px; rentang 0,071px.
+  - Structure: 86,625 → 86,667 → 86,709px; rentang 0,084px.
+- Tinggi section 1023 → 1024 → 1025px:
+  - History: 798,109 → 798,281 → 798,453px; rentang 0,344px.
+  - Landmark: 740,703 → 740,938 → 741,172px; rentang 0,469px.
+  - Vision: 744,422 → 744,578 → 744,688px; rentang 0,266px.
+  - Structure: 817,406 → 817,531 → 817,672px; rentang 0,266px.
+- Metric enam viewport:
+  - 390×844: document 6.086px; padding section 52–60px; hero 844px.
+  - 768×900: document 4.676px; padding section 68–76px; hero 900px.
+  - 1023×900: document 4.526px; section utama kontinu dan tanpa overflow.
+  - 1024×900: document 4.378px; section utama kontinu dan tanpa overflow.
+  - 1025×900: document 4.379px; section utama kontinu dan tanpa overflow.
+  - 1440×1000: document 4.775px; padding section 96–104px; hero 1.000px.
+- Regression existing — PASS: data 1.201/626/575/390, 2 wilayah administratif, 3 sebutan warga, tepat satu `Drainase & Irigasi`, no Berita, canonical, no-JS, ARIA, reduced-motion, menu keyboard/Escape/touch, seluruh 7 route, dan UMKM.
+- `.agents/get-change-fingerprint.ps1` — PASS:
 
   ```text
-  BASE_HEAD=58a0293588c54cb380ef67dc03446734208c9b96
-  DIFF_FINGERPRINT=f135316ef22f310f2998c5cbba861b7f43225003242395b27671355f376f432d
+  BASE_HEAD=32ad61ae099ff41841dad020920468667e7310aa
+  DIFF_FINGERPRINT=d5938c045c2fca314c2ecca85d74d90442323cb971712fe8217851b7e374e26e
   FILES:
-  src/layouts/SiteLayout.astro file 18a5a45b66d398206cdae8865ac451eb26b0d547066b62469f8b9947f77f5f35
-  src/pages/profil-desa.astro file b14752b342ee1dedabf7809cde950878e1b75a93ddb5969d7a31a1e3442967f9
-  src/styles/global.css file 64e4f1021b2d39efc4c91695a72edfe0379fc0397cbfb18a8a79ac2d486340b6
-  tests/site-parity.spec.ts file 39cfec28b9c5aa0a775917eb915e817529d90e3b9fd03db74257180f121749b2
+  src/pages/profil-desa.astro file 0f29bf4465687294d6ecc3f7afed4d2474d46aaedf7ea469c7334f8302f52b3e
+  tests/site-parity.spec.ts file 37d8abd2baed9d87a2700bac6b827cb38b6662761fc47c9c9bb91e36e9ee9a10
   ```
 
 ## Risiko dan Batasan
 
-- Browser pembanding eksternal tidak tersedia pada sesi ini; implementasi mengikuti kontrak dan bukti ukuran fresh yang diberikan master, sedangkan hasil lokal diverifikasi melalui screenshot Playwright pada tiga breakpoint. Tinggi final desktop/mobile masing-masing berjarak sekitar 1%/2% dari bukti referensi.
-- Penilaian ini adalah handoff implementasi Orion, bukan keputusan QA atau izin push. Lyra, Litcq, dan Xavier harus mengaudit ulang fingerprint final di atas.
-- Laporan auditor lain tidak diubah. Tidak ada dependency baru, commit, atau push.
+- Tinggi total dokumen berubah 148px dari 1023 ke 1024 karena footer global yang sudah ada berpindah dari grid dua kolom menjadi empat kolom. Screenshot menunjukkan kedua bentuk footer tetap teratur, tanpa gap kosong, overlap, atau clipping; empat section Profil Desa sendiri berubah kurang dari 0,5px dan tidak lagi melonjak.
+- Browser terintegrasi tidak tersedia pada sesi ini. QA dilakukan memakai Chromium headless dari dependency Playwright proyek dengan screenshot full-page dan pengukuran DOM nyata.
+- Perubahan hanya menyentuh CSS lokal Profil Desa dan test regresinya; tidak ada dependency, konten, route, commit, atau push baru.
+- Ini adalah handoff implementasi Orion, bukan keputusan QA atau izin push. Lyra dan Litcq harus mengaudit ulang fingerprint baru, kemudian Xavier menjalankan gate.

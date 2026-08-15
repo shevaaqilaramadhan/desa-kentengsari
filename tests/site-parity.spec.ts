@@ -202,6 +202,118 @@ test('profile content remains visible without JavaScript', async ({ browser }) =
   await context.close();
 });
 
+test('profile sections keep balanced responsive spacing and orderly geometry', async ({ page }) => {
+  const viewports = [
+    { width: 390, height: 844, padding: { min: 48, max: 64 }, document: { min: 5000, max: 6500 } },
+    { width: 768, height: 900, padding: { min: 64, max: 80 }, document: { min: 4000, max: 5400 } },
+    { width: 1440, height: 1000, padding: { min: 80, max: 112 }, document: { min: 4400, max: 5300 } },
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto('/profil-desa.html');
+
+    const layout = await page.evaluate(() => {
+      const selectors = ['.profile-history', '.profile-landmark', '.profile-vision', '.profile-structure'];
+      const sections = selectors.map((selector) => {
+        const section = document.querySelector<HTMLElement>(selector)!;
+        const content = section.querySelector<HTMLElement>(':scope > .profile-container')!;
+        const sectionRect = section.getBoundingClientRect();
+        const contentRect = content.getBoundingClientRect();
+        const style = getComputedStyle(section);
+        return {
+          selector,
+          top: sectionRect.top + scrollY,
+          bottom: sectionRect.bottom + scrollY,
+          height: sectionRect.height,
+          contentHeight: contentRect.height,
+          paddingTop: Number.parseFloat(style.paddingTop),
+          paddingBottom: Number.parseFloat(style.paddingBottom),
+          minHeight: Number.parseFloat(style.minHeight) || 0,
+        };
+      });
+
+      const boxes = (selector: string) => [...document.querySelectorAll<HTMLElement>(selector)].map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { top: rect.top + scrollY, bottom: rect.bottom + scrollY, left: rect.left, width: rect.width };
+      });
+
+      return {
+        heroHeight: document.querySelector<HTMLElement>('.profile-hero')!.getBoundingClientRect().height,
+        documentHeight: document.documentElement.scrollHeight,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+        sections,
+        visionCards: boxes('.profile-vision__card'),
+        organizationNodes: boxes('.profile-org__branches > article'),
+        collage: boxes('.profile-landmark__image'),
+      };
+    });
+
+    expect(Math.abs(layout.heroHeight - viewport.height), `${viewport.width}px hero`).toBeLessThanOrEqual(2);
+    expect(layout.overflow, `${viewport.width}px horizontal overflow`).toBeLessThanOrEqual(0);
+    expect(layout.documentHeight, `${viewport.width}px document height`).toBeGreaterThanOrEqual(viewport.document.min);
+    expect(layout.documentHeight, `${viewport.width}px document height`).toBeLessThanOrEqual(viewport.document.max);
+
+    for (const section of layout.sections) {
+      expect(section.minHeight, `${viewport.width}px ${section.selector} forced min-height`).toBe(0);
+      expect(section.paddingTop, `${viewport.width}px ${section.selector} top padding`).toBeGreaterThanOrEqual(viewport.padding.min);
+      expect(section.paddingTop, `${viewport.width}px ${section.selector} top padding`).toBeLessThanOrEqual(viewport.padding.max);
+      expect(section.paddingBottom, `${viewport.width}px ${section.selector} bottom padding`).toBeGreaterThanOrEqual(viewport.padding.min);
+      expect(section.paddingBottom, `${viewport.width}px ${section.selector} bottom padding`).toBeLessThanOrEqual(viewport.padding.max);
+      expect(section.height / section.contentHeight, `${viewport.width}px ${section.selector} whitespace ratio`).toBeLessThan(1.5);
+    }
+
+    for (let index = 1; index < layout.sections.length; index += 1) {
+      const gap = layout.sections[index]!.top - layout.sections[index - 1]!.bottom;
+      expect(Math.abs(gap), `${viewport.width}px section continuity`).toBeLessThanOrEqual(2);
+    }
+
+    if (viewport.width > 760) {
+      expect(Math.abs(layout.visionCards[0]!.top - layout.visionCards[1]!.top), `${viewport.width}px vision card rows`).toBeLessThanOrEqual(2);
+      expect(Math.abs(layout.visionCards[0]!.bottom - layout.visionCards[1]!.bottom), `${viewport.width}px equal-height vision cards`).toBeLessThanOrEqual(2);
+      const organizationTops = layout.organizationNodes.map(({ top }) => Math.round(top));
+      const organizationBottoms = layout.organizationNodes.map(({ bottom }) => Math.round(bottom));
+      expect(new Set(organizationTops).size, `${viewport.width}px organization row alignment`).toBe(1);
+      expect(new Set(organizationBottoms).size, `${viewport.width}px equal-height organization nodes`).toBe(1);
+    } else {
+      const cardWidths = layout.visionCards.map(({ width }) => Math.round(width));
+      const nodeWidths = layout.organizationNodes.map(({ width }) => Math.round(width));
+      expect(new Set(cardWidths).size, 'mobile vision card widths').toBe(1);
+      expect(new Set(nodeWidths).size, 'mobile organization node widths').toBe(1);
+    }
+
+    expect(layout.collage).toHaveLength(3);
+    expect(layout.collage.every(({ width }) => width > 0)).toBe(true);
+  }
+
+  const breakpointPadding = [];
+  for (const width of [1023, 1024, 1025]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/profil-desa.html');
+    breakpointPadding.push(await page.evaluate(() => {
+      const selectors = ['.profile-history', '.profile-landmark', '.profile-vision', '.profile-structure'];
+      return {
+        overflow: document.documentElement.scrollWidth - innerWidth,
+        values: Object.fromEntries(selectors.map((selector) => {
+          const section = document.querySelector<HTMLElement>(selector)!;
+          return [selector, {
+            height: section.getBoundingClientRect().height,
+            padding: Number.parseFloat(getComputedStyle(section).paddingTop),
+          }];
+        })),
+      };
+    }));
+  }
+
+  for (const result of breakpointPadding) expect(result.overflow, '1024px breakpoint overflow').toBeLessThanOrEqual(0);
+  for (const selector of ['.profile-history', '.profile-landmark', '.profile-vision', '.profile-structure']) {
+    const padding = breakpointPadding.map((result) => result.values[selector]!.padding);
+    const height = breakpointPadding.map((result) => result.values[selector]!.height);
+    expect(Math.max(...padding) - Math.min(...padding), `${selector} padding must transition smoothly at 1024px`).toBeLessThanOrEqual(1);
+    expect(Math.max(...height) - Math.min(...height), `${selector} geometry must transition smoothly at 1024px`).toBeLessThanOrEqual(4);
+  }
+});
+
 test('gallery dialog supports close button, Escape, backdrop, and focus return', async ({ page }) => {
   await page.goto('/galeri.html');
   const triggers = page.locator('[data-lightbox]');
