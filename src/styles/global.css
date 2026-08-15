@@ -127,10 +127,7 @@
 .site-header__logo {
   width: 42px;
   height: 42px;
-  padding: 3px;
   object-fit: contain;
-  background: rgb(255 255 255 / 0.82);
-  border-radius: 4px;
 }
 
 .site-header__toggle {
