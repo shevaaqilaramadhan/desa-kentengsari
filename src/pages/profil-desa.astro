@@ -1,345 +1,373 @@
 ---
-import InfoCard from '../components/astro/InfoCard.astro';
-import PageHero from '../components/astro/PageHero.astro';
-import SectionHeading from '../components/astro/SectionHeading.astro';
-import StatGrid from '../components/astro/StatGrid.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 
 const stats = [
-  { value: '1.201', label: 'Total Penduduk', note: 'Data resmi tahun 2025' },
-  { value: '626', label: 'Pria', note: 'Penduduk pria tahun 2025' },
-  { value: '575', label: 'Wanita', note: 'Penduduk wanita tahun 2025' },
-  { value: '390', label: 'Kepala Keluarga', note: 'Jumlah KK tahun 2025' },
-] as const;
+  { value: '1.201', label: 'Total Penduduk', detail: 'Data resmi tahun 2025' },
+  { value: '626', label: 'Pria', detail: 'Penduduk pria tahun 2025' },
+  { value: '575', label: 'Wanita', detail: 'Penduduk wanita tahun 2025' },
+  { value: '390', label: 'Kepala Keluarga', detail: 'Jumlah KK tahun 2025' },
+];
 
 const missions = [
-  'Meningkatkan kualitas pelayanan publik yang transparan, cepat, dan akuntabel bagi seluruh masyarakat desa.',
-  'Mengembangkan sektor pertanian dan ekonomi produktif sebagai tulang punggung kesejahteraan warga.',
-  'Memperkuat nilai gotong royong, kerukunan, dan kearifan lokal dalam kehidupan bermasyarakat.',
-  'Melestarikan lingkungan dan potensi alam lereng Gunung Sumbing secara berkelanjutan.',
-  'Meningkatkan kualitas sumber daya manusia melalui pendidikan, pelatihan, dan pemberdayaan pemuda.',
+  ['01', 'Pelayanan publik', 'Meningkatkan kualitas pelayanan publik yang transparan, cepat, dan akuntabel.'],
+  ['02', 'Ekonomi produktif', 'Mengembangkan sektor pertanian dan ekonomi produktif sebagai tulang punggung kesejahteraan warga.'],
+  ['03', 'Gotong royong', 'Memperkuat kerukunan dan kearifan lokal dalam kehidupan bermasyarakat.'],
+  ['04', 'Alam berkelanjutan', 'Melestarikan lingkungan dan potensi alam lereng Gunung Sumbing.'],
+  ['05', 'Generasi masa depan', 'Meningkatkan kualitas sumber daya manusia melalui pendidikan dan pemberdayaan pemuda.'],
 ] as const;
 ---
 
 <SiteLayout title="Profil Desa — Desa Kentengsari" description="Profil Desa Kentengsari: data penduduk 2025, dua wilayah administratif, tiga sebutan dusun warga, sejarah, dan struktur pemerintahan desa." activeRoute="profil-desa" canonicalPath="/profil-desa.html">
-  <main id="main-content">
-    <PageHero current="Profil Desa" title="Profil Desa Kentengsari" description="Mengenal lebih dalam sejarah, geografis, dan pemerintahan Desa Kentengsari." />
+  <main id="main-content" class="profile-page">
+    <section class="profile-hero" data-page-hero aria-labelledby="profile-title">
+      <img src="/assets/hero-background.jpg" alt="Pemandangan Desa Kentengsari di lereng Gunung Sumbing" class="profile-hero__image" />
+      <div class="profile-hero__veil"></div>
+      <div class="profile-hero__grid"></div>
+      <div class="profile-hero__content">
+        <p class="profile-kicker profile-reveal">Profil Desa <span>/</span> Windusari, Magelang</p>
+        <h1 id="profile-title" class="profile-hero__title profile-reveal">Satu desa.<br /><em>Seribu cerita.</em></h1>
+        <p class="profile-hero__lead profile-reveal">Mengenal Kentengsari lebih dekat—dari jejak sejarah, tanah yang subur, hingga semangat warga yang menghidupkannya.</p>
+        <a class="profile-hero__cta profile-reveal" href="#sejarah">Jelajahi cerita desa <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="profile-hero__aside profile-reveal" aria-label="Informasi singkat lokasi">
+        <span class="profile-hero__aside-line"></span><span>LERENG GUNUNG SUMBING</span><strong>750<small> mdpl</small></strong>
+      </div>
+      <div class="profile-hero__scroll">Scroll untuk menjelajah <span></span></div>
+    </section>
 
-    <section class="py-20 md:py-28" id="sejarah">
-      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
-        <div>
-          <SectionHeading eyebrow="Sejarah & Gambaran Umum" title="Dari Kenteng dan Sari Menjadi Kentengsari" />
-          <div class="mt-6 grid gap-4 leading-8 text-muted">
-            <p>Nama Desa Kentengsari merupakan penggabungan dari dua nama desa pendahulunya, yaitu Desa Kenteng dan Desa Sari. Penggabungan ini melahirkan satu kesatuan wilayah administratif yang kini dikenal sebagai Desa Kentengsari.</p>
-            <p>Desa Kentengsari berada di Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah, dan merupakan desa terkecil di kecamatan tersebut. Jaraknya sekitar 2,5 Km dari ibu kota kecamatan dan 29 Km dari ibu kota kabupaten melalui Bandongan.</p>
-            <p>Wilayahnya terletak di lereng Gunung Sumbing dengan ketinggian 750 meter di atas permukaan laut. Kondisi ini menghadirkan udara yang sejuk dan tanah yang subur — anugerah yang dimanfaatkan masyarakat untuk bertani padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
-          </div>
+    <nav class="profile-rail" aria-label="Bagian halaman profil">
+      <a href="#sejarah" class="is-active">01 <span>Sejarah</span></a><a href="#statistik">02 <span>Angka</span></a><a href="#visi-misi">03 <span>Visi & Misi</span></a><a href="#struktur">04 <span>Pemerintahan</span></a>
+    </nav>
+
+    <section class="profile-story profile-section" id="sejarah">
+      <div class="profile-container profile-story__layout">
+        <div class="profile-story__copy profile-reveal">
+          <p class="profile-kicker profile-kicker--dark">01 / Sejarah & gambaran umum</p>
+          <h2>Dari Kenteng<br /><span>dan Sari</span></h2>
+          <p>Nama Desa Kentengsari merupakan penggabungan dari dua nama desa pendahulunya, yaitu Desa Kenteng dan Desa Sari. Penggabungan ini melahirkan satu kesatuan wilayah administratif yang kini dikenal sebagai Kentengsari.</p>
+          <p>Berada di Kecamatan Windusari, Kabupaten Magelang, desa ini terletak di lereng Gunung Sumbing. Udara sejuk dan tanah yang subur menjadi anugerah yang dimanfaatkan masyarakat untuk bertani padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
+          <div class="profile-story__coordinates"><span>LERENG GUNUNG SUMBING</span><span class="profile-story__rule"></span><span>MAGELANG, JAWA TENGAH</span></div>
         </div>
-        <figure class="relative">
-          <img class="h-[460px] w-full rounded-panel object-cover shadow-raised" src="/assets/profil-desa-image.jpg" alt="Panorama wilayah Desa Kentengsari di lereng Gunung Sumbing" loading="lazy" />
-          <figcaption class="absolute -bottom-5 left-5 rounded-card bg-white p-5 shadow-raised"><strong class="block text-2xl text-kenteng-700">2,5 Km</strong><span class="text-sm font-bold text-muted">Dari ibu kota kecamatan</span></figcaption>
+        <figure class="profile-story__visual profile-reveal">
+          <div class="profile-story__image-wrap"><img src="/assets/profil-desa-image.jpg" alt="Panorama wilayah Desa Kentengsari di lereng Gunung Sumbing" loading="lazy" /></div>
+          <figcaption><strong>2,5</strong><span>km dari ibu kota<br />kecamatan</span></figcaption>
+          <span class="profile-story__stamp">KENTENGSARI<br /><small>RUMAH BERSAMA</small></span>
         </figure>
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="statistik">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Data Penduduk 2025" title="Kentengsari Dalam Angka" description="Data resmi kependudukan Desa Kentengsari tahun 2025." />
-        <div class="mt-10"><StatGrid stats={stats} /></div>
+    <section class="profile-numbers profile-section" id="statistik">
+      <div class="profile-container">
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker">02 / Data penduduk 2025</p><h2>Kentengsari <span>Dalam Angka</span></h2></div><p>Data resmi kependudukan Desa Kentengsari tahun 2025.</p></div>
+        <div class="profile-stat-grid">{stats.map((stat, index) => <article class="profile-stat profile-reveal" style={`--delay: ${index * 80}ms`}><span class="profile-stat__index">0{index + 1}</span><strong>{stat.value}</strong><h3>{stat.label}</h3><p>{stat.detail}</p></article>)}</div>
       </div>
     </section>
 
-    <section class="py-20 md:py-28" id="wilayah" aria-labelledby="wilayah-heading">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading headingId="wilayah-heading" centered eyebrow="Pembagian Wilayah" title="Dua Administratif, Tiga Sebutan Warga" description="Pembagian pemerintah dan sebutan yang hidup di tengah warga dipakai untuk konteks yang berbeda, sehingga keduanya bukan informasi yang bertentangan." />
-        <div class="mt-10 grid gap-6 lg:grid-cols-2">
-          <article class="rounded-panel border border-kenteng-100 bg-kenteng-50 p-7 shadow-card md:p-8">
-            <p class="text-sm font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Administratif Pemerintah</p>
-            <h3 class="mt-3 text-2xl font-extrabold text-kenteng-950">2 Wilayah Kewilayahan</h3>
-            <p class="mt-3 leading-7 text-muted">Nama kewilayahan setelah mengikuti peraturan bupati baru:</p>
-            <ul class="mt-5 grid gap-3" aria-label="Wilayah administratif pemerintah">
-              <li class="rounded-card border border-kenteng-100 bg-white px-5 py-4 font-extrabold text-kenteng-900">Kentengsari 1</li>
-              <li class="rounded-card border border-kenteng-100 bg-white px-5 py-4 font-extrabold text-kenteng-900">Kentengsari 2</li>
-            </ul>
+    <section class="profile-territory profile-section" id="wilayah" aria-labelledby="wilayah-heading">
+      <div class="profile-container">
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">03 / Pembagian wilayah</p><h2 id="wilayah-heading">Dua Administratif, <span>Tiga Sebutan Warga</span></h2></div><p>Pembagian pemerintah dan sebutan yang hidup di tengah warga dipakai untuk konteks yang berbeda, sehingga keduanya bukan informasi yang bertentangan.</p></div>
+        <div class="profile-territory__grid profile-reveal">
+          <article class="profile-territory__card profile-territory__card--admin">
+            <p class="profile-kicker profile-kicker--dark">Administratif Pemerintah</p>
+            <h3>2 Wilayah Kewilayahan</h3>
+            <p>Nama kewilayahan setelah mengikuti peraturan bupati baru:</p>
+            <ul aria-label="Wilayah administratif pemerintah"><li>Kentengsari 1</li><li>Kentengsari 2</li></ul>
           </article>
-          <article class="rounded-panel border border-line bg-white p-7 shadow-card md:p-8">
-            <p class="text-sm font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Sebutan yang Hidup di Warga</p>
-            <h3 class="mt-3 text-2xl font-extrabold text-kenteng-950">3 Sebutan Dusun</h3>
-            <p class="mt-3 leading-7 text-muted">Dalam percakapan dan kehidupan sehari-hari, warga mengenal:</p>
-            <ul class="mt-5 grid gap-3 sm:grid-cols-3" aria-label="Sebutan dusun warga">
-              <li class="rounded-card bg-surface-soft px-4 py-4 text-center font-extrabold text-kenteng-900">Nglarangan</li>
-              <li class="rounded-card bg-surface-soft px-4 py-4 text-center font-extrabold text-kenteng-900">Kentengsari</li>
-              <li class="rounded-card bg-surface-soft px-4 py-4 text-center font-extrabold text-kenteng-900">Kenteng Wetan</li>
-            </ul>
+          <article class="profile-territory__card">
+            <p class="profile-kicker profile-kicker--dark">Sebutan yang Hidup di Warga</p>
+            <h3>3 Sebutan Dusun</h3>
+            <p>Dalam percakapan dan kehidupan sehari-hari, warga mengenal:</p>
+            <ul class="profile-territory__community" aria-label="Sebutan dusun warga"><li>Nglarangan</li><li>Kentengsari</li><li>Kenteng Wetan</li></ul>
           </article>
         </div>
-        <aside class="mt-6 rounded-card border-l-4 border-kenteng-600 bg-surface-soft p-6 leading-7 text-muted" aria-label="Riwayat penamaan wilayah">
-          <strong class="text-kenteng-950">Riwayat sebelum penataan organisasi desa:</strong> wilayah pernah dinyatakan sebagai Krajan 1, Krajan 2, dan Krajan 3. Nama-nama tersebut dicatat sebagai riwayat, bukan nama kewilayahan administratif yang berlaku saat ini.
-        </aside>
+        <aside class="profile-territory__history profile-reveal" aria-label="Riwayat penataan wilayah"><strong>Riwayat sebelum penataan organisasi desa:</strong> wilayah pernah dinyatakan sebagai Krajan 1, Krajan 2, dan Krajan 3. Nama-nama tersebut dicatat sebagai riwayat, bukan nama kewilayahan administratif yang berlaku saat ini.</aside>
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="landmark">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Fasilitas Desa" title="Landmark & Sarana Umum" description="Fasilitas yang menjadi pusat kegiatan dan pelayanan masyarakat Desa Kentengsari." />
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <InfoCard title="Kantor Desa" description="Pusat pelayanan administrasi dan informasi bagi masyarakat." />
-          <InfoCard title="Sekolah Dasar" description="Fasilitas pendidikan dasar bagi putra-putri desa.">
-            <svg slot="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
-          </InfoCard>
-          <InfoCard title="Tempat Ibadah" description="Masjid dan mushola yang mendukung kegiatan rohani masyarakat." />
-          <InfoCard title="Lahan Pertanian" description="Hamparan sawah dan kebun tembakau yang menjadi tulang punggung ekonomi desa." />
-          <InfoCard title="Drainase & Irigasi" description="Sarana aliran air yang mendukung lingkungan permukiman dan lahan pertanian desa." />
+    <section class="profile-facilities profile-section" id="landmark" aria-labelledby="landmark-heading">
+      <div class="profile-container">
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">Sarana desa</p><h2 id="landmark-heading">Landmark &amp; Sarana Umum</h2></div><p>Fasilitas yang menjadi pusat kegiatan, pelayanan, dan ruang hidup masyarakat Desa Kentengsari.</p></div>
+        <div class="profile-facilities__grid profile-reveal">
+          <article><h3>Kantor Desa</h3><p>Pusat pelayanan administrasi dan informasi bagi masyarakat.</p></article>
+          <article><h3>Sekolah Dasar</h3><p>Fasilitas pendidikan dasar bagi putra-putri desa.</p></article>
+          <article><h3>Tempat Ibadah</h3><p>Ruang kegiatan rohani masyarakat.</p></article>
+          <article><h3>Lahan Pertanian</h3><p>Hamparan sawah dan kebun yang mendukung ekonomi desa.</p></article>
+          <article><h3>Drainase &amp; Irigasi</h3><p>Sarana aliran air yang mendukung lingkungan permukiman dan lahan pertanian desa.</p></article>
         </div>
       </div>
     </section>
 
-    <section class="py-20 md:py-28" id="visi-misi">
-      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-start gap-10 lg:grid-cols-2">
-        <div class="rounded-panel bg-kenteng-800 p-8 text-white shadow-raised md:p-10">
-          <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-kenteng-100">Visi</p>
-          <blockquote class="mt-5 text-2xl font-bold leading-relaxed">“Terwujudnya Desa Kentengsari yang maju, mandiri, dan sejahtera, berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote>
+    <section class="profile-vision profile-section" id="visi-misi">
+      <div class="profile-container profile-vision__layout">
+        <div class="profile-vision__statement profile-reveal"><p class="profile-kicker profile-kicker--light">03 / Arah pembangunan</p><p class="profile-vision__eyebrow">Visi Desa</p><blockquote>“Maju, mandiri, dan sejahtera—berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote><span class="profile-vision__signature">— Pemerintah Desa Kentengsari</span></div>
+        <div class="profile-mission profile-reveal"><p class="profile-kicker profile-kicker--dark">Misi kami</p><h2>Langkah nyata,<br /><span>setiap hari.</span></h2><div class="profile-mission__list">{missions.map((mission) => <article><span>{mission[0]}</span><div><h3>{mission[1]}</h3><p>{mission[2]}</p></div></article>)}</div></div>
+      </div>
+    </section>
+
+    <section class="profile-structure profile-section" id="struktur" aria-labelledby="struktur-heading">
+      <div class="profile-container">
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">04 / Pemerintahan desa · Struktur Organisasi</p><h2 id="struktur-heading">Yang melayani,<br /><span>yang menggerakkan.</span></h2></div><p>Struktur pemerintahan adalah ruang kolaborasi untuk memastikan pelayanan hadir lebih dekat bagi setiap warga.</p></div>
+        <div class="profile-org profile-hierarchy profile-reveal" role="group" aria-label="Bagan hierarki pemerintahan Desa Kentengsari">
+          <article class="profile-org__lead"><span>Level Utama</span><h3>Kepala Desa</h3><p>Pimpinan pemerintahan desa</p></article>
+          <div class="profile-org__connector"></div>
+          <div class="profile-hierarchy__branches" aria-label="Unsur di bawah Kepala Desa">
+            <article class="profile-hierarchy__card"><span>Administrasi</span><h3>Sekretaris Desa</h3><p>Koordinasi administrasi pemerintahan desa.</p></article>
+            <article class="profile-hierarchy__card"><span>Pelaksana Teknis</span><h3>Kaur &amp; Kasi</h3><p>Unsur urusan dan seksi pelaksana teknis.</p></article>
+            <article class="profile-hierarchy__card profile-hierarchy__territory"><span>Pelaksana Kewilayahan</span><h3>Kepala Kewilayahan</h3><p>Pelaksana pemerintahan pada wilayah administratif desa.</p><div class="profile-hierarchy__territories" aria-label="Wilayah administratif di bawah Kepala Kewilayahan"><article><h4>Kentengsari 1</h4></article><article><h4>Kentengsari 2</h4></article></div></article>
+          </div>
         </div>
-        <div>
-          <SectionHeading eyebrow="Misi" title="Langkah Nyata Membangun Desa" />
-          <ol class="mt-7 grid gap-4">
-            {missions.map((mission, index) => <li class="flex gap-4 leading-7 text-muted"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-kenteng-100 font-extrabold text-kenteng-800">{index + 1}</span><span>{mission}</span></li>)}
-          </ol>
+        <div class="profile-structure__notes profile-reveal">
+          <aside><strong>Sebutan Warga</strong><p>Nglarangan, Kentengsari, dan Kenteng Wetan adalah tiga sebutan dusun yang hidup di tengah warga; ketiganya tidak menggantikan dua nama administratif pada bagan.</p></aside>
+          <aside><strong>Catatan Riwayat</strong><p>Krajan 1, Krajan 2, dan Krajan 3 merupakan pernyataan wilayah sebelum penataan organisasi desa, bukan nama kewilayahan administratif saat ini.</p></aside>
         </div>
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="struktur" aria-labelledby="struktur-heading">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading headingId="struktur-heading" centered eyebrow="Pemerintahan Desa" title="Struktur Organisasi" description="Bagan fungsi pemerintahan Desa Kentengsari tanpa mencantumkan nama pejabat atau jumlah perangkat yang belum tersedia." />
-        <div class="org-chart mx-auto mt-12 max-w-5xl" role="group" aria-label="Bagan hierarki pemerintahan Desa Kentengsari">
-          <article class="org-chart__leader mx-auto max-w-md rounded-panel bg-kenteng-800 p-7 text-center text-white shadow-raised">
-            <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-kenteng-100">Level Utama</p>
-            <h3 class="mt-2 text-2xl font-extrabold">Kepala Desa</h3>
-            <p class="mt-2 text-sm leading-6 text-white/80">Pimpinan pemerintahan desa</p>
-          </article>
-
-          <ol class="org-chart__branches" aria-label="Unsur di bawah Kepala Desa">
-            <li class="org-chart__branch">
-              <article class="org-chart__card">
-                <span class="org-chart__number" aria-hidden="true">01</span>
-                <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Administrasi</p>
-                <h3 class="mt-2 text-xl font-extrabold text-kenteng-950">Sekretaris Desa</h3>
-                <p class="mt-2 text-sm leading-6 text-muted">Koordinasi administrasi pemerintahan desa.</p>
-              </article>
-            </li>
-            <li class="org-chart__branch">
-              <article class="org-chart__card">
-                <span class="org-chart__number" aria-hidden="true">02</span>
-                <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Pelaksana Teknis</p>
-                <h3 class="mt-2 text-xl font-extrabold text-kenteng-950">Kaur &amp; Kasi</h3>
-                <p class="mt-2 text-sm leading-6 text-muted">Unsur urusan dan seksi pelaksana teknis.</p>
-              </article>
-            </li>
-            <li class="org-chart__branch org-chart__branch--territory">
-              <article class="org-chart__card">
-                <span class="org-chart__number" aria-hidden="true">03</span>
-                <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Pelaksana Kewilayahan</p>
-                <h3 class="mt-2 text-xl font-extrabold text-kenteng-950">Kepala Kewilayahan</h3>
-                <p class="mt-2 text-sm leading-6 text-muted">Pelaksana pemerintahan pada wilayah administratif desa.</p>
-              </article>
-              <ol class="org-chart__territories" aria-label="Wilayah administratif di bawah Kepala Kewilayahan">
-                <li class="rounded-card border border-kenteng-100 bg-kenteng-50 p-4 text-center font-extrabold text-kenteng-900 shadow-card">Kentengsari 1</li>
-                <li class="rounded-card border border-kenteng-100 bg-kenteng-50 p-4 text-center font-extrabold text-kenteng-900 shadow-card">Kentengsari 2</li>
-              </ol>
-            </li>
-          </ol>
-        </div>
-        <div class="mx-auto mt-10 grid max-w-5xl gap-5 md:grid-cols-2">
-          <aside class="rounded-card border border-line bg-white p-6 shadow-card" aria-label="Catatan sebutan warga">
-            <p class="text-sm font-extrabold text-kenteng-700">Sebutan Warga</p>
-            <p class="mt-2 leading-7 text-muted">Nglarangan, Kentengsari, dan Kenteng Wetan adalah tiga sebutan dusun yang hidup di tengah warga; ketiganya tidak menggantikan dua nama administratif pada bagan.</p>
-          </aside>
-          <aside class="rounded-card border border-line bg-white p-6 shadow-card" aria-label="Catatan riwayat wilayah">
-            <p class="text-sm font-extrabold text-kenteng-700">Catatan Riwayat</p>
-            <p class="mt-2 leading-7 text-muted">Krajan 1, Krajan 2, dan Krajan 3 merupakan pernyataan wilayah sebelum penataan organisasi desa, bukan nama kewilayahan administratif saat ini.</p>
-          </aside>
-        </div>
-      </div>
-    </section>
+    <section class="profile-endcap"><div class="profile-container"><p class="profile-kicker profile-kicker--light">Kentengsari / Rumah bersama</p><h2>Tempat cerita<br /><em>terus tumbuh.</em></h2><a href="/kontak.html">Hubungi pemerintah desa <span>→</span></a></div></section>
   </main>
 </SiteLayout>
 
+<script>
+  const revealItems = document.querySelectorAll('.profile-reveal');
+  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: 0.12 });
+  revealItems.forEach((item) => observer.observe(item));
+  const sections = document.querySelectorAll('.profile-section');
+  const railLinks = document.querySelectorAll('.profile-rail a');
+  const sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) railLinks.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === `#${entry.target.id}`)); }), { rootMargin: '-35% 0px -55% 0px' });
+  sections.forEach((section) => sectionObserver.observe(section));
+</script>
+
 <style>
-  .org-chart__branches,
-  .org-chart__territories {
+  /* Keep the editorial hero within the shared page-hero geometry used by the site. */
+  .profile-page .profile-hero[data-page-hero] {
+    height: 385px;
+    min-height: 385px;
+  }
+
+  .profile-territory,
+  .profile-facilities {
+    padding: 7rem 0;
+  }
+
+  .profile-territory {
+    background: #f8f7f2;
+  }
+
+  .profile-territory .profile-section-head h2,
+  .profile-facilities .profile-section-head h2 {
+    color: #153a26;
+  }
+
+  .profile-territory__grid,
+  .profile-facilities__grid,
+  .profile-structure__notes {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 4rem;
+  }
+
+  .profile-territory__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-territory__card,
+  .profile-facilities__grid article,
+  .profile-structure__notes aside {
+    min-width: 0;
+    padding: 1.75rem;
+    border: 1px solid #cbdacb;
+    background: rgb(255 255 255 / .72);
+    box-shadow: 0 10px 25px rgb(28 91 56 / .06);
+  }
+
+  .profile-territory__card--admin {
+    background: #eef3ea;
+  }
+
+  .profile-territory__card h3,
+  .profile-facilities__grid h3 {
+    margin: 1rem 0 .45rem;
+    color: #173e26;
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+
+  .profile-territory__card > p:not(.profile-kicker),
+  .profile-facilities__grid p,
+  .profile-structure__notes p {
     margin: 0;
+    color: #68766d;
+    font-size: .85rem;
+    line-height: 1.75;
+  }
+
+  .profile-territory__card ul {
+    display: grid;
+    gap: .7rem;
+    margin: 1.25rem 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .org-chart__branches {
+  .profile-territory__card li {
+    padding: .85rem 1rem;
+    border: 1px solid #d2e0d1;
+    background: #fff;
+    color: #173e26;
+    font-size: .85rem;
+    font-weight: 800;
+  }
+
+  .profile-territory__community {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .profile-territory__community li {
+    text-align: center;
+  }
+
+  .profile-territory__history {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid #2c8050;
+    background: #eef3ea;
+    color: #68766d;
+    font-size: .85rem;
+    line-height: 1.75;
+  }
+
+  .profile-territory__history strong,
+  .profile-structure__notes strong {
+    color: #173e26;
+  }
+
+  .profile-facilities {
+    background: #fff;
+  }
+
+  .profile-facilities__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .profile-facilities__grid article:last-child {
+    background: #eef3ea;
+  }
+
+  .profile-hierarchy__branches {
     position: relative;
     display: grid;
-    gap: 1.25rem;
-    padding-top: 2rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
   }
 
-  .org-chart__branches::before {
+  .profile-hierarchy__branches::before {
     position: absolute;
-    top: 0;
-    left: 50%;
-    width: 2px;
-    height: 2rem;
+    top: -1px;
+    right: 16.66%;
+    left: 16.66%;
+    height: 1px;
     content: '';
-    background: var(--green-100);
-    transform: translateX(-50%);
+    background: #94b79b;
   }
 
-  .org-chart__branches::after {
-    position: absolute;
-    top: 2rem;
-    right: 50%;
-    left: 0.55rem;
-    height: 2px;
-    content: '';
-    background: var(--green-100);
-  }
-
-  .org-chart__branch {
-    position: relative;
-    min-width: 0;
-    padding-left: 2rem;
-  }
-
-  .org-chart__branch::before {
-    position: absolute;
-    top: 0;
-    bottom: -1.25rem;
-    left: 0.55rem;
-    width: 2px;
-    content: '';
-    background: var(--green-100);
-  }
-
-  .org-chart__branch::after {
-    position: absolute;
-    top: 2rem;
-    left: 0.55rem;
-    width: 1.45rem;
-    height: 2px;
-    content: '';
-    background: var(--green-100);
-  }
-
-  .org-chart__branch:last-child::before {
-    bottom: auto;
-    height: 2rem;
-  }
-
-  .org-chart__card {
-    position: relative;
-    height: 100%;
+  .profile-hierarchy__card {
     min-width: 0;
     padding: 1.5rem;
-    overflow: hidden;
-    background: white;
-    border: 1px solid var(--line);
-    border-top: 4px solid var(--green-600);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
+    border: 1px solid #cbdacb;
+    background: rgb(255 255 255 / .72);
+    text-align: left;
   }
 
-  .org-chart__number {
-    position: absolute;
-    top: 0.8rem;
-    right: 1rem;
-    color: var(--green-100);
-    font-size: 2.3rem;
+  .profile-hierarchy__card h3,
+  .profile-org__lead h3 {
+    margin: .45rem 0 .25rem;
+    color: #173e26;
+    font-size: 1rem;
     font-weight: 800;
-    line-height: 1;
   }
 
-  .org-chart__territories {
-    position: relative;
+  .profile-org__lead h3 {
+    color: #fff;
+    font-size: 1.2rem;
+  }
+
+  .profile-hierarchy__card p,
+  .profile-org__lead p {
+    margin: 0;
+    color: #68766d;
+    font-size: .8rem;
+    line-height: 1.65;
+  }
+
+  .profile-org__lead p {
+    color: rgb(255 255 255 / .68);
+  }
+
+  .profile-hierarchy__territories {
     display: grid;
-    gap: 0.75rem;
-    padding-top: 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .65rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #cbdacb;
   }
 
-  .org-chart__territories::before {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 2px;
-    height: 2rem;
-    content: '';
-    background: var(--green-100);
-    transform: translateX(-50%);
+  .profile-hierarchy__territories article {
+    padding: .7rem .5rem;
+    border: 1px solid #d2e0d1;
+    background: #eef3ea;
+    text-align: center;
   }
 
-  @media (min-width: 768px) {
-    .org-chart__branches {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1.5rem;
+  .profile-hierarchy__territories h4 {
+    margin: 0;
+    color: #173e26;
+    font-size: .75rem;
+    font-weight: 800;
+  }
+
+  .profile-structure__notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 3rem;
+  }
+
+  .profile-structure__notes strong {
+    display: block;
+    margin-bottom: .45rem;
+    color: #2c8050;
+    font-size: .7rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 760px) {
+    .profile-page .profile-hero[data-page-hero] {
+      height: 468px;
+      min-height: 468px;
     }
 
-    .org-chart__branches::after {
-      position: absolute;
-      top: 2rem;
-      right: calc((100% - 3rem) / 6);
-      left: calc((100% - 3rem) / 6);
-      height: 2px;
-      content: '';
-      background: var(--green-100);
+    .profile-territory,
+    .profile-facilities {
+      padding: 6rem 0;
     }
 
-    .org-chart__branch {
-      padding-top: 1rem;
-      padding-left: 0;
+    .profile-territory__grid,
+    .profile-facilities__grid,
+    .profile-hierarchy__branches,
+    .profile-structure__notes {
+      grid-template-columns: 1fr;
     }
 
-    .org-chart__branch::before {
-      top: 0;
-      bottom: auto;
-      left: 50%;
-      width: 2px;
-      height: 1rem;
-      transform: translateX(-50%);
+    .profile-territory__community {
+      grid-template-columns: 1fr;
     }
 
-    .org-chart__branch::after {
+    .profile-hierarchy__branches::before {
       display: none;
     }
 
-    .org-chart__branch--territory {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .org-chart__territories {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      padding-top: 3rem;
-    }
-
-    .org-chart__territories::after {
-      position: absolute;
-      top: 2rem;
-      right: 25%;
-      left: 25%;
-      height: 2px;
-      content: '';
-      background: var(--green-100);
-    }
-
-    .org-chart__territories > li {
-      position: relative;
-    }
-
-    .org-chart__territories > li::before {
-      position: absolute;
-      top: -1rem;
-      left: 50%;
-      width: 2px;
-      height: 1rem;
-      content: '';
-      background: var(--green-100);
-      transform: translateX(-50%);
+    .profile-hierarchy__territories {
+      grid-template-columns: 1fr;
     }
   }
 </style>
