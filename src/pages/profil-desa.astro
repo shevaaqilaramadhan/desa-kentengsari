@@ -1,99 +1,92 @@
 ---
-import InfoCard from '../components/astro/InfoCard.astro';
-import PageHero from '../components/astro/PageHero.astro';
-import SectionHeading from '../components/astro/SectionHeading.astro';
-import StatGrid from '../components/astro/StatGrid.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 
 const stats = [
-  { value: '309', label: 'Jiwa', note: 'Total penduduk (2025)' },
-  { value: '92', label: 'Kepala Keluarga', note: 'Tersebar di seluruh dusun' },
-  { value: '5', label: 'Dusun', note: 'Krajan 1–3, Kenteng Wetan, Nglarangan' },
-  { value: '8 / 2', label: 'RT / RW', note: 'Wilayah administrasi' },
-] as const;
+  { value: '309', label: 'Jiwa', detail: 'Penduduk 2025' },
+  { value: '92', label: 'KK', detail: 'Kepala keluarga' },
+  { value: '750', label: 'mdpl', detail: 'Ketinggian wilayah' },
+  { value: '5', label: 'Dusun', detail: 'Krajan 1–3, Kenteng Wetan, Nglarangan' },
+];
 
 const missions = [
-  'Meningkatkan kualitas pelayanan publik yang transparan, cepat, dan akuntabel bagi seluruh masyarakat desa.',
-  'Mengembangkan sektor pertanian dan ekonomi produktif sebagai tulang punggung kesejahteraan warga.',
-  'Memperkuat nilai gotong royong, kerukunan, dan kearifan lokal dalam kehidupan bermasyarakat.',
-  'Melestarikan lingkungan dan potensi alam lereng Gunung Sumbing secara berkelanjutan.',
-  'Meningkatkan kualitas sumber daya manusia melalui pendidikan, pelatihan, dan pemberdayaan pemuda.',
+  ['01', 'Pelayanan publik', 'Meningkatkan kualitas pelayanan publik yang transparan, cepat, dan akuntabel.'],
+  ['02', 'Ekonomi produktif', 'Mengembangkan sektor pertanian dan ekonomi produktif sebagai tulang punggung kesejahteraan warga.'],
+  ['03', 'Gotong royong', 'Memperkuat kerukunan dan kearifan lokal dalam kehidupan bermasyarakat.'],
+  ['04', 'Alam berkelanjutan', 'Melestarikan lingkungan dan potensi alam lereng Gunung Sumbing.'],
+  ['05', 'Generasi masa depan', 'Meningkatkan kualitas sumber daya manusia melalui pendidikan dan pemberdayaan pemuda.'],
 ] as const;
 ---
 
 <SiteLayout title="Profil Desa — Desa Kentengsari" description="Profil lengkap Desa Kentengsari: sejarah, kondisi geografis, data kependudukan, visi misi, dan struktur organisasi pemerintahan desa." activeRoute="profil-desa" canonicalPath="/profil-desa.html">
-  <main id="main-content">
-    <PageHero current="Profil Desa" title="Profil Desa Kentengsari" description="Mengenal lebih dalam sejarah, geografis, dan pemerintahan Desa Kentengsari." />
+  <main id="main-content" class="profile-page">
+    <section class="profile-hero" aria-labelledby="profile-title">
+      <img src="/assets/hero-background.jpg" alt="Pemandangan Desa Kentengsari di lereng Gunung Sumbing" class="profile-hero__image" />
+      <div class="profile-hero__veil"></div>
+      <div class="profile-hero__grid"></div>
+      <div class="profile-hero__content">
+        <p class="profile-kicker profile-reveal">Profil Desa <span>/</span> Windusari, Magelang</p>
+        <h1 id="profile-title" class="profile-hero__title profile-reveal">Satu desa.<br /><em>Seribu cerita.</em></h1>
+        <p class="profile-hero__lead profile-reveal">Mengenal Kentengsari lebih dekat—dari jejak sejarah, tanah yang subur, hingga semangat warga yang menghidupkannya.</p>
+        <a class="profile-hero__cta profile-reveal" href="#sejarah">Jelajahi cerita desa <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="profile-hero__aside profile-reveal" aria-label="Informasi singkat lokasi">
+        <span class="profile-hero__aside-line"></span><span>LERENG GUNUNG SUMBING</span><strong>750<small> mdpl</small></strong>
+      </div>
+      <div class="profile-hero__scroll">Scroll untuk menjelajah <span></span></div>
+    </section>
 
-    <section class="py-20 md:py-28" id="sejarah">
-      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
-        <div>
-          <SectionHeading eyebrow="Sejarah & Gambaran Umum" title="Dari Kenteng dan Sari Menjadi Kentengsari" />
-          <div class="mt-6 grid gap-4 leading-8 text-muted">
-            <p>Nama Desa Kentengsari merupakan penggabungan dari dua nama desa pendahulunya, yaitu Desa Kenteng dan Desa Sari. Penggabungan ini melahirkan satu kesatuan wilayah administratif yang kini dikenal sebagai Desa Kentengsari.</p>
-            <p>Desa Kentengsari berada di Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah, dan merupakan desa terkecil di kecamatan tersebut. Jaraknya sekitar 2,5 Km dari ibu kota kecamatan dan 29 Km dari ibu kota kabupaten melalui Bandongan.</p>
-            <p>Wilayahnya terletak di lereng Gunung Sumbing dengan ketinggian 750 meter di atas permukaan laut. Kondisi ini menghadirkan udara yang sejuk dan tanah yang subur — anugerah yang dimanfaatkan masyarakat untuk bertani padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
-          </div>
+    <nav class="profile-rail" aria-label="Bagian halaman profil">
+      <a href="#sejarah" class="is-active">01 <span>Sejarah</span></a><a href="#angka">02 <span>Angka</span></a><a href="#visi-misi">03 <span>Visi & Misi</span></a><a href="#struktur">04 <span>Pemerintahan</span></a>
+    </nav>
+
+    <section class="profile-story profile-section" id="sejarah">
+      <div class="profile-container profile-story__layout">
+        <div class="profile-story__copy profile-reveal">
+          <p class="profile-kicker profile-kicker--dark">01 / Sejarah & gambaran umum</p>
+          <h2>Dari Kenteng<br /><span>dan Sari</span></h2>
+          <p>Nama Desa Kentengsari merupakan penggabungan dari dua nama desa pendahulunya, yaitu Desa Kenteng dan Desa Sari. Penggabungan ini melahirkan satu kesatuan wilayah administratif yang kini dikenal sebagai Kentengsari.</p>
+          <p>Berada di Kecamatan Windusari, Kabupaten Magelang, desa ini terletak di lereng Gunung Sumbing. Udara sejuk dan tanah yang subur menjadi anugerah yang dimanfaatkan masyarakat untuk bertani padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
+          <div class="profile-story__coordinates"><span>07° 25' 38" S</span><span>110° 14' 12" E</span><span class="profile-story__rule"></span><span>MAGELANG, JAWA TENGAH</span></div>
         </div>
-        <figure class="relative">
-          <img class="h-[460px] w-full rounded-panel object-cover shadow-raised" src="/assets/profil-desa-image.jpg" alt="Panorama wilayah Desa Kentengsari di lereng Gunung Sumbing" loading="lazy" />
-          <figcaption class="absolute -bottom-5 left-5 rounded-card bg-white p-5 shadow-raised"><strong class="block text-2xl text-kenteng-700">2,5 Km</strong><span class="text-sm font-bold text-muted">Dari ibu kota kecamatan</span></figcaption>
+        <figure class="profile-story__visual profile-reveal">
+          <div class="profile-story__image-wrap"><img src="/assets/profil-desa-image.jpg" alt="Panorama wilayah Desa Kentengsari di lereng Gunung Sumbing" loading="lazy" /></div>
+          <figcaption><strong>2,5</strong><span>km dari ibu kota<br />kecamatan</span></figcaption>
+          <span class="profile-story__stamp">KENTENGSARI<br /><small>EST. 1922</small></span>
         </figure>
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="statistik">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Data Wilayah" title="Kentengsari Dalam Angka" description="Gambaran kondisi demografis dan administrasi Desa Kentengsari." />
-        <div class="mt-10"><StatGrid stats={stats} /></div>
+    <section class="profile-numbers profile-section" id="angka">
+      <div class="profile-container">
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker">02 / Data wilayah</p><h2>Kentengsari<br /><span>dalam angka</span></h2></div><p>Gambaran singkat tentang ruang hidup, demografi, dan karakter wilayah yang kami jaga bersama.</p></div>
+        <div class="profile-stat-grid">{stats.map((stat, index) => <article class="profile-stat profile-reveal" style={`--delay: ${index * 80}ms`}><span class="profile-stat__index">0{index + 1}</span><strong>{stat.value}</strong><h3>{stat.label}</h3><p>{stat.detail}</p></article>)}</div>
       </div>
     </section>
 
-    <section class="py-20 md:py-28" id="landmark">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Fasilitas Desa" title="Landmark & Sarana Umum" description="Fasilitas yang menjadi pusat kegiatan dan pelayanan masyarakat Desa Kentengsari." />
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <InfoCard title="Kantor Desa" description="Pusat pelayanan administrasi dan informasi bagi masyarakat." />
-          <InfoCard title="Sekolah Dasar" description="Fasilitas pendidikan dasar bagi putra-putri desa.">
-            <svg slot="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
-          </InfoCard>
-          <InfoCard title="Tempat Ibadah" description="Masjid dan mushola di tiap dusun sebagai pusat kegiatan rohani." />
-          <InfoCard title="Lahan Pertanian" description="Hamparan sawah dan kebun tembakau yang menjadi tulang punggung ekonomi desa." />
-        </div>
+    <section class="profile-vision profile-section" id="visi-misi">
+      <div class="profile-container profile-vision__layout">
+        <div class="profile-vision__statement profile-reveal"><p class="profile-kicker profile-kicker--light">03 / Arah pembangunan</p><p class="profile-vision__eyebrow">Visi Desa</p><blockquote>“Maju, mandiri, dan sejahtera—berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote><span class="profile-vision__signature">— Pemerintah Desa Kentengsari</span></div>
+        <div class="profile-mission profile-reveal"><p class="profile-kicker profile-kicker--dark">Misi kami</p><h2>Langkah nyata,<br /><span>setiap hari.</span></h2><div class="profile-mission__list">{missions.map((mission) => <article><span>{mission[0]}</span><div><h3>{mission[1]}</h3><p>{mission[2]}</p></div></article>)}</div></div>
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="visi-misi">
-      <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-start gap-10 lg:grid-cols-2">
-        <div class="rounded-panel bg-kenteng-800 p-8 text-white shadow-raised md:p-10">
-          <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-kenteng-100">Visi</p>
-          <blockquote class="mt-5 text-2xl font-bold leading-relaxed">“Terwujudnya Desa Kentengsari yang maju, mandiri, dan sejahtera, berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote>
-        </div>
-        <div>
-          <SectionHeading eyebrow="Misi" title="Langkah Nyata Membangun Desa" />
-          <ol class="mt-7 grid gap-4">
-            {missions.map((mission, index) => <li class="flex gap-4 leading-7 text-muted"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-kenteng-100 font-extrabold text-kenteng-800">{index + 1}</span><span>{mission}</span></li>)}
-          </ol>
-        </div>
+    <section class="profile-structure profile-section" id="struktur">
+      <div class="profile-container"><div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">04 / Pemerintahan desa</p><h2>Yang melayani,<br /><span>yang menggerakkan.</span></h2></div><p>Struktur pemerintahan adalah ruang kolaborasi untuk memastikan pelayanan hadir lebih dekat bagi setiap warga.</p></div>
+        <div class="profile-org profile-reveal"><article class="profile-org__lead"><span>Kepala Desa</span><strong>Pimpinan Pemerintahan Desa</strong></article><div class="profile-org__connector"></div><div class="profile-org__grid"><article><span>Sekretaris Desa</span><strong>Administrasi & Umum</strong></article><article><span>Kaur & Kasi</span><strong>Keuangan, Perencanaan, Pelayanan</strong></article><article><span>Kepala Dusun</span><strong>Krajan 1–3, Kenteng Wetan, Nglarangan</strong></article></div></div>
+        <p class="profile-structure__note profile-reveal">Didukung oleh BPD, lembaga kemasyarakatan, PKK, Karang Taruna, serta seluruh elemen masyarakat.</p>
       </div>
     </section>
 
-    <section class="py-20 md:py-28" id="struktur">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Pemerintahan Desa" title="Struktur Organisasi" description="Susunan pemerintahan Desa Kentengsari yang melayani masyarakat." />
-        <div class="mx-auto mt-10 max-w-4xl">
-          <article class="mx-auto max-w-sm rounded-card bg-kenteng-800 p-6 text-center text-white shadow-raised">
-            <p class="text-sm font-bold text-kenteng-100">Kepala Desa</p><h3 class="mt-1 text-lg font-extrabold">Pimpinan Pemerintahan Desa</h3>
-          </article>
-          <div class="mx-auto h-8 w-px bg-kenteng-100"></div>
-          <div class="grid gap-5 md:grid-cols-3">
-            <article class="rounded-card border border-line bg-white p-6 text-center shadow-card"><p class="text-sm font-bold text-kenteng-700">Sekretaris Desa</p><h3 class="mt-1 font-extrabold text-kenteng-950">Administrasi & Umum</h3></article>
-            <article class="rounded-card border border-line bg-white p-6 text-center shadow-card"><p class="text-sm font-bold text-kenteng-700">Kaur & Kasi</p><h3 class="mt-1 font-extrabold text-kenteng-950">Keuangan, Perencanaan, Pelayanan</h3></article>
-            <article class="rounded-card border border-line bg-white p-6 text-center shadow-card"><p class="text-sm font-bold text-kenteng-700">Kepala Dusun</p><h3 class="mt-1 font-extrabold text-kenteng-950">Krajan 1–3, Kenteng Wetan, Nglarangan</h3></article>
-          </div>
-        </div>
-        <p class="mx-auto mt-8 max-w-3xl rounded-card bg-kenteng-50 p-5 text-center leading-7 text-kenteng-900">Didukung oleh Badan Permusyawaratan Desa (BPD), lembaga kemasyarakatan, PKK, Karang Taruna, serta seluruh elemen masyarakat.</p>
-      </div>
-    </section>
+    <section class="profile-endcap"><div class="profile-container"><p class="profile-kicker profile-kicker--light">Kentengsari / Rumah bersama</p><h2>Tempat cerita<br /><em>terus tumbuh.</em></h2><a href="/kontak.html">Hubungi pemerintah desa <span>→</span></a></div></section>
   </main>
 </SiteLayout>
+
+<script>
+  const revealItems = document.querySelectorAll('.profile-reveal');
+  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: 0.12 });
+  revealItems.forEach((item) => observer.observe(item));
+  const sections = document.querySelectorAll('.profile-section');
+  const railLinks = document.querySelectorAll('.profile-rail a');
+  const sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) railLinks.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === `#${entry.target.id}`)); }), { rootMargin: '-35% 0px -55% 0px' });
+  sections.forEach((section) => sectionObserver.observe(section));
+</script>
