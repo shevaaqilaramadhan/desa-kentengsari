@@ -17,7 +17,6 @@ export const SITE = {
 export const NAV_ITEMS: readonly NavItem[] = [
   { id: 'beranda', label: 'Beranda', href: '/index.html' },
   { id: 'profil-desa', label: 'Profil Desa', href: '/profil-desa.html' },
-  { id: 'berita', label: 'Berita', href: '/berita.html' },
   { id: 'galeri', label: 'Galeri', href: '/galeri.html' },
   { id: 'dusun', label: 'Dusun', href: '/dusun.html' },
   { id: 'destinasi', label: 'Destinasi', href: '/destinasi.html' },

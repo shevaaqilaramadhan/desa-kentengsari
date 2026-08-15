@@ -1,32 +1,48 @@
 # Orion Implementation Report
 
-- Waktu implementasi: 2026-08-15T10:39:29+07:00
-- Base HEAD: 4091a794b138960cd758eb9f869dfcc659109bdb
-- Diff fingerprint: 693052c67d632065c3cdc95d529eaa1ad0dc16ee68d4d957223cbc92581de804
-- Permintaan/scope: Memperbaiki hanya presentasi logo header di `src/styles/global.css` dengan menghapus panel, padding, dan radius yang dipaksakan; mempertahankan ukuran render, markup/alt, logo footer, layout header, serta kontras pada state transparan dan scrolled.
+- Waktu implementasi: 2026-08-15T11:32:27+07:00; fingerprint disegarkan 2026-08-15T11:34:47+07:00
+- Base HEAD: 281fe14ce1fc84c4c7ac66e08e3543ad4869604e
+- Diff fingerprint: 07ce2b55da7271bb7992c9b16b54cbbc3569a3259f8c01a16f352b3a8f01ac48
+- Permintaan/scope: Menghapus seluruh permukaan publik Berita tanpa redirect; memperbarui data penduduk resmi 2025 menjadi 1.201 total, 626 pria, 575 wanita, dan 390 KK; membedakan dua kewilayahan administratif, tiga sebutan dusun warga, dan riwayat Krajan 1–3; memperbarui bagan struktur pemerintahan; menggabungkan Drainase & Irigasi; serta menyesuaikan sitemap, README, dan regresi Playwright.
 - Status: READY_FOR_AUDIT
 
 ## Ringkasan Perubahan
 
-Menghapus `padding`, latar putih semi-transparan, dan `border-radius` dari `.site-header__logo` agar piksel semi-transparan pada aset logo menyatu alami dengan hero transparan dan header putih setelah scroll. Ukuran desktop `42px × 42px`, `object-fit`, dan aturan responsif yang sudah ada tetap dipertahankan.
+- Menghapus `src/pages/berita.astro`, item navigasi/`RouteId` Berita, section Berita Terkini di beranda, serta URL terkait dari kedua sitemap. Tidak ada redirect yang ditambahkan.
+- Mengganti angka lama pada beranda dan Profil Desa dengan empat data resmi 2025 serta memperbarui metadata yang terdampak.
+- Menjelaskan secara terpisah bahwa Kentengsari 1 dan Kentengsari 2 adalah nama kewilayahan administratif setelah mengikuti peraturan bupati baru; Nglarangan, Kentengsari, dan Kenteng Wetan adalah tiga sebutan dusun yang hidup di warga; sedangkan Krajan 1–3 merupakan riwayat sebelum penataan organisasi desa. Tidak ada angka RT/RW baru yang dibuat.
+- Mendesain ulang struktur pemerintahan menjadi bagan hierarki semantik dan responsif: Kepala Desa sebagai level utama, diikuti Sekretaris Desa, Kaur & Kasi/pelaksana teknis, dan Kepala Kewilayahan dengan dua kartu wilayah administratif. Kartu catatan membedakan sebutan warga dan riwayat wilayah agar bagan tidak menyesatkan.
+- Menambahkan satu sarana umum bernama `Drainase & Irigasi` dengan deskripsi umum tanpa jumlah atau ukuran.
+- Memperbarui parity test untuk tujuh route, tujuh item navigasi, absennya halaman/referensi Berita dan klaim lama, data resmi 2025, pembagian wilayah, struktur organisasi, sitemap, serta output tanpa overflow.
 
 ## File yang Berubah
 
-- `src/styles/global.css` — satu-satunya file sumber yang diubah Orion untuk tugas ini.
-
-Fingerprint resmi kandidat saat ini juga mencakup perubahan yang sudah ada pada `astro.config.mjs`, `public/robots.txt`, `public/sitemap.xml`, `sitemap.xml`, `src/config/site.ts`, `src/pages/kontak.astro`, dan `tests/site-parity.spec.ts`; Orion tidak mengubah file-file tersebut dalam tugas ini.
+- `README.md`
+- `public/sitemap.xml`
+- `sitemap.xml`
+- `src/config/site.ts`
+- `src/pages/berita.astro` (dihapus)
+- `src/pages/dusun.astro`
+- `src/pages/index.astro`
+- `src/pages/profil-desa.astro`
+- `src/types/site.ts`
+- `tests/site-parity.spec.ts`
 
 ## Validasi
 
-- Memeriksa aset `public/assets/kentengsari-logo.png` dan aturan header terkait; perubahan terbatas pada tiga deklarasi dekoratif penyebab panel.
-- Memeriksa diff terfokus: ukuran `42px × 42px`, `object-fit: contain`, aturan mobile, markup/alt, footer, dan layout header tidak diubah.
-- `npm run check` lulus dengan 0 errors, 0 warnings, dan 0 hints (master-provided evidence).
-- `npm test` lulus dengan 13/13 test (master-provided evidence).
-- `git diff --check` lulus (master-provided evidence).
-- Verifikasi visual local Playwright pada viewport 390px dan 1280px, di state top dan scrolled, menunjukkan computed `background: transparent`, `padding: 0px`, dan `border-radius: 0px` (master-provided evidence).
-- `.agents/get-change-fingerprint.ps1` dijalankan terhadap kandidat yang sama; Base HEAD dan fingerprint tercatat di atas.
+- Baseline sebelum edit: `git status --short` kosong dan `git rev-parse HEAD` menghasilkan `281fe14ce1fc84c4c7ac66e08e3543ad4869604e`.
+- `npm run check`: lulus; 25 file diperiksa, 0 error, 0 warning, 0 hint.
+- `npm test`: lulus setelah diulang di luar sandbox karena percobaan pertama dibatasi `spawn EPERM`; build produksi sukses dan 14/14 test Playwright lulus.
+- Build Astro menghasilkan tepat tujuh halaman: `index.html`, `profil-desa.html`, `galeri.html`, `dusun.html`, `destinasi.html`, `umkm.html`, dan `kontak.html`.
+- `dist/berita.html` tidak ada dan test memastikan permintaan `/berita.html` tidak sukses.
+- Test responsif memastikan semua route bebas overflow pada lebar 320px, 768px, dan 1280px; test mobile navigation juga lulus.
+- Pencarian final pada source/public/README/sitemap tidak menemukan klaim lama `309`, `92`, lima dusun, `8 RT`, atau `2 RW`; tidak ditemukan referensi Berita pada permukaan source/public.
+- `git diff --check`: lulus.
+- `.agents/get-change-fingerprint.ps1`: dijalankan ulang pada kandidat saat ini dan menghasilkan Base HEAD serta fingerprint resmi yang tercatat di atas.
 
 ## Risiko dan Batasan
 
-- Bukti validasi visual dan test di atas berasal dari master-provided evidence; Lyra dan Litcq tetap perlu memvalidasi kandidat dengan fingerprint di atas.
-- Fingerprint mencakup tujuh file kandidat lain yang telah ada di worktree dan berada di luar perubahan Orion pada tugas logo ini.
+- Risiko base lama yang sebelumnya berasal dari `main` lokal pada `4091a794...` tidak lagi berlaku. `main` lokal kini sudah disinkronkan ke `281fe14...`, sehingga fingerprint resmi saat ini hanya merepresentasikan kandidat perubahan terhadap base yang benar dan tercatat konsisten untuk audit.
+- Label lokasi UMKM lama, termasuk `Kenteng Krajan`, tidak dipetakan ulang karena tidak tersedia pemetaan resmi menuju dua wilayah administratif atau tiga sebutan warga. Perubahan dibatasi pada klaim demografi/wilayah utama sesuai instruksi agar tidak mengarang data UMKM.
+- Referensi preview eksternal tidak dapat diakses pada sesi ini. Bagan mengikuti token dan pola visual project serta lolos pemeriksaan build, aksesibilitas dasar, dan overflow; audit visual akhir tetap menjadi tanggung jawab Lyra.
+- Tidak ada nama orang, jumlah perangkat, jabatan rinci, angka RT/RW baru, jumlah sarana, atau ukuran infrastruktur yang ditambahkan.

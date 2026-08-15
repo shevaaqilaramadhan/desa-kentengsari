@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/index.html',
     title: 'Desa Kentengsari — Website Resmi',
-    description: 'Website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Jelajahi keindahan alam lereng Gunung Sumbing, potensi pertanian, dan masyarakat yang guyub rukun.',
+    description: 'Website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Temukan profil desa, data penduduk 2025, pembagian wilayah, dan potensi alam lereng Gunung Sumbing.',
     active: 'Beranda',
     markers: ['Jelajahi Keindahan Di Desa Kentengsari', 'Selamat Datang Di Desa Kentengsari', 'Mengenal Desa Kentengsari', 'Hamparan Sawah Terasering'],
     assets: ['/assets/hero-background.jpg', '/assets/kata-sambutan-1.jpg', '/assets/kata-sambutan-2.jpg', '/assets/profil-desa-image.jpg', '/assets/destinasi-image-1.jpg', '/assets/destinasi-image-2.jpg'],
@@ -15,18 +15,10 @@ const routes = [
   {
     path: '/profil-desa.html',
     title: 'Profil Desa — Desa Kentengsari',
-    description: 'Profil lengkap Desa Kentengsari: sejarah, kondisi geografis, data kependudukan, visi misi, dan struktur organisasi pemerintahan desa.',
+    description: 'Profil Desa Kentengsari: data penduduk 2025, dua wilayah administratif, tiga sebutan dusun warga, sejarah, dan struktur pemerintahan desa.',
     active: 'Profil Desa',
-    markers: ['Dari Kenteng dan Sari Menjadi Kentengsari', 'Kentengsari Dalam Angka', 'Landmark & Sarana Umum', 'Struktur Organisasi'],
+    markers: ['Dari Kenteng dan Sari Menjadi Kentengsari', 'Kentengsari Dalam Angka', 'Dua Administratif, Tiga Sebutan Warga', 'Drainase & Irigasi', 'Struktur Organisasi'],
     assets: ['/assets/profil-desa-image.jpg'],
-  },
-  {
-    path: '/berita.html',
-    title: 'Berita — Desa Kentengsari',
-    description: 'Berita dan informasi terbaru seputar kegiatan, pembangunan, dan kehidupan masyarakat Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang.',
-    active: 'Berita',
-    markers: ['Berita Desa', 'Informasi & Kegiatan Desa', 'Belum Ada Berita'],
-    assets: [],
   },
   {
     path: '/galeri.html',
@@ -39,9 +31,9 @@ const routes = [
   {
     path: '/dusun.html',
     title: 'Dusun — Desa Kentengsari',
-    description: 'Lima dusun di Desa Kentengsari: Krajan 1, Krajan 2, Krajan 3, Kenteng Wetan, dan Nglarangan — wilayah administrasi dengan 8 RT dan 2 RW.',
+    description: 'Pembagian wilayah Desa Kentengsari: dua wilayah administratif Kentengsari 1 dan Kentengsari 2, serta tiga sebutan dusun warga.',
     active: 'Dusun',
-    markers: ['Dusun Krajan 1', 'Dusun Krajan 2', 'Dusun Krajan 3', 'Dusun Kenteng Wetan', 'Dusun Nglarangan'],
+    markers: ['Dua Wilayah Kewilayahan', 'Kentengsari 1', 'Kentengsari 2', 'Tiga Sebutan Dusun', 'Nglarangan', 'Kenteng Wetan', 'Krajan 1, Krajan 2, dan Krajan 3'],
     assets: ['/assets/kata-sambutan-2.jpg'],
   },
   {
@@ -70,7 +62,9 @@ const routes = [
   },
 ] as const;
 
-test('eight public routes preserve metadata, navigation, material content, and local references', async ({ page, request }) => {
+test('seven public routes preserve metadata, navigation, material content, and local references', async ({ page, request }) => {
+  expect(routes).toHaveLength(7);
+
   for (const route of routes) {
     const response = await page.goto(route.path);
     expect(response?.ok(), route.path).toBeTruthy();
@@ -84,11 +78,17 @@ test('eight public routes preserve metadata, navigation, material content, and l
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 
     const navigation = page.getByRole('navigation', { name: 'Navigasi utama' });
-    await expect(navigation.getByRole('link')).toHaveCount(8);
+    await expect(navigation.getByRole('link')).toHaveCount(7);
+    await expect(navigation.getByRole('link', { name: 'Berita', exact: true })).toHaveCount(0);
     await expect(navigation.getByRole('link', { name: route.active, exact: true })).toHaveAttribute('aria-current', 'page');
     await expect(page.locator('footer')).toContainText('Hak cipta dilindungi undang-undang.');
 
     for (const marker of route.markers) await expect(page.getByText(marker, { exact: false }).first()).toBeVisible();
+
+    const publicText = await page.locator('body').innerText();
+    expect(publicText, route.path).not.toMatch(/\bBerita\b/i);
+    expect(publicText, route.path).not.toMatch(/\b(?:309|92)\b|lima dusun|8\s*RT|2\s*RW/i);
+    expect(await page.content(), route.path).not.toContain('/berita.html');
 
     const imagePaths = await page.locator('img[src]').evaluateAll((images) =>
       images.map((image) => new URL((image as HTMLImageElement).src).pathname),
@@ -127,6 +127,11 @@ test('sitemap and social card cover the production surface', async ({ page, requ
   expect(sitemap.ok()).toBeTruthy();
   const sitemapText = await sitemap.text();
   for (const route of routes) expect(sitemapText).toContain(`${origin}${route.path}`);
+  expect(sitemapText).not.toContain('/berita.html');
+  expect(sitemapText.match(/<url>/g)).toHaveLength(7);
+
+  const removedRoute = await request.get('/berita.html');
+  expect(removedRoute.ok()).toBe(false);
 
   const robots = await request.get('/robots.txt');
   expect(robots.ok()).toBeTruthy();
@@ -148,6 +153,38 @@ test('sitemap and social card cover the production surface', async ({ page, requ
     return { width: image.naturalWidth, height: image.naturalHeight };
   });
   expect(dimensions).toEqual({ width: 1731, height: 909 });
+});
+
+test('profile presents official 2025 data and separates administrative, community, and historical names', async ({ page }) => {
+  await page.goto('/profil-desa.html');
+
+  const statistics = page.locator('#statistik');
+  await expect(statistics.locator('article')).toHaveCount(4);
+  for (const value of ['1.201', '626', '575', '390']) {
+    await expect(statistics.getByText(value, { exact: true })).toBeVisible();
+  }
+  for (const label of ['Total Penduduk', 'Pria', 'Wanita', 'Kepala Keluarga']) {
+    await expect(statistics.getByRole('heading', { name: label, exact: true })).toBeVisible();
+  }
+
+  const territory = page.locator('#wilayah');
+  await expect(territory).toContainText('Kentengsari 1');
+  await expect(territory).toContainText('Kentengsari 2');
+  await expect(territory).toContainText('Nglarangan');
+  await expect(territory).toContainText('Kenteng Wetan');
+  await expect(territory).toContainText('Krajan 1, Krajan 2, dan Krajan 3');
+  await expect(territory).toContainText('bukan informasi yang bertentangan');
+  const communityNames = territory.getByRole('list', { name: 'Sebutan dusun warga' }).getByRole('listitem');
+  await expect(communityNames).toHaveCount(3);
+  for (const name of ['Nglarangan', 'Kentengsari', 'Kenteng Wetan']) {
+    await expect(communityNames.getByText(name, { exact: true })).toBeVisible();
+  }
+
+  const organization = page.getByRole('group', { name: 'Bagan hierarki pemerintahan Desa Kentengsari' });
+  for (const role of ['Kepala Desa', 'Sekretaris Desa', 'Kaur & Kasi', 'Kepala Kewilayahan']) {
+    await expect(organization.getByRole('heading', { name: role, exact: true })).toBeVisible();
+  }
+  await expect(page.getByRole('heading', { name: 'Drainase & Irigasi', exact: true })).toBeVisible();
 });
 
 test('gallery dialog supports close button, Escape, backdrop, and focus return', async ({ page }) => {

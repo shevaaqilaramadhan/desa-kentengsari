@@ -1,7 +1,6 @@
 export type RouteId =
   | 'beranda'
   | 'profil-desa'
-  | 'berita'
   | 'galeri'
   | 'dusun'
   | 'destinasi'

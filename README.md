@@ -1,6 +1,6 @@
 # Website Resmi Desa Kentengsari
 
-Website statis Desa Kentengsari dibangun dengan Astro, React islands, Tailwind CSS, Motion, dan TypeScript. Astro menghasilkan delapan URL publik berekstensi `.html` ke `dist/`; Vercel hanya menerbitkan direktori tersebut.
+Website statis Desa Kentengsari dibangun dengan Astro, React islands, Tailwind CSS, Motion, dan TypeScript. Astro menghasilkan tujuh URL publik berekstensi `.html` ke `dist/`; Vercel hanya menerbitkan direktori tersebut.
 
 ## Prasyarat
 
@@ -23,7 +23,7 @@ npm run preview  # pratinjau build produksi
 npm test         # build lalu regresi Playwright
 ```
 
-Gunakan hanya server Astro (`npm run dev`) atau preview hasil build (`npm run build` lalu `npm run preview`) untuk melihat website. Jangan membuka berkas HTML langsung dengan Live Server/static root: source canonical berada di `src/pages/`, sedangkan delapan berkas HTML publik baru dihasilkan ke `dist/` saat build.
+Gunakan hanya server Astro (`npm run dev`) atau preview hasil build (`npm run build` lalu `npm run preview`) untuk melihat website. Jangan membuka berkas HTML langsung dengan Live Server/static root: source canonical berada di `src/pages/`, sedangkan tujuh berkas HTML publik baru dihasilkan ke `dist/` saat build.
 
 Implementasi HTML/CSS/JavaScript sebelum migrasi sengaja tidak dipertahankan sebagai entrypoint kedua di root agar browser tidak memuat UI dan flip-card lama. Baseline tersebut tetap dapat dipulihkan secara penuh dari commit `7a72f2d657c091666ad218b1f91fe2ee2db3c3ed` untuk keperluan audit visual.
 
@@ -32,7 +32,7 @@ Playwright memerlukan browser Chromium lokal. Jika belum tersedia, jalankan `npx
 ## Struktur utama
 
 ```text
-src/pages/              delapan halaman Astro
+src/pages/              tujuh halaman Astro
 src/layouts/            layout, navigasi, footer, dan metadata bersama
 src/components/astro/   komponen konten statis
 src/components/react/   island interaktif UMKM dan Motion
@@ -43,7 +43,7 @@ tests/                  parity, aksesibilitas, responsif, dan regresi interaksi
 dist/                   output build (tidak di-track)
 ```
 
-URL produksi yang dipertahankan: `/index.html`, `/profil-desa.html`, `/berita.html`, `/galeri.html`, `/dusun.html`, `/destinasi.html`, `/umkm.html`, dan `/kontak.html`.
+URL produksi yang dipertahankan: `/index.html`, `/profil-desa.html`, `/galeri.html`, `/dusun.html`, `/destinasi.html`, `/umkm.html`, dan `/kontak.html`.
 
 ## Data dan aset
 

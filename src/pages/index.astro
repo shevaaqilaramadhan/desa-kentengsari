@@ -6,16 +6,16 @@ import StatGrid from '../components/astro/StatGrid.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 
 const stats = [
-  { value: '309', label: 'Jiwa', note: 'Total penduduk (2025)' },
-  { value: '92', label: 'Kepala Keluarga', note: 'Tersebar di seluruh dusun' },
-  { value: '5', label: 'Dusun', note: 'Krajan 1–3, Kenteng Wetan, Nglarangan' },
-  { value: '8', label: 'RT / 2 RW', note: 'Wilayah administrasi' },
+  { value: '1.201', label: 'Total Penduduk', note: 'Data resmi tahun 2025' },
+  { value: '626', label: 'Pria', note: 'Penduduk pria tahun 2025' },
+  { value: '575', label: 'Wanita', note: 'Penduduk wanita tahun 2025' },
+  { value: '390', label: 'Kepala Keluarga', note: 'Jumlah KK tahun 2025' },
 ] as const;
 ---
 
 <SiteLayout
   title="Desa Kentengsari — Website Resmi"
-  description="Website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Jelajahi keindahan alam lereng Gunung Sumbing, potensi pertanian, dan masyarakat yang guyub rukun."
+  description="Website resmi Desa Kentengsari, Kecamatan Windusari, Kabupaten Magelang. Temukan profil desa, data penduduk 2025, pembagian wilayah, dan potensi alam lereng Gunung Sumbing."
   activeRoute="beranda"
   canonicalPath="/index.html"
 >
@@ -52,28 +52,14 @@ const stats = [
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="berita-terkini">
-      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Berita Terkini" title="Kabar & Kegiatan Desa" description="Ikuti perkembangan terbaru seputar kegiatan, pembangunan, dan kehidupan masyarakat Desa Kentengsari." />
-        <div class="mx-auto mt-10 max-w-2xl rounded-panel border border-line bg-white p-10 text-center shadow-card">
-          <div class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-kenteng-50 text-kenteng-700">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6Z"/></svg>
-          </div>
-          <h3 class="mt-5 text-xl font-extrabold text-kenteng-950">Belum Ada Berita</h3>
-          <p class="mt-2 leading-7 text-muted">Informasi dan berita seputar kegiatan Desa Kentengsari akan segera hadir di halaman ini.</p>
-        </div>
-        <div class="mt-8 text-center"><a class="inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/berita.html">Lihat Semua Berita</a></div>
-      </div>
-    </section>
-
-    <section class="py-20 md:py-28" id="profil">
+    <section class="bg-surface-soft py-20 md:py-28" id="profil">
       <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
         <div>
           <SectionHeading eyebrow="Profil Desa" title="Mengenal Desa Kentengsari" />
           <div class="mt-6 grid gap-4 leading-8 text-muted">
             <p>Desa Kentengsari adalah sebuah desa di Kecamatan Windusari, Kabupaten Magelang, Jawa Tengah, Indonesia. Nama desa ini merupakan penggabungan dari dua nama desa pendahulunya, yaitu Desa Kenteng dan Desa Sari. Desa Kentengsari berjarak sekitar 2,5 Km dari ibu kota kecamatan dan 29 Km dari ibu kota kabupaten melalui Bandongan.</p>
             <p>Wilayah desa berada di lereng Gunung Sumbing dengan ketinggian 750 mdpl, menjadikan udaranya sejuk dengan tanah yang subur. Mayoritas penduduknya bermata pencaharian sebagai petani — memanfaatkan tanah yang subur untuk menanam padi, tembakau, sayuran, dan berbagai komoditas pertanian lainnya.</p>
-            <p>Desa ini terdiri dari lima dusun: Krajan 1, Krajan 2, Krajan 3, Kenteng Wetan, dan Nglarangan, dengan penduduk yang dikenal guyub rukun dan menjunjung tinggi gotong royong.</p>
+            <p>Setelah mengikuti peraturan bupati baru, pemerintahan desa menata dua wilayah administratif, yaitu Kentengsari 1 dan Kentengsari 2. Dalam kehidupan sehari-hari, warga tetap mengenal tiga sebutan dusun—Nglarangan, Kentengsari, dan Kenteng Wetan. Keduanya menjelaskan konteks yang berbeda dan bukan pembagian yang saling bertentangan.</p>
           </div>
           <a class="mt-7 inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/profil-desa.html">Selengkapnya</a>
         </div>

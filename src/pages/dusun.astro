@@ -4,29 +4,40 @@ import PageHero from '../components/astro/PageHero.astro';
 import SectionHeading from '../components/astro/SectionHeading.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 
-const hamlets = [
-  ['Dusun Krajan 1', 'Bagian dari kawasan Krajan yang menjadi salah satu pusat permukiman dan kegiatan warga desa.'],
-  ['Dusun Krajan 2', 'Kawasan permukiman yang berdampingan dengan lahan pertanian produktif warga.'],
-  ['Dusun Krajan 3', 'Dusun dengan suasana khas pedesaan dan masyarakat yang menjunjung gotong royong.'],
-  ['Dusun Kenteng Wetan', 'Terletak di sisi timur wilayah desa, mewarisi nama desa pendahulu — Kenteng.'],
-  ['Dusun Nglarangan', 'Kawasan di tepi wilayah desa dengan panorama alam lereng Sumbing yang memukau.'],
-  ['8 RT / 2 RW', 'Kelima dusun terbagi dalam 8 Rukun Tetangga dan 2 Rukun Warga sebagai unit terkecil pemerintahan.'],
+const administrativeAreas = [
+  ['Kentengsari 1', 'Nama kewilayahan administratif pemerintah desa setelah mengikuti peraturan bupati baru.'],
+  ['Kentengsari 2', 'Nama kewilayahan administratif pemerintah desa setelah mengikuti peraturan bupati baru.'],
+] as const;
+
+const communityNames = [
+  ['Nglarangan', 'Sebutan dusun yang tetap hidup dan digunakan dalam keseharian warga.'],
+  ['Kentengsari', 'Sebutan dusun yang tetap hidup dan digunakan dalam keseharian warga.'],
+  ['Kenteng Wetan', 'Sebutan dusun yang tetap hidup dan digunakan dalam keseharian warga.'],
 ] as const;
 ---
 
-<SiteLayout title="Dusun — Desa Kentengsari" description="Lima dusun di Desa Kentengsari: Krajan 1, Krajan 2, Krajan 3, Kenteng Wetan, dan Nglarangan — wilayah administrasi dengan 8 RT dan 2 RW." activeRoute="dusun" canonicalPath="/dusun.html">
+<SiteLayout title="Dusun — Desa Kentengsari" description="Pembagian wilayah Desa Kentengsari: dua wilayah administratif Kentengsari 1 dan Kentengsari 2, serta tiga sebutan dusun warga." activeRoute="dusun" canonicalPath="/dusun.html">
   <main id="main-content">
-    <PageHero current="Dusun" title="Dusun di Desa Kentengsari" description="Wilayah Desa Kentengsari terbagi dalam lima dusun yang guyub dan rukun." />
+    <PageHero current="Dusun" title="Wilayah Desa Kentengsari" description="Memahami nama administratif pemerintah, sebutan dusun warga, dan riwayat penataan wilayah secara tepat." />
     <section class="bg-surface-soft py-20 md:py-28">
       <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Wilayah Administrasi" title="Lima Dusun, Satu Kentengsari" description="Secara administratif, Desa Kentengsari terdiri atas 5 dusun dengan 8 RT dan 2 RW yang dihuni 309 jiwa dari 92 kepala keluarga." />
-        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{hamlets.map(([title, description]) => <InfoCard title={title} description={description} />)}</div>
+        <SectionHeading centered eyebrow="Administratif Pemerintah" title="Dua Wilayah Kewilayahan" description="Setelah mengikuti peraturan bupati baru, nama kewilayahan administratif pemerintah Desa Kentengsari adalah Kentengsari 1 dan Kentengsari 2." />
+        <div class="mx-auto mt-10 grid max-w-3xl gap-5 md:grid-cols-2">{administrativeAreas.map(([title, description]) => <InfoCard title={title} description={description} />)}</div>
       </div>
     </section>
     <section class="py-20 md:py-28">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading centered eyebrow="Sebutan yang Hidup di Warga" title="Tiga Sebutan Dusun" description="Nglarangan, Kentengsari, dan Kenteng Wetan tetap dipakai warga dalam kehidupan sehari-hari. Sebutan sosial ini tidak bertentangan dengan dua wilayah administratif pemerintah karena konteks penggunaannya berbeda." />
+        <div class="mt-10 grid gap-5 md:grid-cols-3">{communityNames.map(([title, description]) => <InfoCard title={title} description={description} />)}</div>
+        <aside class="mx-auto mt-8 max-w-4xl rounded-card border-l-4 border-kenteng-600 bg-kenteng-50 p-6 leading-7 text-muted" aria-label="Riwayat penataan wilayah">
+          <strong class="text-kenteng-950">Riwayat sebelum penataan organisasi desa:</strong> wilayah pernah dinyatakan sebagai Krajan 1, Krajan 2, dan Krajan 3. Ketiganya dicatat sebagai riwayat dan bukan nama kewilayahan administratif yang berlaku saat ini.
+        </aside>
+      </div>
+    </section>
+    <section class="bg-surface-soft py-20 md:py-28">
       <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-center gap-12 lg:grid-cols-2">
         <div>
-          <SectionHeading eyebrow="Kehidupan Bermasyarakat" title="Guyub Rukun di Setiap Dusun" description="Meski terbagi dalam lima dusun, masyarakat Kentengsari hidup dalam satu kesatuan adat dan budaya. Kegiatan gotong royong, kerja bakti, dan acara dusun menjadi perekat kebersamaan warga — dari Krajan hingga Nglarangan." />
+          <SectionHeading eyebrow="Kehidupan Bermasyarakat" title="Nama Berbeda, Satu Kentengsari" description="Pembagian administratif membantu penyelenggaraan pemerintahan, sedangkan sebutan dusun menjaga kedekatan identitas warga. Kegiatan gotong royong, kerja bakti, dan pertemuan warga tetap menjadi perekat kebersamaan Desa Kentengsari." />
           <a class="mt-7 inline-flex rounded-full bg-kenteng-700 px-6 py-3 font-extrabold text-white hover:bg-kenteng-800" href="/galeri.html">Lihat Dokumentasi Kegiatan</a>
         </div>
         <img class="h-[390px] w-full rounded-panel object-cover shadow-raised" src="/assets/kata-sambutan-2.jpg" alt="Kegiatan bersama masyarakat dusun di Desa Kentengsari" loading="lazy" />

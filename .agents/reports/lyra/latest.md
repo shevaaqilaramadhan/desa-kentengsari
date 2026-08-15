@@ -1,14 +1,14 @@
 # Lyra Report
 
-- Waktu audit: 2026-08-15T10:43:57+07:00
-- Base HEAD: 4091a794b138960cd758eb9f869dfcc659109bdb
-- Diff fingerprint: 693052c67d632065c3cdc95d529eaa1ad0dc16ee68d4d957223cbc92581de804
-- Scope: `astro.config.mjs`, `public/robots.txt`, `public/sitemap.xml`, `sitemap.xml`, `src/config/site.ts`, `src/pages/kontak.astro`, `src/styles/global.css`, `tests/site-parity.spec.ts`, serta aset dan layout/header/footer yang menjadi konteks visual
-- Status: PASS
+- Waktu audit: 2026-08-15T11:37:00+07:00
+- Base HEAD: 281fe14ce1fc84c4c7ac66e08e3543ad4869604e
+- Diff fingerprint: 07ce2b55da7271bb7992c9b16b54cbbc3569a3259f8c01a16f352b3a8f01ac48
+- Scope: README.md, public/sitemap.xml, sitemap.xml, src/config/site.ts, src/pages/berita.astro (deleted), src/pages/dusun.astro, src/pages/index.astro, src/pages/profil-desa.astro, src/types/site.ts, tests/site-parity.spec.ts
+- Status: PASS_WITH_NOTES
 
 ## Ringkasan
 
-Audit visual/design system terhadap fingerprint kandidat selesai. Perubahan utama di `src/styles/global.css:127-132` menghapus padding, background putih semi-transparan, dan radius dari logo header; ukuran desktop 42px dan mobile 38px tetap dipertahankan. Tidak ditemukan inkonsistensi visual yang perlu ditindaklanjuti.
+Tidak ada temuan visual/design-system yang material pada kandidat. Struktur profil memakai hierarki section, card, radius, spacing, warna, dan shadow yang konsisten dengan token yang sudah ada. Bagan pemerintahan membedakan level utama, unsur pelaksana, wilayah administratif, sebutan warga, dan riwayat secara jelas pada markup serta styling. UI Berita yang dihapus tidak tersisa pada scope yang diperiksa.
 
 ## Temuan
 
@@ -16,15 +16,16 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menghitung ulang `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint cocok persis dengan konteks audit.
-- Memeriksa diff kandidat dan memastikan perubahan visual lain di `src/styles/global.css:233` membuat panel navigasi mobile opaque, konsisten dengan state menu terbuka.
-- Memeriksa markup shared header/footer di `src/layouts/SiteLayout.astro:60-160`: logo yang sama dipakai pada header dan footer; tidak ada perubahan yang mengganggu keterbacaan, ukuran responsif, atau footer.
-- Memeriksa state header di `src/styles/global.css:90-105` dan `src/layouts/SiteLayout.astro:175-176`: state awal tetap transparan dan state scrolled tetap memiliki background putih, border, shadow, serta blur.
-- Memeriksa aset `public/assets/kentengsari-logo.png`: PNG RGBA 512×512 dengan artwork putih/hijau dan bidang gelap semi-transparan; tidak ada panel putih/abu baru dari aturan CSS kandidat.
-- Memeriksa perubahan `src/pages/kontak.astro:25` terhadap alignment design system; perubahan ke `items-start` tidak menimbulkan inkonsistensi yang terlihat dari struktur layout.
-- Meninjau file kandidat nonvisual (konfigurasi domain, robots, sitemap, dan test) untuk memastikan tidak ada perubahan presentasional yang perlu diaudit.
+- Memeriksa diff pada halaman beranda, dusun, dan profil desa untuk perubahan hierarki section, heading, card, spacing, radius, warna, dan shadow.
+- Memeriksa `src/pages/profil-desa.astro:52-78` untuk pemisahan visual administratif pemerintah, sebutan dusun warga, dan riwayat Krajan 1–3.
+- Memeriksa `src/pages/profil-desa.astro:112-164` untuk hierarki bagan, pembedaan level, connector, dua wilayah administratif, serta catatan sebutan/riwayat.
+- Memeriksa `src/pages/profil-desa.astro:168-341` untuk connector dan wrapping pada layout mobile serta layout tiga cabang pada breakpoint `min-width: 768px`.
+- Memeriksa penggunaan token eksisting `rounded-card`, `rounded-panel`, `shadow-card`, `shadow-raised`, `--green-*`, dan `--line` terhadap komponen visual yang sudah ada.
+- Memeriksa penghapusan Berita pada `src/config/site.ts`, `src/types/site.ts`, `src/pages/index.astro`, sitemap, serta deleted page `src/pages/berita.astro`; tidak ditemukan orphaned Berita UI pada scope.
+- Menjalankan `git diff --check`; tidak ditemukan whitespace error.
+- Menghitung ulang `.agents/get-change-fingerprint.ps1`; hasil Base HEAD dan fingerprint cocok dengan konteks audit.
 
 ## Batasan
 
-- Browser lokal/Playwright tidak tersedia pada sesi ini, sehingga tidak dilakukan screenshot atau inspeksi runtime pada viewport desktop/mobile.
-- Audit terbatas pada inspeksi statis diff, markup/CSS shared, dan aset; fungsi teknis, regresi runtime, SEO, dan aksesibilitas fungsional berada di luar scope Lyra.
+- Runtime/screenshot lokal tidak dapat diverifikasi karena `npm run build` berhenti pada `spawn EPERM` dari esbuild sebelum menghasilkan build yang dapat dipreview. Tidak ada external preview yang digunakan.
+- Audit visual dilakukan melalui inspeksi diff, markup, dan CSS lokal; perubahan di luar scope tidak dinilai.

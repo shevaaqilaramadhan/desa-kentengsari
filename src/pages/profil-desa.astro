@@ -6,10 +6,10 @@ import StatGrid from '../components/astro/StatGrid.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 
 const stats = [
-  { value: '309', label: 'Jiwa', note: 'Total penduduk (2025)' },
-  { value: '92', label: 'Kepala Keluarga', note: 'Tersebar di seluruh dusun' },
-  { value: '5', label: 'Dusun', note: 'Krajan 1–3, Kenteng Wetan, Nglarangan' },
-  { value: '8 / 2', label: 'RT / RW', note: 'Wilayah administrasi' },
+  { value: '1.201', label: 'Total Penduduk', note: 'Data resmi tahun 2025' },
+  { value: '626', label: 'Pria', note: 'Penduduk pria tahun 2025' },
+  { value: '575', label: 'Wanita', note: 'Penduduk wanita tahun 2025' },
+  { value: '390', label: 'Kepala Keluarga', note: 'Jumlah KK tahun 2025' },
 ] as const;
 
 const missions = [
@@ -21,7 +21,7 @@ const missions = [
 ] as const;
 ---
 
-<SiteLayout title="Profil Desa — Desa Kentengsari" description="Profil lengkap Desa Kentengsari: sejarah, kondisi geografis, data kependudukan, visi misi, dan struktur organisasi pemerintahan desa." activeRoute="profil-desa" canonicalPath="/profil-desa.html">
+<SiteLayout title="Profil Desa — Desa Kentengsari" description="Profil Desa Kentengsari: data penduduk 2025, dua wilayah administratif, tiga sebutan dusun warga, sejarah, dan struktur pemerintahan desa." activeRoute="profil-desa" canonicalPath="/profil-desa.html">
   <main id="main-content">
     <PageHero current="Profil Desa" title="Profil Desa Kentengsari" description="Mengenal lebih dalam sejarah, geografis, dan pemerintahan Desa Kentengsari." />
 
@@ -44,26 +44,57 @@ const missions = [
 
     <section class="bg-surface-soft py-20 md:py-28" id="statistik">
       <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Data Wilayah" title="Kentengsari Dalam Angka" description="Gambaran kondisi demografis dan administrasi Desa Kentengsari." />
+        <SectionHeading centered eyebrow="Data Penduduk 2025" title="Kentengsari Dalam Angka" description="Data resmi kependudukan Desa Kentengsari tahun 2025." />
         <div class="mt-10"><StatGrid stats={stats} /></div>
       </div>
     </section>
 
-    <section class="py-20 md:py-28" id="landmark">
+    <section class="py-20 md:py-28" id="wilayah" aria-labelledby="wilayah-heading">
+      <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
+        <SectionHeading headingId="wilayah-heading" centered eyebrow="Pembagian Wilayah" title="Dua Administratif, Tiga Sebutan Warga" description="Pembagian pemerintah dan sebutan yang hidup di tengah warga dipakai untuk konteks yang berbeda, sehingga keduanya bukan informasi yang bertentangan." />
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+          <article class="rounded-panel border border-kenteng-100 bg-kenteng-50 p-7 shadow-card md:p-8">
+            <p class="text-sm font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Administratif Pemerintah</p>
+            <h3 class="mt-3 text-2xl font-extrabold text-kenteng-950">2 Wilayah Kewilayahan</h3>
+            <p class="mt-3 leading-7 text-muted">Nama kewilayahan setelah mengikuti peraturan bupati baru:</p>
+            <ul class="mt-5 grid gap-3" aria-label="Wilayah administratif pemerintah">
+              <li class="rounded-card border border-kenteng-100 bg-white px-5 py-4 font-extrabold text-kenteng-900">Kentengsari 1</li>
+              <li class="rounded-card border border-kenteng-100 bg-white px-5 py-4 font-extrabold text-kenteng-900">Kentengsari 2</li>
+            </ul>
+          </article>
+          <article class="rounded-panel border border-line bg-white p-7 shadow-card md:p-8">
+            <p class="text-sm font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Sebutan yang Hidup di Warga</p>
+            <h3 class="mt-3 text-2xl font-extrabold text-kenteng-950">3 Sebutan Dusun</h3>
+            <p class="mt-3 leading-7 text-muted">Dalam percakapan dan kehidupan sehari-hari, warga mengenal:</p>
+            <ul class="mt-5 grid gap-3 sm:grid-cols-3" aria-label="Sebutan dusun warga">
+              <li class="rounded-card bg-surface-soft px-4 py-4 text-center font-extrabold text-kenteng-900">Nglarangan</li>
+              <li class="rounded-card bg-surface-soft px-4 py-4 text-center font-extrabold text-kenteng-900">Kentengsari</li>
+              <li class="rounded-card bg-surface-soft px-4 py-4 text-center font-extrabold text-kenteng-900">Kenteng Wetan</li>
+            </ul>
+          </article>
+        </div>
+        <aside class="mt-6 rounded-card border-l-4 border-kenteng-600 bg-surface-soft p-6 leading-7 text-muted" aria-label="Riwayat penamaan wilayah">
+          <strong class="text-kenteng-950">Riwayat sebelum penataan organisasi desa:</strong> wilayah pernah dinyatakan sebagai Krajan 1, Krajan 2, dan Krajan 3. Nama-nama tersebut dicatat sebagai riwayat, bukan nama kewilayahan administratif yang berlaku saat ini.
+        </aside>
+      </div>
+    </section>
+
+    <section class="bg-surface-soft py-20 md:py-28" id="landmark">
       <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
         <SectionHeading centered eyebrow="Fasilitas Desa" title="Landmark & Sarana Umum" description="Fasilitas yang menjadi pusat kegiatan dan pelayanan masyarakat Desa Kentengsari." />
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <InfoCard title="Kantor Desa" description="Pusat pelayanan administrasi dan informasi bagi masyarakat." />
           <InfoCard title="Sekolah Dasar" description="Fasilitas pendidikan dasar bagi putra-putri desa.">
             <svg slot="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
           </InfoCard>
-          <InfoCard title="Tempat Ibadah" description="Masjid dan mushola di tiap dusun sebagai pusat kegiatan rohani." />
+          <InfoCard title="Tempat Ibadah" description="Masjid dan mushola yang mendukung kegiatan rohani masyarakat." />
           <InfoCard title="Lahan Pertanian" description="Hamparan sawah dan kebun tembakau yang menjadi tulang punggung ekonomi desa." />
+          <InfoCard title="Drainase & Irigasi" description="Sarana aliran air yang mendukung lingkungan permukiman dan lahan pertanian desa." />
         </div>
       </div>
     </section>
 
-    <section class="bg-surface-soft py-20 md:py-28" id="visi-misi">
+    <section class="py-20 md:py-28" id="visi-misi">
       <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] items-start gap-10 lg:grid-cols-2">
         <div class="rounded-panel bg-kenteng-800 p-8 text-white shadow-raised md:p-10">
           <p class="text-sm font-extrabold uppercase tracking-[0.16em] text-kenteng-100">Visi</p>
@@ -78,22 +109,237 @@ const missions = [
       </div>
     </section>
 
-    <section class="py-20 md:py-28" id="struktur">
+    <section class="bg-surface-soft py-20 md:py-28" id="struktur" aria-labelledby="struktur-heading">
       <div class="mx-auto w-[min(1120px,calc(100%-2rem))]">
-        <SectionHeading centered eyebrow="Pemerintahan Desa" title="Struktur Organisasi" description="Susunan pemerintahan Desa Kentengsari yang melayani masyarakat." />
-        <div class="mx-auto mt-10 max-w-4xl">
-          <article class="mx-auto max-w-sm rounded-card bg-kenteng-800 p-6 text-center text-white shadow-raised">
-            <p class="text-sm font-bold text-kenteng-100">Kepala Desa</p><h3 class="mt-1 text-lg font-extrabold">Pimpinan Pemerintahan Desa</h3>
+        <SectionHeading headingId="struktur-heading" centered eyebrow="Pemerintahan Desa" title="Struktur Organisasi" description="Bagan fungsi pemerintahan Desa Kentengsari tanpa mencantumkan nama pejabat atau jumlah perangkat yang belum tersedia." />
+        <div class="org-chart mx-auto mt-12 max-w-5xl" role="group" aria-label="Bagan hierarki pemerintahan Desa Kentengsari">
+          <article class="org-chart__leader mx-auto max-w-md rounded-panel bg-kenteng-800 p-7 text-center text-white shadow-raised">
+            <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-kenteng-100">Level Utama</p>
+            <h3 class="mt-2 text-2xl font-extrabold">Kepala Desa</h3>
+            <p class="mt-2 text-sm leading-6 text-white/80">Pimpinan pemerintahan desa</p>
           </article>
-          <div class="mx-auto h-8 w-px bg-kenteng-100"></div>
-          <div class="grid gap-5 md:grid-cols-3">
-            <article class="rounded-card border border-line bg-white p-6 text-center shadow-card"><p class="text-sm font-bold text-kenteng-700">Sekretaris Desa</p><h3 class="mt-1 font-extrabold text-kenteng-950">Administrasi & Umum</h3></article>
-            <article class="rounded-card border border-line bg-white p-6 text-center shadow-card"><p class="text-sm font-bold text-kenteng-700">Kaur & Kasi</p><h3 class="mt-1 font-extrabold text-kenteng-950">Keuangan, Perencanaan, Pelayanan</h3></article>
-            <article class="rounded-card border border-line bg-white p-6 text-center shadow-card"><p class="text-sm font-bold text-kenteng-700">Kepala Dusun</p><h3 class="mt-1 font-extrabold text-kenteng-950">Krajan 1–3, Kenteng Wetan, Nglarangan</h3></article>
-          </div>
+
+          <ol class="org-chart__branches" aria-label="Unsur di bawah Kepala Desa">
+            <li class="org-chart__branch">
+              <article class="org-chart__card">
+                <span class="org-chart__number" aria-hidden="true">01</span>
+                <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Administrasi</p>
+                <h3 class="mt-2 text-xl font-extrabold text-kenteng-950">Sekretaris Desa</h3>
+                <p class="mt-2 text-sm leading-6 text-muted">Koordinasi administrasi pemerintahan desa.</p>
+              </article>
+            </li>
+            <li class="org-chart__branch">
+              <article class="org-chart__card">
+                <span class="org-chart__number" aria-hidden="true">02</span>
+                <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Pelaksana Teknis</p>
+                <h3 class="mt-2 text-xl font-extrabold text-kenteng-950">Kaur &amp; Kasi</h3>
+                <p class="mt-2 text-sm leading-6 text-muted">Unsur urusan dan seksi pelaksana teknis.</p>
+              </article>
+            </li>
+            <li class="org-chart__branch org-chart__branch--territory">
+              <article class="org-chart__card">
+                <span class="org-chart__number" aria-hidden="true">03</span>
+                <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-kenteng-700">Pelaksana Kewilayahan</p>
+                <h3 class="mt-2 text-xl font-extrabold text-kenteng-950">Kepala Kewilayahan</h3>
+                <p class="mt-2 text-sm leading-6 text-muted">Pelaksana pemerintahan pada wilayah administratif desa.</p>
+              </article>
+              <ol class="org-chart__territories" aria-label="Wilayah administratif di bawah Kepala Kewilayahan">
+                <li class="rounded-card border border-kenteng-100 bg-kenteng-50 p-4 text-center font-extrabold text-kenteng-900 shadow-card">Kentengsari 1</li>
+                <li class="rounded-card border border-kenteng-100 bg-kenteng-50 p-4 text-center font-extrabold text-kenteng-900 shadow-card">Kentengsari 2</li>
+              </ol>
+            </li>
+          </ol>
         </div>
-        <p class="mx-auto mt-8 max-w-3xl rounded-card bg-kenteng-50 p-5 text-center leading-7 text-kenteng-900">Didukung oleh Badan Permusyawaratan Desa (BPD), lembaga kemasyarakatan, PKK, Karang Taruna, serta seluruh elemen masyarakat.</p>
+        <div class="mx-auto mt-10 grid max-w-5xl gap-5 md:grid-cols-2">
+          <aside class="rounded-card border border-line bg-white p-6 shadow-card" aria-label="Catatan sebutan warga">
+            <p class="text-sm font-extrabold text-kenteng-700">Sebutan Warga</p>
+            <p class="mt-2 leading-7 text-muted">Nglarangan, Kentengsari, dan Kenteng Wetan adalah tiga sebutan dusun yang hidup di tengah warga; ketiganya tidak menggantikan dua nama administratif pada bagan.</p>
+          </aside>
+          <aside class="rounded-card border border-line bg-white p-6 shadow-card" aria-label="Catatan riwayat wilayah">
+            <p class="text-sm font-extrabold text-kenteng-700">Catatan Riwayat</p>
+            <p class="mt-2 leading-7 text-muted">Krajan 1, Krajan 2, dan Krajan 3 merupakan pernyataan wilayah sebelum penataan organisasi desa, bukan nama kewilayahan administratif saat ini.</p>
+          </aside>
+        </div>
       </div>
     </section>
   </main>
 </SiteLayout>
+
+<style>
+  .org-chart__branches,
+  .org-chart__territories {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .org-chart__branches {
+    position: relative;
+    display: grid;
+    gap: 1.25rem;
+    padding-top: 2rem;
+  }
+
+  .org-chart__branches::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 2rem;
+    content: '';
+    background: var(--green-100);
+    transform: translateX(-50%);
+  }
+
+  .org-chart__branches::after {
+    position: absolute;
+    top: 2rem;
+    right: 50%;
+    left: 0.55rem;
+    height: 2px;
+    content: '';
+    background: var(--green-100);
+  }
+
+  .org-chart__branch {
+    position: relative;
+    min-width: 0;
+    padding-left: 2rem;
+  }
+
+  .org-chart__branch::before {
+    position: absolute;
+    top: 0;
+    bottom: -1.25rem;
+    left: 0.55rem;
+    width: 2px;
+    content: '';
+    background: var(--green-100);
+  }
+
+  .org-chart__branch::after {
+    position: absolute;
+    top: 2rem;
+    left: 0.55rem;
+    width: 1.45rem;
+    height: 2px;
+    content: '';
+    background: var(--green-100);
+  }
+
+  .org-chart__branch:last-child::before {
+    bottom: auto;
+    height: 2rem;
+  }
+
+  .org-chart__card {
+    position: relative;
+    height: 100%;
+    min-width: 0;
+    padding: 1.5rem;
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green-600);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .org-chart__number {
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+    color: var(--green-100);
+    font-size: 2.3rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .org-chart__territories {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 2rem;
+  }
+
+  .org-chart__territories::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 2rem;
+    content: '';
+    background: var(--green-100);
+    transform: translateX(-50%);
+  }
+
+  @media (min-width: 768px) {
+    .org-chart__branches {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .org-chart__branches::after {
+      position: absolute;
+      top: 2rem;
+      right: calc((100% - 3rem) / 6);
+      left: calc((100% - 3rem) / 6);
+      height: 2px;
+      content: '';
+      background: var(--green-100);
+    }
+
+    .org-chart__branch {
+      padding-top: 1rem;
+      padding-left: 0;
+    }
+
+    .org-chart__branch::before {
+      top: 0;
+      bottom: auto;
+      left: 50%;
+      width: 2px;
+      height: 1rem;
+      transform: translateX(-50%);
+    }
+
+    .org-chart__branch::after {
+      display: none;
+    }
+
+    .org-chart__branch--territory {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .org-chart__territories {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding-top: 3rem;
+    }
+
+    .org-chart__territories::after {
+      position: absolute;
+      top: 2rem;
+      right: 25%;
+      left: 25%;
+      height: 2px;
+      content: '';
+      background: var(--green-100);
+    }
+
+    .org-chart__territories > li {
+      position: relative;
+    }
+
+    .org-chart__territories > li::before {
+      position: absolute;
+      top: -1rem;
+      left: 50%;
+      width: 2px;
+      height: 1rem;
+      content: '';
+      background: var(--green-100);
+      transform: translateX(-50%);
+    }
+  }
+</style>
