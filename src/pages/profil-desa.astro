@@ -36,7 +36,7 @@ const missions = [
     </section>
 
     <nav class="profile-rail" aria-label="Bagian halaman profil">
-      <a href="#sejarah" class="is-active">01 <span>Sejarah</span></a><a href="#statistik">02 <span>Angka</span></a><a href="#visi-misi">03 <span>Visi & Misi</span></a><a href="#struktur">04 <span>Pemerintahan</span></a>
+      <a href="#sejarah" class="is-active">01 <span>Sejarah</span></a><a href="#statistik">02 <span>Angka</span></a><a href="#wilayah">03 <span>Wilayah</span></a><a href="#landmark">04 <span>Sarana</span></a><a href="#visi-misi">05 <span>Visi & Misi</span></a><a href="#struktur">06 <span>Pemerintahan</span></a>
     </nav>
 
     <section class="profile-story profile-section" id="sejarah">
@@ -99,14 +99,14 @@ const missions = [
 
     <section class="profile-vision profile-section" id="visi-misi">
       <div class="profile-container profile-vision__layout">
-        <div class="profile-vision__statement profile-reveal"><p class="profile-kicker profile-kicker--light">03 / Arah pembangunan</p><p class="profile-vision__eyebrow">Visi Desa</p><blockquote>“Maju, mandiri, dan sejahtera—berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote><span class="profile-vision__signature">— Pemerintah Desa Kentengsari</span></div>
+        <div class="profile-vision__statement profile-reveal"><p class="profile-kicker profile-kicker--light">05 / Arah pembangunan</p><p class="profile-vision__eyebrow">Visi Desa</p><blockquote>“Maju, mandiri, dan sejahtera—berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote><span class="profile-vision__signature">— Pemerintah Desa Kentengsari</span></div>
         <div class="profile-mission profile-reveal"><p class="profile-kicker profile-kicker--dark">Misi kami</p><h2>Langkah nyata,<br /><span>setiap hari.</span></h2><div class="profile-mission__list">{missions.map((mission) => <article><span>{mission[0]}</span><div><h3>{mission[1]}</h3><p>{mission[2]}</p></div></article>)}</div></div>
       </div>
     </section>
 
     <section class="profile-structure profile-section" id="struktur" aria-labelledby="struktur-heading">
       <div class="profile-container">
-        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">04 / Pemerintahan desa · Struktur Organisasi</p><h2 id="struktur-heading">Yang melayani,<br /><span>yang menggerakkan.</span></h2></div><p>Struktur pemerintahan adalah ruang kolaborasi untuk memastikan pelayanan hadir lebih dekat bagi setiap warga.</p></div>
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">06 / Pemerintahan desa · Struktur Organisasi</p><h2 id="struktur-heading">Yang melayani,<br /><span>yang menggerakkan.</span></h2></div><p>Struktur pemerintahan adalah ruang kolaborasi untuk memastikan pelayanan hadir lebih dekat bagi setiap warga.</p></div>
         <div class="profile-org profile-hierarchy profile-reveal" role="group" aria-label="Bagan hierarki pemerintahan Desa Kentengsari">
           <article class="profile-org__lead"><span>Level Utama</span><h3>Kepala Desa</h3><p>Pimpinan pemerintahan desa</p></article>
           <div class="profile-org__connector"></div>
@@ -128,20 +128,48 @@ const missions = [
 </SiteLayout>
 
 <script>
-  const revealItems = document.querySelectorAll('.profile-reveal');
-  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: 0.12 });
-  revealItems.forEach((item) => observer.observe(item));
-  const sections = document.querySelectorAll('.profile-section');
-  const railLinks = document.querySelectorAll('.profile-rail a');
-  const sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) railLinks.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === `#${entry.target.id}`)); }), { rootMargin: '-35% 0px -55% 0px' });
-  sections.forEach((section) => sectionObserver.observe(section));
+  const canRevealProfile = 'IntersectionObserver' in window;
+
+  if (canRevealProfile) {
+    document.documentElement.classList.add('profile-js');
+
+    const revealItems = document.querySelectorAll('.profile-reveal');
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: 0.12 });
+    revealItems.forEach((item) => observer.observe(item));
+
+    const sections = document.querySelectorAll('.profile-section');
+    const railLinks = document.querySelectorAll('.profile-rail a');
+    const sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) railLinks.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === `#${entry.target.id}`)); }), { rootMargin: '-35% 0px -55% 0px' });
+    sections.forEach((section) => sectionObserver.observe(section));
+  }
 </script>
 
 <style>
-  /* Keep the editorial hero within the shared page-hero geometry used by the site. */
-  .profile-page .profile-hero[data-page-hero] {
-    height: 385px;
-    min-height: 385px;
+  /* Content is always readable first; reveal animation is opt-in after JS capability is confirmed. */
+  .profile-page .profile-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .profile-js .profile-page .profile-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .8s ease, transform .8s cubic-bezier(.23, 1, .32, 1);
+  }
+
+  .profile-js .profile-page .profile-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .profile-js .profile-page .profile-reveal,
+    .profile-js .profile-page .profile-reveal.is-visible {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
 
   .profile-territory,
@@ -258,11 +286,12 @@ const missions = [
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
+    padding-top: 2rem;
   }
 
   .profile-hierarchy__branches::before {
     position: absolute;
-    top: -1px;
+    top: 2rem;
     right: 16.66%;
     left: 16.66%;
     height: 1px;
@@ -270,12 +299,33 @@ const missions = [
     background: #94b79b;
   }
 
+  .profile-hierarchy__branches::after {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 2rem;
+    content: '';
+    background: #94b79b;
+  }
+
   .profile-hierarchy__card {
+    position: relative;
     min-width: 0;
     padding: 1.5rem;
     border: 1px solid #cbdacb;
     background: rgb(255 255 255 / .72);
     text-align: left;
+  }
+
+  .profile-hierarchy__branches > .profile-hierarchy__card::before {
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    width: 1px;
+    height: 2rem;
+    content: '';
+    background: #94b79b;
   }
 
   .profile-hierarchy__card h3,
@@ -341,11 +391,6 @@ const missions = [
   }
 
   @media (max-width: 760px) {
-    .profile-page .profile-hero[data-page-hero] {
-      height: 468px;
-      min-height: 468px;
-    }
-
     .profile-territory,
     .profile-facilities {
       padding: 6rem 0;
@@ -358,12 +403,36 @@ const missions = [
       grid-template-columns: 1fr;
     }
 
+    .profile-hierarchy__branches {
+      gap: 1.25rem;
+      padding: 2rem 0 0 2rem;
+    }
+
+    .profile-hierarchy__branches::before {
+      top: 2rem;
+      right: auto;
+      bottom: 2rem;
+      left: .5rem;
+      width: 1px;
+      height: auto;
+    }
+
+    .profile-hierarchy__branches::after {
+      top: 0;
+      left: .5rem;
+      width: 1px;
+      height: 2rem;
+    }
+
     .profile-territory__community {
       grid-template-columns: 1fr;
     }
 
-    .profile-hierarchy__branches::before {
-      display: none;
+    .profile-hierarchy__branches > .profile-hierarchy__card::before {
+      top: 1.75rem;
+      left: -1.5rem;
+      width: 1.5rem;
+      height: 1px;
     }
 
     .profile-hierarchy__territories {

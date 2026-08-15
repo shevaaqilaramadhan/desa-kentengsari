@@ -1,14 +1,14 @@
 # Lyra Report
 
-- Waktu audit: 2026-08-15T11:37:00+07:00
-- Base HEAD: 281fe14ce1fc84c4c7ac66e08e3543ad4869604e
-- Diff fingerprint: 07ce2b55da7271bb7992c9b16b54cbbc3569a3259f8c01a16f352b3a8f01ac48
-- Scope: README.md, public/sitemap.xml, sitemap.xml, src/config/site.ts, src/pages/berita.astro (deleted), src/pages/dusun.astro, src/pages/index.astro, src/pages/profil-desa.astro, src/types/site.ts, tests/site-parity.spec.ts
-- Status: PASS_WITH_NOTES
+- Waktu audit: 2026-08-15T12:14:00+07:00
+- Base HEAD: 7a103af6b56c4b0b5c6ab1ae365929418b6027d0
+- Diff fingerprint: 8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34
+- Scope: `public/sitemap.xml`, `README.md`, `sitemap.xml`, `src/config/site.ts`, `src/pages/berita.astro` (deleted), `src/pages/dusun.astro`, `src/pages/index.astro`, `src/pages/profil-desa.astro`, `src/styles/global.css`, `src/types/site.ts`, `tests/site-parity.spec.ts`.
+- Status: PASS
 
 ## Ringkasan
 
-Tidak ada temuan visual/design-system yang material pada kandidat. Struktur profil memakai hierarki section, card, radius, spacing, warna, dan shadow yang konsisten dengan token yang sudah ada. Bagan pemerintahan membedakan level utama, unsur pelaksana, wilayah administratif, sebutan warga, dan riwayat secara jelas pada markup serta styling. UI Berita yang dihapus tidak tersisa pada scope yang diperiksa.
+Kandidat memenuhi acceptance visual/design system dan menutup catatan kontras sebelumnya. Hero profil bersifat content-driven, hierarchy connector terbaca pada desktop/mobile, rail memiliki enam target dengan kicker `01`–`06` yang sinkron, reveal tetap terlihat tanpa JavaScript, dan rail/kicker pada latar terang menggunakan `var(--green-900)`. Layout responsif konsisten dengan token bersama, tanpa overflow pada lebar target, dan tidak ada UI Berita pada surface publik.
 
 ## Temuan
 
@@ -16,16 +16,18 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Memeriksa diff pada halaman beranda, dusun, dan profil desa untuk perubahan hierarki section, heading, card, spacing, radius, warna, dan shadow.
-- Memeriksa `src/pages/profil-desa.astro:52-78` untuk pemisahan visual administratif pemerintah, sebutan dusun warga, dan riwayat Krajan 1–3.
-- Memeriksa `src/pages/profil-desa.astro:112-164` untuk hierarki bagan, pembedaan level, connector, dua wilayah administratif, serta catatan sebutan/riwayat.
-- Memeriksa `src/pages/profil-desa.astro:168-341` untuk connector dan wrapping pada layout mobile serta layout tiga cabang pada breakpoint `min-width: 768px`.
-- Memeriksa penggunaan token eksisting `rounded-card`, `rounded-panel`, `shadow-card`, `shadow-raised`, `--green-*`, dan `--line` terhadap komponen visual yang sudah ada.
-- Memeriksa penghapusan Berita pada `src/config/site.ts`, `src/types/site.ts`, `src/pages/index.astro`, sitemap, serta deleted page `src/pages/berita.astro`; tidak ditemukan orphaned Berita UI pada scope.
-- Menjalankan `git diff --check`; tidak ditemukan whitespace error.
-- Menghitung ulang `.agents/get-change-fingerprint.ps1`; hasil Base HEAD dan fingerprint cocok dengan konteks audit.
+- Menjalankan `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint cocok persis dengan kandidat.
+- Memeriksa hero profil pada `src/pages/profil-desa.astro:22-35` dan `src/pages/profil-desa.astro:147-173`; ukuran hero tidak lagi fixed-height, baseline reveal terlihat, dan class `profile-js` hanya mengaktifkan penyembunyian sementara ketika `IntersectionObserver` tersedia.
+- Memeriksa rail pada `src/pages/profil-desa.astro:38` serta section/kicker pada `src/pages/profil-desa.astro:44-126`; enam anchor `#sejarah`, `#statistik`, `#wilayah`, `#landmark`, `#visi-misi`, `#struktur` selaras dengan nomor `01`–`06`.
+- Memeriksa hierarchy pada `src/pages/profil-desa.astro:110-118` dan `src/pages/profil-desa.astro:284-440`; desktop memakai trunk, branch, dan stem ke tiga kartu, sedangkan mobile memakai connector vertikal dan connector horizontal ke setiap kartu.
+- Memeriksa token dan kontras pada `src/styles/global.css:26`, `src/styles/global.css:286-308`; `.profile-kicker--dark` dan `.profile-rail a` memakai `var(--green-900)`, menutup catatan kontras sebelumnya.
+- Memeriksa breakpoint dan overflow pada `src/styles/global.css:205-259`, `src/styles/global.css:358-359`, dan style lokal `src/pages/profil-desa.astro:393-440`; rail dapat di-scroll horizontal pada mobile, hierarchy turun menjadi satu kolom, dan konten tidak dipaksa keluar viewport.
+- Memeriksa `NAV_ITEMS`, sitemap, dan penghapusan `src/pages/berita.astro`; tidak ada label, URL, atau UI Berita pada surface publik.
+- Menjalankan `npm run check`: 0 error, 0 warning, 0 hint.
+- Menjalankan `npm test`: build 7 halaman dan 15/15 test Playwright lulus, termasuk no-JS visibility, hero/rail/connector, overflow target widths, visual hierarchy, dan no-Berita.
 
 ## Batasan
 
-- Runtime/screenshot lokal tidak dapat diverifikasi karena `npm run build` berhenti pada `spawn EPERM` dari esbuild sebelum menghasilkan build yang dapat dipreview. Tidak ada external preview yang digunakan.
-- Audit visual dilakukan melalui inspeksi diff, markup, dan CSS lokal; perubahan di luar scope tidak dinilai.
+- Audit ini berfokus pada visual/design system; tidak menilai isi bisnis atau implementasi fungsi yang tidak berdampak pada layout, kontras, hierarchy, dan consistency visual.
+- Tidak ada screenshot pixel-level terpisah; verifikasi runtime dilakukan melalui Playwright pada breakpoint dan acceptance visual yang tersedia.
+- Tidak mengubah source, asset, test, docs, atau laporan agent lain; hanya laporan Lyra ini yang ditulis.

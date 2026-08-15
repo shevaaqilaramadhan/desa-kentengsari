@@ -1,48 +1,46 @@
 # Orion Implementation Report
 
-- Waktu implementasi: 2026-08-15T11:32:27+07:00; fingerprint disegarkan 2026-08-15T11:34:47+07:00
-- Base HEAD: 281fe14ce1fc84c4c7ac66e08e3543ad4869604e
-- Diff fingerprint: 07ce2b55da7271bb7992c9b16b54cbbc3569a3259f8c01a16f352b3a8f01ac48
-- Permintaan/scope: Menghapus seluruh permukaan publik Berita tanpa redirect; memperbarui data penduduk resmi 2025 menjadi 1.201 total, 626 pria, 575 wanita, dan 390 KK; membedakan dua kewilayahan administratif, tiga sebutan dusun warga, dan riwayat Krajan 1–3; memperbarui bagan struktur pemerintahan; menggabungkan Drainase & Irigasi; serta menyesuaikan sitemap, README, dan regresi Playwright.
+- Waktu implementasi: 2026-08-15T12:11:10+07:00
+- Base HEAD: 7a103af6b56c4b0b5c6ab1ae365929418b6027d0
+- Diff fingerprint: 8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34
+- Permintaan/scope: Menutup temuan kontras low pada profil dengan mengganti warna teks kecil `.profile-kicker--dark` dan `.profile-rail a` ke token `var(--green-900)`, tanpa mengubah layout atau content.
 - Status: READY_FOR_AUDIT
 
 ## Ringkasan Perubahan
 
-- Menghapus `src/pages/berita.astro`, item navigasi/`RouteId` Berita, section Berita Terkini di beranda, serta URL terkait dari kedua sitemap. Tidak ada redirect yang ditambahkan.
-- Mengganti angka lama pada beranda dan Profil Desa dengan empat data resmi 2025 serta memperbarui metadata yang terdampak.
-- Menjelaskan secara terpisah bahwa Kentengsari 1 dan Kentengsari 2 adalah nama kewilayahan administratif setelah mengikuti peraturan bupati baru; Nglarangan, Kentengsari, dan Kenteng Wetan adalah tiga sebutan dusun yang hidup di warga; sedangkan Krajan 1–3 merupakan riwayat sebelum penataan organisasi desa. Tidak ada angka RT/RW baru yang dibuat.
-- Mendesain ulang struktur pemerintahan menjadi bagan hierarki semantik dan responsif: Kepala Desa sebagai level utama, diikuti Sekretaris Desa, Kaur & Kasi/pelaksana teknis, dan Kepala Kewilayahan dengan dua kartu wilayah administratif. Kartu catatan membedakan sebutan warga dan riwayat wilayah agar bagan tidak menyesatkan.
-- Menambahkan satu sarana umum bernama `Drainase & Irigasi` dengan deskripsi umum tanpa jumlah atau ukuran.
-- Memperbarui parity test untuk tujuh route, tujuh item navigasi, absennya halaman/referensi Berita dan klaim lama, data resmi 2025, pembagian wilayah, struktur organisasi, sitemap, serta output tanpa overflow.
+- `.profile-kicker--dark` dan `.profile-rail a` kini memakai `var(--green-900)` untuk kontras AA yang lebih aman dan konsisten dengan token hijau gelap project.
+- Tidak ada layout, content, data, struktur pemerintahan, wilayah, sarana, atau desain editorial lain yang diubah.
 
-## File yang Berubah
+## Integrasi dan Acceptance
 
-- `README.md`
+Profil tetap memadukan visual editorial concurrent dengan acceptance implementasi sebelumnya: data 1.201 penduduk, 626 pria, 575 wanita, 390 KK; Kentengsari 1/2 sebagai wilayah administratif; Nglarangan, Kentengsari, Kenteng Wetan sebagai sebutan warga; riwayat Krajan 1–3; struktur Kepala Desa, Sekretaris Desa, Kaur & Kasi, Kepala Kewilayahan; Drainase & Irigasi; serta tujuh route publik tanpa Berita.
+
+## File Scope Kandidat
+
 - `public/sitemap.xml`
+- `README.md`
 - `sitemap.xml`
 - `src/config/site.ts`
 - `src/pages/berita.astro` (dihapus)
 - `src/pages/dusun.astro`
 - `src/pages/index.astro`
 - `src/pages/profil-desa.astro`
+- `src/styles/global.css`
 - `src/types/site.ts`
 - `tests/site-parity.spec.ts`
 
 ## Validasi
 
-- Baseline sebelum edit: `git status --short` kosong dan `git rev-parse HEAD` menghasilkan `281fe14ce1fc84c4c7ac66e08e3543ad4869604e`.
-- `npm run check`: lulus; 25 file diperiksa, 0 error, 0 warning, 0 hint.
-- `npm test`: lulus setelah diulang di luar sandbox karena percobaan pertama dibatasi `spawn EPERM`; build produksi sukses dan 14/14 test Playwright lulus.
-- Build Astro menghasilkan tepat tujuh halaman: `index.html`, `profil-desa.html`, `galeri.html`, `dusun.html`, `destinasi.html`, `umkm.html`, dan `kontak.html`.
-- `dist/berita.html` tidak ada dan test memastikan permintaan `/berita.html` tidak sukses.
-- Test responsif memastikan semua route bebas overflow pada lebar 320px, 768px, dan 1280px; test mobile navigation juga lulus.
-- Pencarian final pada source/public/README/sitemap tidak menemukan klaim lama `309`, `92`, lima dusun, `8 RT`, atau `2 RW`; tidak ditemukan referensi Berita pada permukaan source/public.
+- `npm run check`: lulus; 25 file, 0 error, 0 warning, 0 hint.
+- `npm test`: lulus 15/15; build sukses menghasilkan 7 halaman publik.
+- Test no-JS visibility, hero editorial content-driven, rail/connector, overflow, parity sitemap/no-Berita, data wilayah, dan regresi UMKM lulus.
 - `git diff --check`: lulus.
-- `.agents/get-change-fingerprint.ps1`: dijalankan ulang pada kandidat saat ini dan menghasilkan Base HEAD serta fingerprint resmi yang tercatat di atas.
+- `.agents/get-change-fingerprint.ps1`: dijalankan setelah perubahan warna terakhir dan menghasilkan Base HEAD/fingerprint yang tercatat di atas.
+- Tidak ada commit atau push.
 
 ## Risiko dan Batasan
 
-- Risiko base lama yang sebelumnya berasal dari `main` lokal pada `4091a794...` tidak lagi berlaku. `main` lokal kini sudah disinkronkan ke `281fe14...`, sehingga fingerprint resmi saat ini hanya merepresentasikan kandidat perubahan terhadap base yang benar dan tercatat konsisten untuk audit.
-- Label lokasi UMKM lama, termasuk `Kenteng Krajan`, tidak dipetakan ulang karena tidak tersedia pemetaan resmi menuju dua wilayah administratif atau tiga sebutan warga. Perubahan dibatasi pada klaim demografi/wilayah utama sesuai instruksi agar tidak mengarang data UMKM.
-- Referensi preview eksternal tidak dapat diakses pada sesi ini. Bagan mengikuti token dan pola visual project serta lolos pemeriksaan build, aksesibilitas dasar, dan overflow; audit visual akhir tetap menjadi tanggung jawab Lyra.
-- Tidak ada nama orang, jumlah perangkat, jabatan rinci, angka RT/RW baru, jumlah sarana, atau ukuran infrastruktur yang ditambahkan.
+- Perubahan visual dibatasi pada dua warna teks kecil dan memakai token `var(--green-900)`; tidak ada perubahan geometri atau layout.
+- Alignment kiri dan geometri content-driven hero profil tetap merupakan pengecualian editorial yang eksplisit; route lain tetap mengikuti kontrak shared hero.
+- Reveal animation tetap progressive enhancement: tanpa JavaScript atau tanpa `IntersectionObserver`, konten terlihat penuh.
+- Tidak ada fakta baru, angka RT/RW, nama orang, jumlah perangkat, atau detail infrastruktur yang ditambahkan.

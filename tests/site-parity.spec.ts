@@ -17,7 +17,7 @@ const routes = [
     title: 'Profil Desa — Desa Kentengsari',
     description: 'Profil Desa Kentengsari: data penduduk 2025, dua wilayah administratif, tiga sebutan dusun warga, sejarah, dan struktur pemerintahan desa.',
     active: 'Profil Desa',
-    markers: ['Dari Kenteng dan Sari Menjadi Kentengsari', 'Kentengsari Dalam Angka', 'Dua Administratif, Tiga Sebutan Warga', 'Drainase & Irigasi', 'Struktur Organisasi'],
+    markers: ['Dari Kenteng', 'dan Sari', 'Kentengsari Dalam Angka', 'Dua Administratif, Tiga Sebutan Warga', 'Drainase & Irigasi', 'Struktur Organisasi'],
     assets: ['/assets/profil-desa-image.jpg'],
   },
   {
@@ -185,6 +185,19 @@ test('profile presents official 2025 data and separates administrative, communit
     await expect(organization.getByRole('heading', { name: role, exact: true })).toBeVisible();
   }
   await expect(page.getByRole('heading', { name: 'Drainase & Irigasi', exact: true })).toBeVisible();
+});
+
+test('profile editorial content remains visible without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('/profil-desa.html');
+
+  await expect(page.locator('html')).not.toHaveClass(/profile-js/);
+  await expect(page.getByText('1.201', { exact: true })).toBeVisible();
+  await expect(page.getByText('Struktur Organisasi', { exact: false }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kepala Desa', exact: true })).toBeVisible();
+
+  await context.close();
 });
 
 test('gallery dialog supports close button, Escape, backdrop, and focus return', async ({ page }) => {
@@ -397,11 +410,18 @@ test('pre-migration visual hierarchy is retained by the shared header, photograp
       await page.goto(route.path);
       const hero = page.locator('[data-page-hero]');
       const height = await hero.evaluate((element) => Math.round(element.getBoundingClientRect().height));
-      expect(height, `${width}px ${route.path}`).toBeGreaterThanOrEqual(expectedMinimum);
-      expect(height, `${width}px ${route.path}`).toBeLessThanOrEqual(expectedMaximum);
+      if (route.path === '/profil-desa.html') {
+        const editorialMinimum = width === 320 ? 700 : 800;
+        expect(height, `${width}px ${route.path}: editorial hero must retain room for its content`).toBeGreaterThanOrEqual(editorialMinimum);
+      } else {
+        expect(height, `${width}px ${route.path}`).toBeGreaterThanOrEqual(expectedMinimum);
+        expect(height, `${width}px ${route.path}`).toBeLessThanOrEqual(expectedMaximum);
+      }
       await expect(hero.locator('img[src="/assets/hero-background.jpg"]')).toHaveCount(1);
       const alignment = await hero.evaluate((element) => getComputedStyle(element).textAlign);
-      expect(alignment).toBe('center');
+      // The merged profile keeps its intentional editorial left alignment; shared page heroes remain centered.
+      const expectedAlignment = route.path === '/profil-desa.html' ? 'start' : 'center';
+      expect(alignment, `${width}px ${route.path}: unexpected page-hero text alignment`).toBe(expectedAlignment);
     }
   }
 });

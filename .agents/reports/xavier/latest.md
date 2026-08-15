@@ -1,58 +1,58 @@
 # Xavier Gate Report
 
-- Waktu gate: 2026-08-15T11:41:00+07:00
-- Base HEAD: `281fe14ce1fc84c4c7ac66e08e3543ad4869604e`
-- Diff fingerprint: `07ce2b55da7271bb7992c9b16b54cbbc3569a3259f8c01a16f352b3a8f01ac48`
+- Waktu gate: 2026-08-15T12:16:20+07:00
+- Base HEAD: `7a103af6b56c4b0b5c6ab1ae365929418b6027d0`
+- Diff fingerprint: `8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34`
 - Daftar file yang diperiksa:
-  - `README.md`
   - `public/sitemap.xml`
+  - `README.md`
   - `sitemap.xml`
   - `src/config/site.ts`
   - `src/pages/berita.astro` (deleted)
   - `src/pages/dusun.astro`
   - `src/pages/index.astro`
   - `src/pages/profil-desa.astro`
+  - `src/styles/global.css`
   - `src/types/site.ts`
   - `tests/site-parity.spec.ts`
 - Status Orion: `READY_FOR_AUDIT`
-- Status Lyra: `PASS_WITH_NOTES`
-- Status Litcq: `PASS`
-- Keputusan: `PUSH`
+- Status Lyra: `PASS`
+- Status Litcq: `PASS_WITH_NOTES`
 
 ## Ringkasan
 
-Kandidat final memenuhi quality gate. Fingerprint resmi dihitung ulang dan cocok persis dengan konteks. Ketiga laporan tersedia, segar, memakai Base HEAD/fingerprint yang sama, dan mencakup seluruh scope. Penghapusan Berita, pembaruan data resmi, pemisahan nama wilayah, bagan pemerintahan, serta penggabungan Drainase & Irigasi konsisten antara source, metadata, sitemap, dan regresi.
+Kandidat final memenuhi acceptance dan seluruh laporan audit segar. Base HEAD, fingerprint, dan scope Orion, Lyra, serta Litcq identik dengan kandidat ini. Integrasi editorial profil tetap ada, sementara data pengguna, pemisahan wilayah, dan penghapusan Berita konsisten pada source, navigasi, sitemap, dan parity tests.
 
-## Validasi Temuan
+## Validasi
 
-- Tidak ada temuan blocker, high, atau temuan material dari Lyra maupun Litcq; Lyra menyatakan `PASS_WITH_NOTES` tanpa temuan.
-- `npm run check` dilaporkan lulus dengan 0 diagnostics.
-- Master-side `npm test` dilaporkan lulus 14/14; build menghasilkan tujuh halaman dan `dist/berita.html` tidak ada.
-- Master-side Playwright pada lebar 390px dan 1280px membuktikan chart tetap dalam viewport (`scrollWidth` sama dengan viewport); data/statistik dan hierarki terbaca.
-- Data `1.201`, `626`, `575`, `390`, dua wilayah administratif, tiga sebutan warga, riwayat Krajan 1-3, struktur organisasi, dan `Drainase & Irigasi` diverifikasi melalui diff serta test parity.
-- Berita dihapus dari page, navigasi, tipe route, kedua sitemap, dan referensi publik; test juga memverifikasi request `/berita.html` gagal.
-- `git diff --check` lulus. Fingerprint script mencatat tepat scope kandidat; perubahan laporan worker dikecualikan oleh aturan fingerprint.
+- Fingerprint resmi dihitung ulang setelah seluruh pemeriksaan: cocok persis dengan konteks.
+- `npm run check`: lulus, 25 file, 0 error, 0 warning, 0 hint.
+- `npm test`: build lulus dengan 7 halaman; 14/15 test lulus pada run pertama. Satu assertion transform ikon menu mobile terkena timing transisi dan tidak konsisten dengan hasil ulang.
+- Test terarah mobile navigation diulang 3 kali: 3/3 lulus.
+- Bukti Orion dan Litcq: test lengkap 15/15 lulus, fallback no-JS/observer, ARIA, links, overflow, `/berita.html` 404, dan regresi data lulus.
+- `git diff --check`: lulus.
+- Verifikasi langsung: profil mempertahankan hero editorial, data 1.201/626/575/390, Kentengsari 1/2, Nglarangan/Kentengsari/Kenteng Wetan, riwayat Krajan 1-3, fasilitas, dan struktur pemerintahan.
+- Berita dihapus dari route, navigasi, tipe, sitemap, dan surface publik; build menghasilkan tujuh route tanpa `berita.html`.
 
 ## Blocking Issues
 
-Tidak ada.
+Tidak ada blocker atau temuan `high`. Lyra melaporkan `PASS`; Litcq melaporkan `PASS_WITH_NOTES` tanpa temuan dan mencatat hanya browser in-app yang tidak tersedia, dengan Playwright lokal tetap lulus.
 
 ## Risiko yang Diterima
 
-- Lyra mengalami `spawn EPERM` sehingga tidak mengambil screenshot pada sesinya. Risiko ini tertutup oleh master-side Playwright visual dan bukti overflow pada dua viewport; tidak ada temuan visual material, sehingga tidak memblokir.
-- Lyra tidak memakai external preview. Inspeksi diff/markup/CSS dan bukti runtime master cukup untuk scope ini.
-- Label UMKM lama yang belum dapat dipetakan ke nomenklatur baru tetap dipertahankan sesuai batasan Orion; tidak ada data pemetaan resmi yang dikarang dan Litcq tidak menemukan regresi.
+- Satu kegagalan assertion transform pada run Playwright pertama merupakan timing transisi; pengulangan test terarah 3/3 lulus dan tidak ada perubahan kandidat.
+- Browser in-app tidak tersedia pada sesi Litcq; validasi runtime lokal dan inspeksi source/diff tersedia.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` dan mencocokkan Base HEAD, fingerprint, serta daftar file.
-- Membaca langsung diff kandidat dan seluruh laporan Orion, Lyra, serta Litcq.
-- Mencocokkan status, Base HEAD, fingerprint, dan scope ketiga worker.
-- Memeriksa referensi route Berita/`/berita.html`, klaim angka lama, data baru, sitemap, output `dist`, dan perubahan metadata/source.
-- Memeriksa `git diff --check` dan bukti validasi check, build, Playwright, aksesibilitas, serta responsif yang dilaporkan.
+- Membaca diff langsung dan memastikan daftar file non-report tepat sesuai scope.
+- Membaca laporan Orion, Lyra, dan Litcq serta mencocokkan status, Base HEAD, fingerprint, dan scope.
+- Memverifikasi integrasi concurrent editorial profile tetap dipertahankan bersama data user dan penghapusan Berita.
+- Menjalankan fingerprint resmi, `npm run check`, `npm test`, test terarah Playwright, dan `git diff --check`.
+- Tidak mengubah source, asset, test, docs, atau laporan worker; tidak commit/push.
 
 ## Keputusan
 
 `PUSH`
 
-Diff dengan fingerprint `07ce2b55da7271bb7992c9b16b54cbbc3569a3259f8c01a16f352b3a8f01ac48` boleh didorong oleh Master. Push tetap hanya dilakukan Master sesuai AGENTS.md.
+Diff dengan fingerprint `8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34` boleh didorong oleh Master sesuai AGENTS.md. Tidak ada perubahan file kandidat setelah audit.
