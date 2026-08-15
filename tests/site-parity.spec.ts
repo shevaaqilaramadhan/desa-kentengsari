@@ -184,6 +184,8 @@ test('profile presents official 2025 data and separates administrative, communit
   for (const role of ['Kepala Desa', 'Sekretaris Desa', 'Kaur & Kasi', 'Kepala Kewilayahan']) {
     await expect(organization.getByRole('heading', { name: role, exact: true })).toBeVisible();
   }
+  const landmark = page.locator('#landmark');
+  await expect(landmark.locator('[data-profile-landmark-gallery] img')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Drainase & Irigasi', exact: true })).toBeVisible();
 });
 

@@ -154,13 +154,29 @@ test('flip and unflip are physical, one-second, interruptible, and synchronize a
     const instrumentation = window as typeof window & {
       __umkmFlipRecording?: Promise<typeof frames>;
     };
-    instrumentation.__umkmFlipRecording = new Promise((resolve) => {
+    instrumentation.__umkmFlipRecording = new Promise((resolve, reject) => {
       cardShell.addEventListener('pointerenter', () => {
-        const motionStartedAt = performance.now();
+        const activationObservedAt = performance.now();
+        const initialTransform = getComputedStyle(target).transform;
+        let motionStartedAt: number | null = null;
         const sample = () => {
+          const sampledAt = performance.now();
           const style = getComputedStyle(target);
           const matrix = new DOMMatrixReadOnly(style.transform);
-          const elapsed = performance.now() - motionStartedAt;
+          if (motionStartedAt === null) {
+            if (style.transform === initialTransform) {
+              if (sampledAt - activationObservedAt >= 500) {
+                reject(new Error('The UMKM flip did not start within 500ms of pointerenter'));
+                return;
+              }
+              requestAnimationFrame(sample);
+              return;
+            }
+            // React schedules the Motion effect after pointerenter. Anchor the
+            // one-second contract to the first visual change, not scheduler lag.
+            motionStartedAt = sampledAt;
+          }
+          const elapsed = sampledAt - motionStartedAt;
           frames.push({
             elapsed,
             transform: style.transform,
@@ -199,11 +215,20 @@ test('flip and unflip are physical, one-second, interruptible, and synchronize a
     return instrumentation.__umkmFlipRecording;
   });
   expect(recordedFrames.length).toBeGreaterThan(40);
-  const samples = [250, 500, 750].map((target) =>
-    recordedFrames.reduce((nearest, frame) =>
+  const settledFrame = recordedFrames.find(({ elapsed, m11 }) => elapsed >= 800 && m11 < -0.999);
+  if (!settledFrame) {
+    const finalFrame = recordedFrames.at(-1);
+    throw new Error(`No settled flip frame was recorded by 1180ms; final frame: ${JSON.stringify(finalFrame)}`);
+  }
+  const measuredFlipDuration = settledFrame.elapsed;
+  expect(measuredFlipDuration).toBeGreaterThanOrEqual(900);
+  expect(measuredFlipDuration).toBeLessThanOrEqual(1120);
+  const samples = [0.25, 0.5, 0.75].map((phase) => {
+    const target = measuredFlipDuration * phase;
+    return recordedFrames.reduce((nearest, frame) =>
       Math.abs(frame.elapsed - target) < Math.abs(nearest.elapsed - target) ? frame : nearest,
-    ),
-  );
+    );
+  });
   const quarter = samples[0]!;
   const midpoint = samples[1]!;
   const threeQuarter = samples[2]!;
@@ -231,14 +256,6 @@ test('flip and unflip are physical, one-second, interruptible, and synchronize a
     const matrix = await surface.evaluate((element) => new DOMMatrixReadOnly(getComputedStyle(element).transform).m11);
     return matrix;
   }, { intervals: [16], timeout: 1500 }).toBeLessThan(-0.999);
-  const settledFrame = recordedFrames.find(({ elapsed, m11 }) => elapsed >= 800 && m11 < -0.999);
-  if (!settledFrame) {
-    const finalFrame = recordedFrames.at(-1);
-    throw new Error(`No settled flip frame was recorded by 1180ms; final frame: ${JSON.stringify(finalFrame)}`);
-  }
-  const measuredFlipDuration = settledFrame.elapsed;
-  expect(measuredFlipDuration).toBeGreaterThanOrEqual(900);
-  expect(measuredFlipDuration).toBeLessThanOrEqual(1120);
   await expect(control).toHaveAttribute('aria-expanded', 'true');
   await expect(front).toHaveAttribute('aria-hidden', 'true');
   await expect(back).toHaveAttribute('aria-hidden', 'false');

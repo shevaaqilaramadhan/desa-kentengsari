@@ -15,6 +15,12 @@ const missions = [
   ['04', 'Alam berkelanjutan', 'Melestarikan lingkungan dan potensi alam lereng Gunung Sumbing.'],
   ['05', 'Generasi masa depan', 'Meningkatkan kualitas sumber daya manusia melalui pendidikan dan pemberdayaan pemuda.'],
 ] as const;
+
+const landmarkImages = [
+  { src: '/assets/galeri-3.jpg', alt: 'Panorama alam Desa Kentengsari dari ketinggian', label: 'Panorama lereng' },
+  { src: '/assets/galeri-1.jpg', alt: 'Hamparan hijau persawahan Desa Kentengsari', label: 'Hamparan persawahan' },
+  { src: '/assets/kata-sambutan-2.jpg', alt: 'Semangat gotong royong masyarakat Kentengsari', label: 'Gotong royong warga' },
+] as const;
 ---
 
 <SiteLayout title="Profil Desa — Desa Kentengsari" description="Profil Desa Kentengsari: data penduduk 2025, dua wilayah administratif, tiga sebutan dusun warga, sejarah, dan struktur pemerintahan desa." activeRoute="profil-desa" canonicalPath="/profil-desa.html">
@@ -86,21 +92,31 @@ const missions = [
 
     <section class="profile-facilities profile-section" id="landmark" aria-labelledby="landmark-heading">
       <div class="profile-container">
-        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">Sarana desa</p><h2 id="landmark-heading">Landmark &amp; Sarana Umum</h2></div><p>Fasilitas yang menjadi pusat kegiatan, pelayanan, dan ruang hidup masyarakat Desa Kentengsari.</p></div>
-        <div class="profile-facilities__grid profile-reveal">
-          <article><h3>Kantor Desa</h3><p>Pusat pelayanan administrasi dan informasi bagi masyarakat.</p></article>
-          <article><h3>Sekolah Dasar</h3><p>Fasilitas pendidikan dasar bagi putra-putri desa.</p></article>
-          <article><h3>Tempat Ibadah</h3><p>Ruang kegiatan rohani masyarakat.</p></article>
-          <article><h3>Lahan Pertanian</h3><p>Hamparan sawah dan kebun yang mendukung ekonomi desa.</p></article>
-          <article><h3>Drainase &amp; Irigasi</h3><p>Sarana aliran air yang mendukung lingkungan permukiman dan lahan pertanian desa.</p></article>
+        <div class="profile-section-head profile-reveal"><div><p class="profile-kicker profile-kicker--dark">04 / Sarana desa</p><h2 id="landmark-heading">Landmark &amp; Sarana Umum</h2></div><p>Fasilitas yang menjadi pusat kegiatan, pelayanan, dan ruang hidup masyarakat Desa Kentengsari.</p></div>
+        <div class="profile-landmark__layout profile-reveal">
+          <div class="profile-landmark__gallery" data-profile-landmark-gallery aria-label="Galeri visual ruang hidup Kentengsari">
+            {landmarkImages.map((image, index) => (
+              <figure class={`profile-landmark__figure profile-landmark__figure--${index + 1}`}>
+                <img src={image.src} alt={image.alt} loading="lazy" />
+                <figcaption>{image.label}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <div class="profile-facilities__grid profile-landmark__list">
+            <article><span class="profile-facility__number">01</span><h3>Kantor Desa</h3><p>Pusat pelayanan administrasi dan informasi bagi masyarakat.</p></article>
+            <article><span class="profile-facility__number">02</span><h3>Sekolah Dasar</h3><p>Fasilitas pendidikan dasar bagi putra-putri desa.</p></article>
+            <article><span class="profile-facility__number">03</span><h3>Tempat Ibadah</h3><p>Ruang kegiatan rohani masyarakat.</p></article>
+            <article><span class="profile-facility__number">04</span><h3>Lahan Pertanian</h3><p>Hamparan sawah dan kebun yang mendukung ekonomi desa.</p></article>
+            <article><span class="profile-facility__number">05</span><h3>Drainase &amp; Irigasi</h3><p>Sarana aliran air yang mendukung lingkungan permukiman dan lahan pertanian desa.</p></article>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="profile-vision profile-section" id="visi-misi">
       <div class="profile-container profile-vision__layout">
-        <div class="profile-vision__statement profile-reveal"><p class="profile-kicker profile-kicker--light">05 / Arah pembangunan</p><p class="profile-vision__eyebrow">Visi Desa</p><blockquote>“Maju, mandiri, dan sejahtera—berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote><span class="profile-vision__signature">— Pemerintah Desa Kentengsari</span></div>
-        <div class="profile-mission profile-reveal"><p class="profile-kicker profile-kicker--dark">Misi kami</p><h2>Langkah nyata,<br /><span>setiap hari.</span></h2><div class="profile-mission__list">{missions.map((mission) => <article><span>{mission[0]}</span><div><h3>{mission[1]}</h3><p>{mission[2]}</p></div></article>)}</div></div>
+        <article class="profile-vision__statement profile-reveal" aria-labelledby="visi-heading"><div class="profile-vision__card-head"><p class="profile-kicker profile-kicker--dark">05 / Arah pembangunan</p><span aria-hidden="true">VISI</span></div><h2 id="visi-heading" class="profile-vision__eyebrow">Visi Desa</h2><blockquote>“Maju, mandiri, dan sejahtera—berlandaskan gotong royong serta kearifan lokal masyarakat lereng Gunung Sumbing.”</blockquote><span class="profile-vision__signature">— Pemerintah Desa Kentengsari</span></article>
+        <article class="profile-mission profile-reveal" aria-labelledby="misi-heading"><p class="profile-kicker profile-kicker--dark">Misi kami</p><h2 id="misi-heading">Langkah nyata,<br /><span>setiap hari.</span></h2><div class="profile-mission__list">{missions.map((mission) => <article><span>{mission[0]}</span><div><h3>{mission[1]}</h3><p>{mission[2]}</p></div></article>)}</div></article>
       </div>
     </section>
 
@@ -437,6 +453,221 @@ const missions = [
 
     .profile-hierarchy__territories {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* The landmark section pairs a visual memory of the village with the
+     practical places that keep daily life moving. The grid deliberately
+     collapses to a small, readable sequence on narrow screens. */
+  .profile-landmark__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(19rem, .85fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+    margin-top: 4rem;
+  }
+
+  .profile-landmark__gallery {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+    grid-template-rows: repeat(2, minmax(10rem, 1fr));
+    gap: .75rem;
+    min-height: 31rem;
+  }
+
+  .profile-landmark__figure {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid rgb(18 63 38 / .12);
+    border-radius: var(--radius);
+    background: var(--green-900);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .profile-landmark__figure--1 {
+    grid-row: 1 / span 2;
+  }
+
+  .profile-landmark__figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .7s cubic-bezier(.23, 1, .32, 1);
+  }
+
+  .profile-landmark__figure:hover img {
+    transform: scale(1.05);
+  }
+
+  .profile-landmark__figure::after {
+    position: absolute;
+    inset: 35% 0 0;
+    content: '';
+    background: linear-gradient(transparent, rgb(13 47 27 / .72));
+    pointer-events: none;
+  }
+
+  .profile-landmark__figure figcaption {
+    position: absolute;
+    right: 1rem;
+    bottom: .8rem;
+    left: 1rem;
+    z-index: 1;
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .profile-landmark__list.profile-facilities__grid {
+    grid-template-columns: 1fr;
+    gap: .75rem;
+    margin-top: 0;
+  }
+
+  .profile-landmark__list article {
+    position: relative;
+    padding: 1.2rem 1.35rem 1.25rem 3.7rem;
+    border-color: var(--line);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / .78);
+    box-shadow: none;
+  }
+
+  .profile-landmark__list article:last-child {
+    background: var(--green-50);
+  }
+
+  .profile-facility__number {
+    position: absolute;
+    top: 1.35rem;
+    left: 1.35rem;
+    color: var(--green-600);
+    font-size: .65rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+  }
+
+  .profile-landmark__list h3 {
+    margin-top: 0;
+  }
+
+  .profile-vision {
+    background: var(--green-50);
+  }
+
+  .profile-vision__layout {
+    gap: clamp(1.25rem, 4vw, 3.5rem);
+  }
+
+  .profile-vision__statement,
+  .profile-mission {
+    border: 1px solid rgb(18 63 38 / .12);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .profile-vision__statement {
+    min-height: 0;
+    padding: clamp(2rem, 4vw, 3.5rem);
+    color: var(--green-950);
+    background: #fff;
+    box-shadow: var(--shadow-md);
+  }
+
+  .profile-vision__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .profile-vision__card-head > span {
+    color: var(--green-500);
+    font-size: .62rem;
+    font-weight: 800;
+    letter-spacing: .2em;
+  }
+
+  .profile-vision__statement .profile-kicker--dark,
+  .profile-vision__statement .profile-vision__eyebrow {
+    color: var(--green-900);
+  }
+
+  .profile-vision__eyebrow {
+    margin-top: clamp(4rem, 8vw, 7rem);
+  }
+
+  .profile-vision blockquote {
+    color: var(--green-950);
+  }
+
+  .profile-vision__signature {
+    color: var(--muted);
+  }
+
+  .profile-mission {
+    padding: clamp(2rem, 4vw, 3.5rem);
+    background: rgb(255 255 255 / .78);
+  }
+
+  .profile-mission h2 {
+    color: var(--green-950);
+  }
+
+  @media (max-width: 760px) {
+    .profile-landmark__layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .profile-landmark__gallery {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+      grid-template-rows: minmax(15rem, auto) 10rem;
+      min-height: 0;
+    }
+
+    .profile-landmark__figure--1 {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+
+    .profile-landmark__figure--2 {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .profile-landmark__figure--3 {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .profile-vision__statement,
+    .profile-mission {
+      border-radius: var(--radius);
+    }
+
+    .profile-vision__eyebrow {
+      margin-top: 3rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .profile-hero__cta:hover,
+    .profile-story__visual:hover img,
+    .profile-stat:hover,
+    .profile-landmark__figure:hover img,
+    .profile-org article:hover,
+    .profile-endcap a:hover span {
+      transform: none;
+    }
+
+    .profile-landmark__figure img {
+      transition: none;
     }
   }
 </style>

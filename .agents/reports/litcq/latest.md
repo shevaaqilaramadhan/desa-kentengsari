@@ -1,14 +1,14 @@
 # Litcq Report
 
-- Waktu audit: 2026-08-15T12:14:06+07:00
-- Base HEAD: 7a103af6b56c4b0b5c6ab1ae365929418b6027d0
-- Diff fingerprint: 8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34
-- Scope: `public/sitemap.xml`, `README.md`, `sitemap.xml`, `src/config/site.ts`, `src/pages/berita.astro` (deleted), `src/pages/dusun.astro`, `src/pages/index.astro`, `src/pages/profil-desa.astro`, `src/styles/global.css`, `src/types/site.ts`, `tests/site-parity.spec.ts`
+- Waktu audit: 2026-08-15T18:57:00+07:00
+- Base HEAD: 928aa5ba0bd798b17a90909bdf538b4e1a6da111
+- Diff fingerprint: a2c63bcf67189b21356b745c30318e7feaca6dcd86165e676e82b2c7be80b15d
+- Scope: `src/pages/profil-desa.astro`, `tests/site-parity.spec.ts`, `tests/umkm.spec.ts`, serta dependency runtime dan referensi yang terdampak
 - Status: PASS_WITH_NOTES
 
 ## Ringkasan
 
-Kandidat lulus pemeriksaan fungsi dan regresi teknis. `npm run check` menghasilkan 0 error, 0 warning, dan 0 hint; `npm test` berhasil membangun 7 halaman dan menjalankan 15 test dengan hasil 15 passed. Tidak ditemukan temuan dalam scope audit.
+Audit fungsi teknis dan regresi selesai setelah Orion berstatus `READY_FOR_AUDIT` pada 2026-08-15T18:53:58+07:00. Tidak ditemukan bug yang dapat ditindaklanjuti pada scope perubahan.
 
 ## Temuan
 
@@ -16,18 +16,20 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint identik dengan kandidat yang diberikan.
-- Menjalankan `npm run check`: 0 error, 0 warning, 0 hint pada 25 file Astro.
-- Menjalankan `npm test`: build Astro sukses dengan 7 page(s) built (`index`, `profil-desa`, `galeri`, `dusun`, `destinasi`, `umkm`, `kontak`) dan seluruh 15 test Playwright lulus.
-- Memverifikasi 7 route, metadata, navigasi 7 item tanpa `Berita`, marker konten, aset lokal, sitemap, robots, social card, dan route `/berita.html` tidak tersedia melalui `tests/site-parity.spec.ts:65-151`.
-- Memverifikasi data profil 2025, dua wilayah administratif, tiga sebutan dusun, fasilitas, dan struktur pemerintahan melalui `tests/site-parity.spec.ts:158-188`; struktur/fasilitas terlihat pada `src/pages/profil-desa.astro:59-124`.
-- Memverifikasi konten editorial tetap tersedia tanpa JavaScript melalui `tests/site-parity.spec.ts:190-201`. Fallback observer juga aman: `src/pages/profil-desa.astro:131-139` hanya mengaktifkan reveal jika `IntersectionObserver` tersedia, sementara CSS default tetap terlihat pada `src/pages/profil-desa.astro:150-164`.
-- Memverifikasi hero, rail, connector, dan header/nav runtime melalui test hierarki visual dan navigasi; implementasi berada pada `src/pages/index.astro:23`, `src/components/astro/PageHero.astro:11`, `src/pages/profil-desa.astro:38,112`, dan `src/layouts/SiteLayout.astro:163-194`.
-- Memverifikasi duplicate IDs, referensi ARIA, serta referensi lokal pada seluruh route melalui `tests/site-parity.spec.ts:93-116`; inspeksi artefak `dist/profil-desa.html` juga menghasilkan `DUP_IDS=` dan `MISSING_ARIA=` kosong.
-- Memverifikasi no-overflow pada lebar 320, 768, dan 1280 px serta perilaku menu mobile (keyboard Escape, backdrop, touch, scroll lock, breakpoint 861 px) melalui `tests/site-parity.spec.ts:242-373`.
-- Memverifikasi hero/rail/connector dan fallback unsupported observer secara source-level; browser in-app tidak tersedia pada sesi audit ini, sehingga tidak ada inspeksi visual interaktif tambahan di browser tersebut.
+- Fingerprint resmi `.agents/get-change-fingerprint.ps1`: PASS; Base HEAD dan fingerprint cocok dengan kandidat final, dengan tiga file scope yang sama.
+- `npm run check`: PASS; 25 file, 0 error, 0 warning, 0 hint.
+- `npm test`: PASS; build Astro menghasilkan 7 halaman dan Playwright lulus 15/15.
+- `npx playwright test tests/site-parity.spec.ts`: PASS; 9/9 lulus.
+- `git diff --check`: PASS; hanya warning normal line-ending Git, tanpa whitespace error.
+- Route/link/SEO: `tests/site-parity.spec.ts:65-156` memverifikasi 7 route, canonical, metadata, navigasi, referensi lokal, sitemap 7 URL, robots, social card, dan tidak adanya route/link/sitemap Berita (`/berita.html`).
+- Data Profil Desa: `src/pages/profil-desa.astro:4-23,65-140` memuat data 2025, dua wilayah administratif, tiga sebutan warga, riwayat Krajan, tepat satu item `Drainase & Irigasi`, visi/misi, dan struktur pemerintahan; divalidasi `tests/site-parity.spec.ts:158-190`.
+- Gallery asset: `src/pages/profil-desa.astro:19-23,97-103` mereferensikan tiga aset yang tersedia di `public/assets/`, dengan alt text; count gallery diuji pada `tests/site-parity.spec.ts:184-190`.
+- No-JS/reduced-motion: fallback konten tetap terlihat melalui reveal opt-in pada `src/pages/profil-desa.astro:146-189`; transition/transform dinonaktifkan pada `:182-189` dan `:659-670`; no-JS diuji `tests/site-parity.spec.ts:192-203`.
+- Semantic/ARIA/keyboard: landmark, heading, label, alt, struktur organisasi, gallery close/Escape/backdrop/focus return, mobile navigation, dan validasi referensi ARIA diuji pada `src/pages/profil-desa.astro:27-140` serta `tests/site-parity.spec.ts:98-112,205-227,244-371`.
+- Responsive/canonical/overflow: target width seluruh route, profile hero, dan overflow diuji `tests/site-parity.spec.ts:244-262,382-429`; UMKM 1/2/3 kolom tanpa horizontal overflow diuji `tests/umkm.spec.ts:345-359`.
+- Observability UMKM: SSR/no-JS, filter count/order/zero-state, exit timing, 3D flip timing/interruption, AX state, keyboard/mouse/touch, reduced motion, dan responsive overflow tercakup `tests/umkm.spec.ts:40-359`; seluruhnya lulus dalam 15/15.
 
 ## Batasan
 
-- Browser in-app tidak tersedia (`agent.browsers.list()` mengembalikan daftar kosong). Validasi runtime tetap dilakukan melalui Playwright Chromium lokal yang dijalankan oleh `npm test` dan seluruhnya lulus.
-- Tidak ada perubahan pada source, asset, test, docs, atau laporan agent lain; hanya laporan ini yang ditulis.
+- Percobaan awal `npm test` di sandbox berhenti pada `spawn EPERM` sebelum assertion; pengulangan dengan izin proses tambahan berhasil 15/15. Ini keterbatasan lingkungan audit, bukan kegagalan aplikasi.
+- Audit bersifat audit-only; tidak ada source, test, atau report agent lain yang diubah.

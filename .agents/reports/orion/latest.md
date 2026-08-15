@@ -1,46 +1,42 @@
 # Orion Implementation Report
 
-- Waktu implementasi: 2026-08-15T12:11:10+07:00
-- Base HEAD: 7a103af6b56c4b0b5c6ab1ae365929418b6027d0
-- Diff fingerprint: 8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34
-- Permintaan/scope: Menutup temuan kontras low pada profil dengan mengganti warna teks kecil `.profile-kicker--dark` dan `.profile-rail a` ke token `var(--green-900)`, tanpa mengubah layout atau content.
+- Waktu implementasi: 2026-08-15T18:53:58+07:00
+- Base HEAD: 928aa5ba0bd798b17a90909bdf538b4e1a6da111
+- Diff fingerprint: a2c63bcf67189b21356b745c30318e7feaca6dcd86165e676e82b2c7be80b15d
+- Permintaan/scope: Perbaikan reduced-motion Profil Desa; menetralkan hover transform pada `.profile-org article:hover` dan `.profile-endcap a:hover span`, mencakup hover transform Profil Desa lain yang sudah ada, tanpa mengubah motion site-wide nav, layout/data/copy UTF-8, atau `tests/umkm.spec.ts`.
 - Status: READY_FOR_AUDIT
 
 ## Ringkasan Perubahan
 
-- `.profile-kicker--dark` dan `.profile-rail a` kini memakai `var(--green-900)` untuk kontras AA yang lebih aman dan konsisten dengan token hijau gelap project.
-- Tidak ada layout, content, data, struktur pemerintahan, wilayah, sarana, atau desain editorial lain yang diubah.
+Menambahkan kedua selector hover Profil Desa yang sebelumnya belum tercakup ke override `@media (prefers-reduced-motion: reduce)` di `src/pages/profil-desa.astro`, dengan `transform: none`. Selector hover Profil Desa lainnya tetap tercakup; mode normal, background/shadow hover, layout, data, copy, dan test UMKM dipertahankan.
 
-## Integrasi dan Acceptance
+## File yang Berubah
 
-Profil tetap memadukan visual editorial concurrent dengan acceptance implementasi sebelumnya: data 1.201 penduduk, 626 pria, 575 wanita, 390 KK; Kentengsari 1/2 sebagai wilayah administratif; Nglarangan, Kentengsari, Kenteng Wetan sebagai sebutan warga; riwayat Krajan 1–3; struktur Kepala Desa, Sekretaris Desa, Kaur & Kasi, Kepala Kewilayahan; Drainase & Irigasi; serta tujuh route publik tanpa Berita.
-
-## File Scope Kandidat
-
-- `public/sitemap.xml`
-- `README.md`
-- `sitemap.xml`
-- `src/config/site.ts`
-- `src/pages/berita.astro` (dihapus)
-- `src/pages/dusun.astro`
-- `src/pages/index.astro`
-- `src/pages/profil-desa.astro`
-- `src/styles/global.css`
-- `src/types/site.ts`
-- `tests/site-parity.spec.ts`
+- `src/pages/profil-desa.astro` — perubahan Orion pada override reduced-motion.
+- `tests/site-parity.spec.ts` — perubahan kandidat yang sudah ada sebelum pekerjaan ini; tidak diubah Orion.
+- `tests/umkm.spec.ts` — perubahan kandidat yang sudah ada sebelum pekerjaan ini; tidak diubah Orion.
+- `.agents/reports/orion/latest.md` — laporan ini.
 
 ## Validasi
 
-- `npm run check`: lulus; 25 file, 0 error, 0 warning, 0 hint.
-- `npm test`: lulus 15/15; build sukses menghasilkan 7 halaman publik.
-- Test no-JS visibility, hero editorial content-driven, rail/connector, overflow, parity sitemap/no-Berita, data wilayah, dan regresi UMKM lulus.
-- `git diff --check`: lulus.
-- `.agents/get-change-fingerprint.ps1`: dijalankan setelah perubahan warna terakhir dan menghasilkan Base HEAD/fingerprint yang tercatat di atas.
-- Tidak ada commit atau push.
+- `npm run check` — PASS; 25 file, 0 error, 0 warning, 0 hint.
+- `npm test` — PASS; build Astro 7 halaman dan Playwright 15/15.
+- `npx playwright test tests/site-parity.spec.ts` — PASS; 9/9.
+- `git diff --check` — PASS; hanya warning line-ending Git pada working copy, tanpa whitespace error.
+- `.agents/get-change-fingerprint.ps1` — PASS; output final:
+
+  ```text
+  BASE_HEAD=928aa5ba0bd798b17a90909bdf538b4e1a6da111
+  DIFF_FINGERPRINT=a2c63bcf67189b21356b745c30318e7feaca6dcd86165e676e82b2c7be80b15d
+  FILES:
+  src/pages/profil-desa.astro	file	7972c47358df92c002299f272a41bc052e4f9d32201527f6370d6ea7632f7f60
+  tests/site-parity.spec.ts	file	659d8e60a34bbd4061f1eb6cab31424a033e82b7534cec126c9ac2f98013fc39
+  tests/umkm.spec.ts	file	91d8658c87714f3d675231115de0f8e3e6eb15ea601791eb506b689c64df735f
+  ```
 
 ## Risiko dan Batasan
 
-- Perubahan visual dibatasi pada dua warna teks kecil dan memakai token `var(--green-900)`; tidak ada perubahan geometri atau layout.
-- Alignment kiri dan geometri content-driven hero profil tetap merupakan pengecualian editorial yang eksplisit; route lain tetap mengikuti kontrak shared hero.
-- Reveal animation tetap progressive enhancement: tanpa JavaScript atau tanpa `IntersectionObserver`, konten terlihat penuh.
-- Tidak ada fakta baru, angka RT/RW, nama orang, jumlah perangkat, atau detail infrastruktur yang ditambahkan.
+- Perubahan normal-mode hover dan motion site-wide nav tidak disentuh.
+- Laporan Lyra, Litcq, dan Xavier tidak diubah.
+- Tidak ada commit atau push.
+- Audit wajib mengulang terhadap fingerprint final di atas.

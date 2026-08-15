@@ -1,58 +1,49 @@
-# Xavier Gate Report
+# Xavier QA Gate Report
 
-- Waktu gate: 2026-08-15T12:16:20+07:00
-- Base HEAD: `7a103af6b56c4b0b5c6ab1ae365929418b6027d0`
-- Diff fingerprint: `8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34`
-- Daftar file yang diperiksa:
-  - `public/sitemap.xml`
-  - `README.md`
-  - `sitemap.xml`
-  - `src/config/site.ts`
-  - `src/pages/berita.astro` (deleted)
-  - `src/pages/dusun.astro`
-  - `src/pages/index.astro`
-  - `src/pages/profil-desa.astro`
-  - `src/styles/global.css`
-  - `src/types/site.ts`
-  - `tests/site-parity.spec.ts`
-- Status Orion: `READY_FOR_AUDIT`
-- Status Lyra: `PASS`
-- Status Litcq: `PASS_WITH_NOTES`
+- Waktu gate: 2026-08-15T18:59:42+07:00
+- Base HEAD: 928aa5ba0bd798b17a90909bdf538b4e1a6da111
+- Diff fingerprint: a2c63bcf67189b21356b745c30318e7feaca6dcd86165e676e82b2c7be80b15d
+- Scope/diff: `src/pages/profil-desa.astro`, `tests/site-parity.spec.ts`, `tests/umkm.spec.ts`
+- Orion: READY_FOR_AUDIT
+- Lyra: PASS
+- Litcq: PASS_WITH_NOTES
+- Keputusan: PUSH
 
-## Ringkasan
+## Ringkasan Keputusan
 
-Kandidat final memenuhi acceptance dan seluruh laporan audit segar. Base HEAD, fingerprint, dan scope Orion, Lyra, serta Litcq identik dengan kandidat ini. Integrasi editorial profil tetap ada, sementara data pengguna, pemisahan wilayah, dan penghapusan Berita konsisten pada source, navigasi, sitemap, dan parity tests.
+Kandidat final memenuhi gate. Fingerprint resmi, Base HEAD, scope, dan status ketiga report konsisten. Tidak ada temuan blocker/high terkait scope. Acceptance criteria dan validasi material terverifikasi; izin PUSH hanya berlaku untuk Base HEAD dan fingerprint di atas.
 
-## Validasi
+## Validasi Laporan Worker
 
-- Fingerprint resmi dihitung ulang setelah seluruh pemeriksaan: cocok persis dengan konteks.
-- `npm run check`: lulus, 25 file, 0 error, 0 warning, 0 hint.
-- `npm test`: build lulus dengan 7 halaman; 14/15 test lulus pada run pertama. Satu assertion transform ikon menu mobile terkena timing transisi dan tidak konsisten dengan hasil ulang.
-- Test terarah mobile navigation diulang 3 kali: 3/3 lulus.
-- Bukti Orion dan Litcq: test lengkap 15/15 lulus, fallback no-JS/observer, ARIA, links, overflow, `/berita.html` 404, dan regresi data lulus.
-- `git diff --check`: lulus.
-- Verifikasi langsung: profil mempertahankan hero editorial, data 1.201/626/575/390, Kentengsari 1/2, Nglarangan/Kentengsari/Kenteng Wetan, riwayat Krajan 1-3, fasilitas, dan struktur pemerintahan.
-- Berita dihapus dari route, navigasi, tipe, sitemap, dan surface publik; build menghasilkan tujuh route tanpa `berita.html`.
+- `.agents/reports/orion/latest.md` tersedia, lengkap, berstatus `READY_FOR_AUDIT`, timestamp `2026-08-15T18:53:58+07:00`, dan mencatat fingerprint yang sama.
+- `.agents/reports/lyra/latest.md` tersedia, lengkap, berstatus `PASS`, timestamp `2026-08-15T18:57:03+07:00` sesudah Orion, dan mencatat fingerprint/scope yang sama; tidak ada temuan.
+- `.agents/reports/litcq/latest.md` tersedia, lengkap, berstatus `PASS_WITH_NOTES`, timestamp `2026-08-15T18:57:00+07:00` sesudah Orion, dan mencatat fingerprint serta tiga file kandidat yang sama; tidak ada temuan teknis.
+- Perhitungan ulang `.agents/get-change-fingerprint.ps1` menghasilkan tepat:
+  `BASE_HEAD=928aa5ba0bd798b17a90909bdf538b4e1a6da111` dan `DIFF_FINGERPRINT=a2c63bcf67189b21356b745c30318e7feaca6dcd86165e676e82b2c7be80b15d`.
+- Daftar file resmi fingerprint tepat tiga file scope; perubahan report dan screenshot audit berada di bawah artefak yang dikecualikan oleh fingerprint.
 
 ## Blocking Issues
 
-Tidak ada blocker atau temuan `high`. Lyra melaporkan `PASS`; Litcq melaporkan `PASS_WITH_NOTES` tanpa temuan dan mencatat hanya browser in-app yang tidak tersedia, dengan Playwright lokal tetap lulus.
+Tidak ada.
 
 ## Risiko yang Diterima
 
-- Satu kegagalan assertion transform pada run Playwright pertama merupakan timing transisi; pengulangan test terarah 3/3 lulus dan tidak ada perubahan kandidat.
-- Browser in-app tidak tersedia pada sesi Litcq; validasi runtime lokal dan inspeksi source/diff tersedia.
+- Litcq mencatat percobaan sandbox awal terhenti `spawn EPERM`; Xavier mengulang dengan izin proses tambahan dan memperoleh build sukses serta Playwright 15/15. Risiko lingkungan tersebut tidak merupakan kegagalan aplikasi.
+- Peringatan `LF will be replaced by CRLF` dari Git adalah line-ending working-copy, bukan whitespace error; `git diff --check` tidak menemukan error.
+- Validasi visual Lyra berbasis screenshot kandidat dan pemeriksaan source; tidak ada temuan visual atau regresi yang dilaporkan.
 
-## Pemeriksaan yang Dilakukan
+## Pemeriksaan Xavier
 
-- Membaca diff langsung dan memastikan daftar file non-report tepat sesuai scope.
-- Membaca laporan Orion, Lyra, dan Litcq serta mencocokkan status, Base HEAD, fingerprint, dan scope.
-- Memverifikasi integrasi concurrent editorial profile tetap dipertahankan bersama data user dan penghapusan Berita.
-- Menjalankan fingerprint resmi, `npm run check`, `npm test`, test terarah Playwright, dan `git diff --check`.
-- Tidak mengubah source, asset, test, docs, atau laporan worker; tidak commit/push.
+- `npm run check`: PASS — 25 file, 0 error, 0 warning, 0 hint.
+- `npm test`: PASS — build Astro 7 halaman dan Playwright 15/15.
+- `npx playwright test tests/site-parity.spec.ts`: PASS — 9/9.
+- `git diff --check`: PASS.
+- Acceptance data: `1.201`, `626`, `575`, `390` tersedia dan diuji di `tests/site-parity.spec.ts:163-166`.
+- Acceptance administratif/komunitas/riwayat: `Kentengsari 1/2`, `Nglarangan/Kentengsari/Kenteng Wetan`, dan `Krajan 1/2/3` tersedia di `src/pages/profil-desa.astro:80-89` serta diuji di `tests/site-parity.spec.ts:171-180`.
+- Acceptance fasilitas: tepat satu heading `Drainase & Irigasi` di `src/pages/profil-desa.astro:110`, diuji di `tests/site-parity.spec.ts:189`; tidak ada link/teks publik `Berita`, diuji di `tests/site-parity.spec.ts:82-89`.
+- Editorial migration: diff memakai struktur editorial/gallery/vision baru pada Profil Desa dan mereferensikan asset lokal yang tersedia; tidak ada referensi asset atau copy Kuta pada file scope.
+- Reduced motion: selector hover Profil Desa, termasuk gallery, org card, CTA, story, dan statistik, dinetralkan dengan `transform: none` pada `src/pages/profil-desa.astro:659-670`; fallback reveal/no-JS diuji pada `tests/site-parity.spec.ts:192-203`.
+- UTF-8: decoding UTF-8 strict PASS dan pemeriksaan pola mojibake menghasilkan `MOJIBAKE=NONE`.
+- Responsive/no-JS/accessibility: suite parity 9/9 mencakup target widths, overflow, no-JS, metadata/route, gallery dialog, keyboard/focus, dan referensi ARIA; suite UMKM 15/15 mencakup interaksi, reduced motion, dan grid 1/2/3 kolom.
 
-## Keputusan
-
-`PUSH`
-
-Diff dengan fingerprint `8b0c6d3d568067128758b3ab0d8a10c88f147893f59e9c926ac0da148280fb34` boleh didorong oleh Master sesuai AGENTS.md. Tidak ada perubahan file kandidat setelah audit.
+PUSH
