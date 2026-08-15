@@ -1,14 +1,14 @@
 # Lyra Report
 
-- Waktu audit: 2026-08-15T18:57:03+07:00
-- Base HEAD: 928aa5ba0bd798b17a90909bdf538b4e1a6da111
-- Diff fingerprint: a2c63bcf67189b21356b745c30318e7feaca6dcd86165e676e82b2c7be80b15d
-- Scope: `src/pages/profil-desa.astro`, `tests/site-parity.spec.ts`, `tests/umkm.spec.ts`
+- Waktu audit: 2026-08-15T23:47:08.5496798+07:00
+- Base HEAD: `58a0293588c54cb380ef67dc03446734208c9b96`
+- Diff fingerprint: `f135316ef22f310f2998c5cbba861b7f43225003242395b27671355f376f432d`
+- Scope: `src/layouts/SiteLayout.astro`, `src/pages/profil-desa.astro`, `src/styles/global.css`, `tests/site-parity.spec.ts`
 - Status: PASS
 
 ## Ringkasan
 
-Kandidat final konsisten secara visual pada desktop, tablet, dan mobile. Hero editorial, sejarah, statistik, wilayah, gallery landmark, visi-misi, struktur beserta connector, rail/nav, dan endcap terbaca serta mempertahankan hierarchy dan bahasa visual hijau-editorial yang sama. Tidak terlihat overflow horizontal atau kerusakan layout pada screenshot kandidat.
+Kandidat final secara visual telah mengikuti struktur dan proporsi utama referensi [Kuta Village](https://www.kutavillage.com/profile-desa): hero penuh viewport, header transparan, blok sejarah putih yang ringkas, kolase landmark, blok Visi/Misi biru muda, bagan organisasi putih, dan footer terang khusus halaman profil. Hierarki sans-serif, warna, whitespace, dan perilaku mobile konsisten dengan arah referensi serta konten Kentengsari.
 
 ## Temuan
 
@@ -16,14 +16,18 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Screenshot visual: `.agents/reports/orion/profil-desktop.png`, `.agents/reports/orion/profil-tablet.png`, `.agents/reports/orion/profil-mobile.png`; diperiksa untuk proporsi, wrapping, alignment, contrast, rail/nav, gallery, connector, dan endcap.
-- Markup presentasional: `src/pages/profil-desa.astro:28-142` mencakup seluruh section yang diminta; gallery memakai tiga figure ber-caption di `:97-103`, struktur dan connector di `:123-138`.
-- Responsive rules: `src/pages/profil-desa.astro:409-457` dan `:622-657` mengubah rail menjadi scrollable, grid menjadi single-column, connector menjadi vertikal, serta gallery menjadi susunan mobile yang terbaca.
-- Reduced motion: `src/styles/global.css:293-356` dan override `src/pages/profil-desa.astro:659-671` mencakup hover transform CTA, sejarah, statistik, gallery, struktur, dan endcap; reveal juga dinonaktifkan di `src/pages/profil-desa.astro:182-189`.
-- No-JS/readability: markup default di `src/pages/profil-desa.astro:164-169` tetap terlihat sebelum `.profile-js` aktif; no-JS assertion yang relevan tersedia di `tests/site-parity.spec.ts:192-203`.
-- UTF-8: source berhasil didekode sebagai UTF-8 strict dan tidak memuat pola mojibake.
-- Fingerprint resmi dijalankan sebelum laporan dan cocok dengan kandidat yang diberikan.
+- Menjalankan `.agents/get-change-fingerprint.ps1`; Base HEAD dan fingerprint sama persis dengan kandidat yang diberikan.
+- Meninjau markup dan CSS presentasional pada file scope, termasuk selector `.profile-hero`, `.profile-history`, `.profile-landmark`, `.profile-vision`, `.profile-structure`, breakpoint `max-width: 760px`, dan aturan `prefers-reduced-motion`.
+- Mengambil screenshot Playwright halaman `/profil-desa` pada 1440×1000, 768×900, dan 390×844.
+- Hasil layout: hero 1000px, 900px, dan 844px; tidak ada horizontal overflow pada ketiga breakpoint.
+- Desktop: section tersusun sebagai hero → sejarah/statistik → landmark → Visi/Misi → struktur → footer dengan layout dua kolom dan whitespace yang sebanding dengan referensi.
+- Mobile: hero tetap penuh viewport; gambar sejarah muncul sebelum teks; kolase, kartu Visi/Misi, bagan organisasi, dan footer tersusun satu kolom tanpa clipping atau wrapping yang merusak hierarchy.
+- Memastikan tidak ada elemen lama berbasis rail, endcap, atau editorial ornament pada DOM kandidat.
+- Memastikan tidak ada kecocokan mojibake (`â`, `Â`, `�`) pada file visual scope.
+- Memastikan scoping visual: `/profil-desa` memakai `profile-route` dan `profile-site-footer`, sementara `/` dan `/kontak` tetap memakai footer global.
+- Menjalankan `git diff --check`; tidak ada whitespace error.
 
 ## Batasan
 
-- `npm run build` dan Playwright tidak dapat dijalankan di lingkungan audit karena proses child-process gagal dengan `spawn EPERM`; tidak ada assertion failure yang teramati. Pemeriksaan visual dan source tetap selesai berdasarkan kandidat screenshot serta source/test scope.
+- Audit ini visual/design-only; validasi fungsi, route, aksesibilitas fungsional, dan regresi teknis menjadi tanggung jawab Litcq.
+- Screenshot referensi dan kandidat dibandingkan secara visual pada breakpoint yang sama; audit tidak menilai kesamaan pixel-per-pixel atau aset yang tidak dimiliki proyek.

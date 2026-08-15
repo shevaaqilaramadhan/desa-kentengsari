@@ -49,7 +49,7 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
     />
     <title>{title}</title>
   </head>
-  <body>
+  <body class:list={[activeRoute === 'profil-desa' && 'profile-route']}>
     <a
       class="fixed left-3 top-3 z-[200] -translate-y-[160%] rounded-lg bg-white px-4 py-3 font-extrabold text-kenteng-950 shadow-raised transition-transform focus:translate-y-0"
       href={skipTarget}
@@ -114,7 +114,7 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
 
     <slot />
 
-    <footer class="bg-kenteng-950 text-white/80">
+    <footer class:list={['bg-kenteng-950 text-white/80', activeRoute === 'profil-desa' && 'profile-site-footer']}>
       <div class="mx-auto grid w-[min(1120px,calc(100%-2rem))] gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <img
@@ -206,9 +206,79 @@ const socialImageUrl = new URL('/og.png', SITE.origin);
 </html>
 
 <style is:global>
+  .profile-route .site-header__inner {
+    min-height: 96px;
+  }
+
+  .profile-route .site-nav {
+    gap: 0;
+  }
+
+  .profile-route .site-nav__link {
+    padding-inline: 0.58rem;
+    font-size: 0.75rem;
+  }
+
+  .profile-route .profile-site-footer {
+    color: #5f6f7c;
+    background: #e8f0f5;
+  }
+
+  .profile-route .profile-site-footer > div:first-child {
+    padding-block: 3.25rem;
+    gap: 2rem;
+  }
+
+  .profile-route .profile-site-footer h2 {
+    color: #283a47;
+    font-size: 0.9rem;
+  }
+
+  .profile-route .profile-site-footer a:hover {
+    color: #275d59;
+  }
+
+  .profile-route .profile-site-footer a[href^='mailto:'] {
+    color: #326d69;
+  }
+
+  .profile-route .profile-site-footer > div:last-child {
+    border-color: rgb(53 80 95 / 0.16);
+  }
+
+  .profile-route .profile-site-footer > div:last-child > div {
+    color: #75838d;
+  }
+
   @media (max-width: 860px) {
+    .profile-route .site-header__inner {
+      min-height: 80px;
+    }
+
     .site-nav[data-open='true'] {
       display: flex;
+    }
+
+    .profile-route .profile-site-footer > div:first-child {
+      padding-block: 2.75rem;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .profile-route .profile-site-footer > div:first-child {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem 1rem;
+    }
+
+    .profile-route .profile-site-footer > div:first-child > div:first-child,
+    .profile-route .profile-site-footer > div:first-child > div:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .profile-route .profile-site-footer p,
+    .profile-route .profile-site-footer address,
+    .profile-route .profile-site-footer a {
+      font-size: 0.75rem;
     }
   }
 </style>
