@@ -1,47 +1,52 @@
 # Xavier QA Gate Report
 
-- Waktu gate: 2026-08-16T00:26:00+07:00
-- Base HEAD: `32ad61ae099ff41841dad020920468667e7310aa`
-- Diff fingerprint: `d5938c045c2fca314c2ecca85d74d90442323cb971712fe8217851b7e374e26e`
-- Scope/diff: `src/pages/profil-desa.astro`, `tests/site-parity.spec.ts`
-- Orion: READY_FOR_AUDIT
-- Lyra: PASS
-- Litcq: PASS
-- Keputusan: PUSH
+- Waktu gate: 2026-08-16T01:23:00+07:00
+- Base HEAD: `b53434880e812c26d9065969d8cd0beb09fc3c82`
+- Diff fingerprint: `e9a0e315b62a334074ff51d2eedc77176a7c11115750cd5e441ffe67ea9a50cc`
+- Scope/diff: `package.json`, `package-lock.json`, `src/layouts/SiteLayout.astro`, `src/pages/kontak.astro`, `src/styles/global.css`, `tests/site-parity.spec.ts`
+- Orion: `READY_FOR_AUDIT`
+- Lyra: `PASS`
+- Litcq: `PASS`
+- Keputusan: `PUSH`
 
 ## Ringkasan Keputusan
 
-Kandidat memenuhi tujuan perbaikan whitespace dan kerapian alignment halaman Profil Desa. Spacing section kini fluid pada transisi 1023/1024/1025px, tidak ada whitespace ekstrem, overlap, clipping, atau overflow, dan data serta perilaku halaman tetap terjaga. Perubahan tinggi total dokumen pada 1024px terbukti berasal dari reflow footer dua menjadi empat kolom, bukan lonjakan spacing pada section Profil Desa. Keputusan ini berlaku hanya untuk Base HEAD dan fingerprint yang tercantum di atas.
+Kandidat memenuhi acceptance criteria untuk menyamakan header/footer pada tujuh halaman, menjaga konsistensi UI lintas viewport, memakai font utama secara self-hosted, mempertahankan treatment logo, memastikan aset lazy-load sehat, serta menyediakan state loading/ready/no-JS yang jelas untuk Google Maps. Tidak ditemukan blocker atau high issue yang diperkenalkan oleh diff.
+
+Keputusan ini berlaku hanya untuk Base HEAD dan fingerprint yang tercantum di atas. Tidak ada commit atau push dilakukan oleh Xavier.
 
 ## Validasi Laporan Worker
 
-- Laporan Orion tersedia, lengkap, berstatus `READY_FOR_AUDIT`, serta mencatat Base HEAD dan fingerprint yang cocok.
-- Laporan Lyra round 2 tersedia, scope cocok, berstatus `PASS`, dan memeriksa enam viewport: 390, 768, 1023, 1024, 1025, dan 1440px.
-- Laporan Litcq round 2 tersedia, mencakup scope kandidat serta regresi tujuh route, berstatus `PASS`, dan menyatakan temuan medium round 1 telah terselesaikan.
-- Fingerprint resmi dihitung ulang Xavier dengan `.agents/get-change-fingerprint.ps1`; hasilnya identik dengan ketiga laporan:
-  `d5938c045c2fca314c2ecca85d74d90442323cb971712fe8217851b7e374e26e`.
-- Daftar file calon push hanya dua file scope yang diminta. Perubahan `.agents/reports/**` adalah artefak audit dan dikecualikan oleh fingerprint.
+- Laporan Orion tersedia, terbaru untuk fingerprint kandidat, scope cocok, dan berstatus `READY_FOR_AUDIT`.
+- Laporan Lyra round 2 tersedia, fingerprint dan Base HEAD cocok, scope cocok, dan berstatus `PASS`.
+- Laporan Litcq round 2 tersedia, fingerprint dan Base HEAD cocok, scope mencakup kandidat serta regresi seluruh route, dan berstatus `PASS`.
+- Fingerprint resmi dihitung ulang Xavier dengan `.agents/get-change-fingerprint.ps1`:
+  `BASE_HEAD=b53434880e812c26d9065969d8cd0beb09fc3c82` dan
+  `DIFF_FINGERPRINT=e9a0e315b62a334074ff51d2eedc77176a7c11115750cd5e441ffe67ea9a50cc`.
+- Daftar file kandidat non-report persis sama dengan scope yang diserahkan. Perubahan pada `.agents/reports/**` hanya merupakan artefak audit dan dikecualikan oleh fingerprint resmi.
 
 ## Blocking Issues
 
-Tidak ada blocking issue, blocker, atau high finding.
+Tidak ada.
 
 ## Risiko yang Diterima
 
-- Footer berpindah dari dua menjadi empat kolom pada breakpoint 1024px; audit visual dan fungsi memverifikasi reflow valid tanpa overlap, clipping, atau overflow. Tinggi footer turun sekitar 148px, sedangkan delta tinggi setiap section Profil Desa tetap di bawah 0,5px.
-- Validasi lokal pertama `npm test` terkena `spawn EPERM` saat esbuild membuat child process dalam sandbox. Rerun dengan izin proses yang sesuai berhasil penuh, sehingga ini dicatat sebagai batasan lingkungan, bukan kegagalan kandidat.
-- Kesamaan terhadap referensi dinilai dari hierarchy, proporsi, spacing, dan perilaku responsif; tidak ada tuntutan pixel-perfect atau penggunaan aset pihak lain.
+- Google Maps tetap memuat isi internal melalui iframe pihak ketiga. Request font Google di dalam iframe diterima sebagai boundary eksternal; main document tidak memuat font eksternal dan tidak ada request/error yang gagal pada audit.
+- Variasi rendering browser selain Chromium headless tidak diverifikasi.
+- Satu percobaan awal `npm test` menghasilkan `spawn EPERM` saat Astro/esbuild membuat child process karena batas eksekusi Windows; pengulangan berurutan dengan izin proses yang sesuai lulus penuh dan tidak menunjukkan kegagalan produk.
 
 ## Pemeriksaan Xavier
 
-- Membaca diff langsung pada `src/pages/profil-desa.astro` dan `tests/site-parity.spec.ts`; perubahan konsisten dengan tujuan menghapus min-height/padding keras dan menggantinya dengan spacing fluid.
-- Menjalankan fingerprint resmi dan memverifikasi Base HEAD, daftar file, serta SHA-256 konten.
-- Menjalankan `git diff --check`; lulus tanpa whitespace error. Warning LF/CRLF Windows bersifat normalisasi dan bukan error diff.
-- Menjalankan `npm run check`; lulus dengan 0 error, 0 warning, dan 0 hint.
-- Menjalankan full `npm test`; build Astro menghasilkan tujuh halaman dan Playwright lulus `16/16`.
-- Memverifikasi bukti enam viewport: hero sesuai tinggi viewport, section tersambung tanpa gap, padding/tinggi section 1023→1024→1025 berubah halus, dan tidak ada horizontal overflow.
-- Memverifikasi bukti geometri: card Visi/Misi dan node organisasi aligned/equal-height pada desktop-tablet, equal-width saat mobile, collage memiliki tiga gambar berdimensi positif, serta whitespace ratio berada dalam batas test.
-- Memverifikasi bukti regresi Litcq: seluruh tujuh route HTTP 200, canonical/metadata, no-JS, ARIA, keyboard/touch/Escape, reduced-motion, aset, data 2025, UTF-8, dan tidak adanya route/navigasi Berita.
-- Memverifikasi temuan round 1 tentang lonjakan spacing breakpoint telah ditutup oleh Orion dan diverifikasi ulang Lyra serta Litcq round 2.
+- `npm run check`: lulus, 25 file, 0 error, 0 warning, 0 hint.
+- `npm test`: lulus `18/18`; build Astro menghasilkan tujuh route statis.
+- `git diff --check`: lulus.
+- Dependency: `@fontsource-variable/plus-jakarta-sans@5.3.0` terpasang sesuai manifest dan lockfile; lockfile memiliki resolved URL, SHA-512 integrity, dan license `OFL-1.1`. Project license tetap `ISC`.
+- Full Playwright memverifikasi metadata/canonical, konten, no-JS, reduced-motion, navigasi keyboard/touch/Escape, galeri, form Kontak, UMKM, aset, ARIA, duplicate ID, console/page errors, request lokal gagal, dan overflow.
+- Shell parity tervalidasi pada tujuh route × enam viewport (`390`, `768`, `1023`, `1024`, `1025`, `1440`): `42/42` lulus. Signature yang dibandingkan mencakup tinggi header, geometri logo, warna/background footer, kolom/gap/padding/tinggi footer, geometri logo footer, dan computed body font.
+- Tidak ditemukan horizontal overflow, broken image setelah scroll, console error, page error, failed local request, duplicate ID, atau missing ARIA reference.
+- Map loading/ready/no-JS/reduced-motion/interactivity lulus; test map diulang tiga kali dan lulus `3/3` tanpa flake. Geometri shell tidak berubah saat transisi, placeholder tidak menutup interaksi setelah ready/no-JS, dan fallback loading tidak blank.
+- Request font di dalam iframe Google Maps tidak diperlakukan sebagai kegagalan karena main document bebas font eksternal, request tidak gagal, dan boundary pihak ketiga tersebut telah diterima dalam acceptance criteria.
 
-Keputusan: **PUSH**
+## Keputusan
+
+`PUSH`

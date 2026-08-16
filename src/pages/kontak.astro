@@ -17,8 +17,24 @@ import SiteLayout from '../layouts/SiteLayout.astro';
             <article class="flex gap-4 rounded-card border border-line bg-white p-5 shadow-card"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-kenteng-50 text-kenteng-700"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3 class="font-extrabold text-kenteng-950">Jam Pelayanan</h3><p class="mt-1 leading-7 text-muted">Senin – Jumat, pukul 08.00 – 14.00 WIB. Di luar jam tersebut silakan hubungi melalui email.</p></div></article>
             <article class="flex gap-4 rounded-card border border-line bg-white p-5 shadow-card"><div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-kenteng-50 text-kenteng-700"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2Z"/></svg></div><div><h3 class="font-extrabold text-kenteng-950">Layanan Aspirasi</h3><p class="mt-1 leading-7 text-muted">Sampaikan aspirasi dan pengaduan masyarakat melalui email resmi atau langsung ke kantor desa.</p></div></article>
           </div>
-          <div class="min-h-[430px] overflow-hidden rounded-panel border border-line bg-white shadow-card">
-            <iframe class="h-full min-h-[430px] w-full" src="https://maps.google.com/maps?q=Kentengsari,%20Windusari,%20Magelang&t=&z=14&ie=UTF8&iwloc=&output=embed" title="Peta lokasi Desa Kentengsari, Windusari, Magelang" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          <div class="map-shell min-h-[430px] overflow-hidden rounded-panel border border-line bg-white shadow-card" data-map-shell data-map-state="loading">
+            <div class="map-shell__placeholder" data-map-placeholder role="status" aria-live="polite" aria-atomic="true">
+              <span class="map-shell__pin" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 21s-7-5.1-7-11a7 7 0 0 1 14 0c0 5.9-7 11-7 11Z" />
+                  <circle cx="12" cy="10" r="2.6" />
+                </svg>
+              </span>
+              <span class="map-shell__label">Memuat peta lokasi…</span>
+              <span class="map-shell__hint">Desa Kentengsari, Windusari</span>
+            </div>
+            <iframe class="map-shell__frame h-full min-h-[430px] w-full" data-map-frame src="https://maps.google.com/maps?q=Kentengsari,%20Windusari,%20Magelang&t=&z=14&ie=UTF8&iwloc=&output=embed" title="Peta lokasi Desa Kentengsari, Windusari, Magelang" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+            <noscript>
+              <style>
+                [data-map-placeholder] { display: none !important; }
+                [data-map-frame] { opacity: 1 !important; }
+              </style>
+            </noscript>
           </div>
         </div>
 
@@ -43,6 +59,20 @@ import SiteLayout from '../layouts/SiteLayout.astro';
   </main>
 
   <script>
+    const mapShell = document.querySelector<HTMLElement>('[data-map-shell]');
+    const mapFrame = mapShell?.querySelector<HTMLIFrameElement>('[data-map-frame]');
+    const mapPlaceholder = mapShell?.querySelector<HTMLElement>('[data-map-placeholder]');
+
+    if (mapShell && mapFrame) {
+      const setMapReady = () => {
+        mapShell.dataset.mapState = 'ready';
+        mapPlaceholder?.setAttribute('aria-hidden', 'true');
+      };
+
+      mapFrame.addEventListener('load', setMapReady, { once: true });
+      mapShell.dataset.mapEnhanced = 'true';
+    }
+
     const form = document.querySelector<HTMLFormElement>('#contactForm');
     form?.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -59,3 +89,106 @@ import SiteLayout from '../layouts/SiteLayout.astro';
     });
   </script>
 </SiteLayout>
+
+<style>
+  .map-shell {
+    position: relative;
+    isolation: isolate;
+    background: #eef7f0;
+  }
+
+  .map-shell__placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: 2rem;
+    overflow: hidden;
+    color: #175233;
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 38%, rgb(255 255 255 / 0.88), transparent 32%),
+      linear-gradient(145deg, #f6faf7, #e3f0e7);
+    transition: opacity 240ms ease, visibility 240ms ease;
+  }
+
+  .map-shell__placeholder::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.52) 50%, transparent 65%);
+    transform: translateX(-100%);
+    animation: map-shell-shimmer 2.4s ease-in-out infinite;
+  }
+
+  .map-shell__pin {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    place-items: center;
+    color: #1e6b3f;
+    background: white;
+    border: 1px solid #d9eddf;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgb(18 63 38 / 0.12);
+  }
+
+  .map-shell__label,
+  .map-shell__hint {
+    position: relative;
+    z-index: 1;
+  }
+
+  .map-shell__label {
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .map-shell__hint {
+    margin-top: 0.35rem;
+    color: #5f6b76;
+    font-size: 0.8rem;
+  }
+
+  .map-shell__frame {
+    position: relative;
+    z-index: 1;
+    display: block;
+    border: 0;
+    opacity: 1;
+    transition: opacity 240ms ease;
+  }
+
+  .map-shell[data-map-enhanced='true'][data-map-state='loading'] .map-shell__frame {
+    opacity: 0;
+  }
+
+  .map-shell[data-map-state='ready'] .map-shell__placeholder {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  @keyframes map-shell-shimmer {
+    55%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map-shell__placeholder,
+    .map-shell__frame {
+      transition: none;
+    }
+
+    .map-shell__placeholder::after {
+      animation: none;
+    }
+  }
+</style>

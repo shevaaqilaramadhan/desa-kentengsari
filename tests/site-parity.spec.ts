@@ -314,6 +314,159 @@ test('profile sections keep balanced responsive spacing and orderly geometry', a
   }
 });
 
+test('shared header and footer stay identical while lazy assets remain healthy on every route', async ({ page }) => {
+  test.setTimeout(120_000);
+
+  const viewports = [
+    { width: 390, height: 844 },
+    { width: 768, height: 900 },
+    { width: 1440, height: 1000 },
+  ] as const;
+
+  const consoleErrors: string[] = [];
+  const pageErrors: string[] = [];
+  const failedLocalRequests: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text());
+  });
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('requestfailed', (request) => {
+    if (request.url().startsWith('http://127.0.0.1:4321')) failedLocalRequests.push(request.url());
+  });
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    let expectedShell: Awaited<ReturnType<typeof readShellSignature>> | undefined;
+
+    for (const route of routes) {
+      consoleErrors.length = 0;
+      pageErrors.length = 0;
+      failedLocalRequests.length = 0;
+
+      const response = await page.goto(route.path, { waitUntil: 'domcontentloaded' });
+      expect(response?.ok(), `${viewport.width}px ${route.path}: HTTP status`).toBeTruthy();
+
+      await page.evaluate(async () => {
+        const step = Math.max(320, Math.floor(innerHeight * 0.72));
+        for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+          scrollTo(0, y);
+          await new Promise((resolve) => setTimeout(resolve, 30));
+        }
+        scrollTo(0, document.documentElement.scrollHeight);
+        await new Promise((resolve) => setTimeout(resolve, 120));
+      });
+
+      const assets = await page.evaluate(async () => {
+        const images = [...document.images];
+        await Promise.all(images.map(async (image) => {
+          if (!image.complete) {
+            await Promise.race([
+              new Promise<void>((resolve) => {
+                image.addEventListener('load', () => resolve(), { once: true });
+                image.addEventListener('error', () => resolve(), { once: true });
+              }),
+              new Promise<void>((resolve) => setTimeout(resolve, 2_000)),
+            ]);
+          }
+        }));
+
+        return {
+          brokenImages: images
+            .filter((image) => !image.complete || image.naturalWidth <= 0)
+            .map((image) => image.currentSrc || image.src),
+          frames: [...document.querySelectorAll<HTMLIFrameElement>('iframe')].map((frame) => {
+            const rect = frame.getBoundingClientRect();
+            return {
+              title: frame.title,
+              src: frame.src,
+              width: rect.width,
+              height: rect.height,
+            };
+          }),
+          overflow: document.documentElement.scrollWidth - innerWidth,
+          duplicateIds: [...document.querySelectorAll<HTMLElement>('[id]')]
+            .map((element) => element.id)
+            .filter((id, index, ids) => ids.indexOf(id) !== index),
+          missingAriaReferences: [...document.querySelectorAll<HTMLElement>('[aria-controls],[aria-describedby],[aria-labelledby]')]
+            .flatMap((element) => ['aria-controls', 'aria-describedby', 'aria-labelledby']
+              .flatMap((attribute) => (element.getAttribute(attribute) ?? '').split(/\s+/).filter(Boolean))
+              .filter((id) => !document.getElementById(id))),
+        };
+      });
+
+      expect(assets.brokenImages, `${viewport.width}px ${route.path}: broken image`).toEqual([]);
+      expect(assets.overflow, `${viewport.width}px ${route.path}: horizontal overflow`).toBeLessThanOrEqual(0);
+      expect(assets.duplicateIds, `${viewport.width}px ${route.path}: duplicate IDs`).toEqual([]);
+      expect(assets.missingAriaReferences, `${viewport.width}px ${route.path}: missing ARIA references`).toEqual([]);
+      for (const frame of assets.frames) {
+        expect(frame.title, `${viewport.width}px ${route.path}: iframe title`).not.toBe('');
+        expect(frame.src, `${viewport.width}px ${route.path}: iframe src`).toMatch(/^https:\/\//);
+        expect(frame.width, `${viewport.width}px ${route.path}: iframe width`).toBeGreaterThan(0);
+        expect(frame.height, `${viewport.width}px ${route.path}: iframe height`).toBeGreaterThan(0);
+      }
+
+      const shell = await readShellSignature(page);
+      if (!expectedShell) expectedShell = shell;
+      else {
+        expect(shell.footer.background, `${viewport.width}px ${route.path}: footer background`).toBe(expectedShell.footer.background);
+        expect(shell.footer.color, `${viewport.width}px ${route.path}: footer color`).toBe(expectedShell.footer.color);
+        expect(shell.footer.columns, `${viewport.width}px ${route.path}: footer columns`).toBe(expectedShell.footer.columns);
+        expect(shell.footer.gap, `${viewport.width}px ${route.path}: footer gap`).toBe(expectedShell.footer.gap);
+        expect(Math.abs(shell.footer.paddingTop - expectedShell.footer.paddingTop), `${viewport.width}px ${route.path}: footer top padding`).toBeLessThanOrEqual(1);
+        expect(Math.abs(shell.footer.paddingBottom - expectedShell.footer.paddingBottom), `${viewport.width}px ${route.path}: footer bottom padding`).toBeLessThanOrEqual(1);
+        expect(Math.abs(shell.footer.height - expectedShell.footer.height), `${viewport.width}px ${route.path}: footer height`).toBeLessThanOrEqual(1);
+        expect(Math.abs(shell.header.height - expectedShell.header.height), `${viewport.width}px ${route.path}: header height`).toBeLessThanOrEqual(1);
+        expect(shell.header.logo, `${viewport.width}px ${route.path}: header logo`).toEqual(expectedShell.header.logo);
+        expect(shell.footer.logo, `${viewport.width}px ${route.path}: footer logo`).toEqual(expectedShell.footer.logo);
+      }
+
+      expect(shell.bodyFont).toContain('Plus Jakarta Sans Variable');
+      expect(consoleErrors, `${viewport.width}px ${route.path}: console errors`).toEqual([]);
+      expect(pageErrors, `${viewport.width}px ${route.path}: page errors`).toEqual([]);
+      expect(failedLocalRequests, `${viewport.width}px ${route.path}: failed local requests`).toEqual([]);
+    }
+  }
+
+  expect(await page.locator('link[href*="fonts.googleapis"], link[href*="fonts.gstatic"]').count()).toBe(0);
+});
+
+async function readShellSignature(page: import('@playwright/test').Page) {
+  return page.evaluate(() => {
+    const rectSignature = (element: Element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        width: Math.round(rect.width * 100) / 100,
+        height: Math.round(rect.height * 100) / 100,
+        radius: style.borderRadius,
+        objectFit: style.objectFit,
+      };
+    };
+    const header = document.querySelector<HTMLElement>('.site-header__inner')!;
+    const footer = document.querySelector<HTMLElement>('.site-footer')!;
+    const footerGrid = footer.querySelector<HTMLElement>('.site-footer__grid')!;
+    const footerStyle = getComputedStyle(footer);
+    const gridStyle = getComputedStyle(footerGrid);
+    return {
+      bodyFont: getComputedStyle(document.body).fontFamily,
+      header: {
+        height: header.getBoundingClientRect().height,
+        logo: rectSignature(header.querySelector('.site-header__logo')!),
+      },
+      footer: {
+        background: footerStyle.backgroundColor,
+        color: footerStyle.color,
+        columns: gridStyle.gridTemplateColumns,
+        gap: gridStyle.gap,
+        paddingTop: Number.parseFloat(gridStyle.paddingTop),
+        paddingBottom: Number.parseFloat(gridStyle.paddingBottom),
+        height: footer.getBoundingClientRect().height,
+        logo: rectSignature(footer.querySelector('.site-footer__logo')!),
+      },
+    };
+  });
+}
+
 test('gallery dialog supports close button, Escape, backdrop, and focus return', async ({ page }) => {
   await page.goto('/galeri.html');
   const triggers = page.locator('[data-lightbox]');
@@ -351,6 +504,121 @@ test('contact form keeps its no-JS mailto fallback and enhanced status', async (
   await page.getByLabel('Pesan').fill('Mohon informasi pelayanan desa.');
   await form.evaluate((element) => element.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
   await expect(page.locator('#formNote')).toContainText('Aplikasi email Anda akan terbuka');
+});
+
+test('contact map uses a deterministic loading shell and remains visible without JavaScript', async ({ browser }) => {
+  test.setTimeout(60_000);
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1440, height: 1000 },
+  ]) {
+    const context = await browser.newContext({
+      baseURL: 'http://127.0.0.1:4321',
+      viewport,
+    });
+    const page = await context.newPage();
+    let releaseMap = () => {};
+    let markMapRequested = () => {};
+    const mapRequested = new Promise<void>((resolve) => {
+      markMapRequested = resolve;
+    });
+    const mapGate = new Promise<void>((resolve) => {
+      releaseMap = resolve;
+    });
+
+    await page.route('https://maps.google.com/**', async (route) => {
+      markMapRequested();
+      await mapGate;
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><html lang="id"><body><p>Peta uji siap</p></body></html>',
+      });
+    });
+
+    await page.goto('/kontak.html', { waitUntil: 'commit' });
+    const shell = page.locator('[data-map-shell]');
+    const placeholder = page.locator('[data-map-placeholder]');
+    const frame = page.locator('[data-map-frame]');
+    await shell.scrollIntoViewIfNeeded();
+    await mapRequested;
+    await expect(shell).toHaveAttribute('data-map-enhanced', 'true');
+    await expect(shell).toHaveAttribute('data-map-state', 'loading');
+    await expect(placeholder).toBeVisible();
+    await expect(placeholder).toHaveAttribute('role', 'status');
+    await expect(placeholder).toHaveAttribute('aria-live', 'polite');
+    await expect(placeholder).toContainText('Memuat peta lokasi…');
+    await expect(frame).toHaveCSS('opacity', '0');
+
+    const loadingGeometry = await shell.evaluate((element) => {
+      const frameElement = element.querySelector<HTMLIFrameElement>('[data-map-frame]')!;
+      const shellRect = element.getBoundingClientRect();
+      const frameRect = frameElement.getBoundingClientRect();
+      return {
+        shell: { width: shellRect.width, height: shellRect.height },
+        frame: { width: frameRect.width, height: frameRect.height },
+        background: getComputedStyle(element).backgroundColor,
+      };
+    });
+    expect(loadingGeometry.shell.width).toBeGreaterThan(0);
+    expect(loadingGeometry.shell.height).toBeGreaterThanOrEqual(430);
+    expect(Math.abs(loadingGeometry.frame.width - (loadingGeometry.shell.width - 2))).toBeLessThanOrEqual(1);
+    expect(Math.abs(loadingGeometry.frame.height - (loadingGeometry.shell.height - 2))).toBeLessThanOrEqual(1);
+    expect(loadingGeometry.background).not.toBe('rgb(255, 255, 255)');
+
+    releaseMap();
+    await expect(shell).toHaveAttribute('data-map-state', 'ready');
+    await expect(frame).toHaveCSS('opacity', '1');
+    await expect(placeholder).toBeHidden();
+    await expect(placeholder).toHaveAttribute('aria-hidden', 'true');
+    await expect(placeholder).toHaveCSS('pointer-events', 'none');
+    const readyGeometry = await shell.evaluate((element) => {
+      const frameElement = element.querySelector<HTMLIFrameElement>('[data-map-frame]')!;
+      const shellRect = element.getBoundingClientRect();
+      const frameRect = frameElement.getBoundingClientRect();
+      return {
+        shell: { width: shellRect.width, height: shellRect.height },
+        frame: { width: frameRect.width, height: frameRect.height },
+      };
+    });
+    expect(readyGeometry).toEqual({ shell: loadingGeometry.shell, frame: loadingGeometry.frame });
+    await context.close();
+  }
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1440, height: 1000 },
+  ]) {
+    const context = await browser.newContext({
+      baseURL: 'http://127.0.0.1:4321',
+      javaScriptEnabled: false,
+      viewport,
+    });
+    const page = await context.newPage();
+    await page.route('https://maps.google.com/**', (route) => route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<!doctype html><html lang="id"><body><p>Peta tanpa JavaScript</p></body></html>',
+    }));
+    await page.goto('/kontak.html', { waitUntil: 'domcontentloaded' });
+
+    const shell = page.locator('[data-map-shell]');
+    const placeholder = page.locator('[data-map-placeholder]');
+    const frame = page.locator('[data-map-frame]');
+    await shell.scrollIntoViewIfNeeded();
+    await expect(shell).not.toHaveAttribute('data-map-enhanced', 'true');
+    await expect(placeholder).toBeHidden();
+    await expect(frame).toBeVisible();
+    await expect(frame).toHaveCSS('opacity', '1');
+    const dimensions = await frame.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    });
+    expect(dimensions.width).toBeGreaterThan(0);
+    expect(dimensions.height).toBeGreaterThanOrEqual(430);
+    await context.close();
+  }
 });
 
 test('mobile navigation and every page remain overflow-free at target widths', async ({ page, browser }) => {

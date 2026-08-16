@@ -1,14 +1,14 @@
-# Lyra Report — Audit Round 2
+# Lyra Report
 
-- Waktu audit: 2026-08-16T00:22:16.0429469+07:00
-- Base HEAD: `32ad61ae099ff41841dad020920468667e7310aa`
-- Diff fingerprint: `d5938c045c2fca314c2ecca85d74d90442323cb971712fe8217851b7e374e26e`
-- Scope: `src/pages/profil-desa.astro`, `tests/site-parity.spec.ts`
-- Status: PASS
+- Waktu audit: 2026-08-16T01:20:14+07:00
+- Base HEAD: `b53434880e812c26d9065969d8cd0beb09fc3c82`
+- Diff fingerprint: `e9a0e315b62a334074ff51d2eedc77176a7c11115750cd5e441ffe67ea9a50cc`
+- Scope: `package.json`, `package-lock.json`, `src/layouts/SiteLayout.astro`, `src/pages/kontak.astro`, `src/styles/global.css`, `tests/site-parity.spec.ts`
+- Status: `PASS`
 
 ## Ringkasan
 
-Audit visual round 2 lulus. Penggantian breakpoint spacing yang keras dengan nilai `clamp()` fluid menghasilkan transisi padding dan geometri section yang halus pada 1023/1024/1025px. Seluruh layout tetap teratur pada 390, 768, 1023, 1024, 1025, dan 1440px tanpa whitespace ekstrem, clipping, overlap, atau horizontal overflow. Hero, collage, card Visi/Misi, bagan organisasi, dan footer mempertahankan hierarchy visual Kentengsari/Kuta.
+Audit visual round 2 lulus. Shell bersama tetap konsisten pada seluruh tujuh route, dan blank map note round 1 sudah terselesaikan. Halaman Kontak kini memiliki loading placeholder yang intentional, transisi ke map ready tanpa layout shift, iframe no-JS yang tidak tertutup, dan reduced-motion yang tenang. Tidak ditemukan overlay blocking, clipping, overlap, overflow, mojibake, atau regresi visual.
 
 ## Temuan
 
@@ -16,22 +16,23 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Menjalankan `.agents/get-change-fingerprint.ps1` sebelum dan setelah audit; Base HEAD serta fingerprint identik dengan kandidat round 2.
-- Meninjau diff presentasional pada `src/pages/profil-desa.astro`, khususnya fluid spacing, gap, tinggi image/collage, margin card, margin bagan, penghapusan forced `min-height`, dan mobile spacing.
-- Mengambil dan memeriksa screenshot full-page Chromium Playwright pada 390x844, 768x900, 1023x900, 1024x900, 1025x900, dan 1440x1000 dengan `prefers-reduced-motion: reduce`.
-- Hero terukur tepat satu viewport: 844px pada mobile, 900px pada 768–1025px, dan 1000px pada desktop 1440px.
-- Seluruh section memiliki `min-height: 0`, continuity antar-section 0px, dan tidak ada horizontal overflow pada keenam viewport.
-- Padding 1023/1024/1025 bergerak fluid tanpa lonjakan: history 84.143/84.191/84.238px; landmark 80.143/80.191/80.238px; vision 81.107/81.142/81.178px; structure 86.625/86.667/86.709px.
-- Tinggi section 1023/1024/1025 juga berubah mulus: history 798.11/798.28/798.45px; landmark 740.70/740.94/741.17px; vision 744.42/744.58/744.69px; structure 817.41/817.53/817.67px.
-- History image-content dan landmark collage-content tetap sejajar pada tablet/desktop; mobile tersusun satu kolom dengan gambar lebih dahulu dan gap yang konsisten.
-- Ketiga image collage memiliki ukuran positif dan grid yang stabil pada semua viewport; crop gambar konsisten tanpa distorsi visual.
-- Kedua card Visi/Misi sejajar dan sama tinggi pada 768–1440px; pada 390px keduanya menjadi satu kolom dengan lebar identik dan spacing teratur.
-- Tiga node organisasi sejajar dan sama tinggi pada 768–1440px; pada 390px menjadi satu kolom dengan lebar identik. Head node, connector, territory chips, dan dua notes tetap terpusat dan tidak terpotong.
-- Footer beralih dari grid dua kolom pada 1023px menjadi empat kolom pada 1024px sesuai breakpoint `lg`. Tingginya berubah dari 525.16px menjadi 376.67px, tetapi reflow terlihat teratur, tidak menggeser section profile, dan tidak menimbulkan overlap, clipping, atau whitespace abnormal; 1024 dan 1025 identik secara visual.
-- Tidak terlihat mojibake/karakter UTF-8 rusak, teks terpotong, card acak, border tidak sejajar, atau transisi warna section yang membingungkan.
-- `git diff --check` lulus tanpa whitespace error.
+- Fingerprint resmi dijalankan sebelum audit dan setelah seluruh artefak sementara dihapus; Base HEAD serta fingerprint identik dengan kontrak round 2.
+- Build Astro lulus dan menghasilkan tujuh route statis.
+- Playwright khusus shell dan map lulus `2/2`: shared header/footer seluruh route serta state map loading/ready/no-JS.
+- Screenshot full-page dan scroll nyata sampai footer pada `/index.html`, `/profil-desa.html`, `/destinasi.html`, `/dusun.html`, `/galeri.html`, `/umkm.html`, dan `/kontak.html` di `1440x1000` serta `390x844`.
+- Shell desktop seluruh route identik: header inner `1140x76px`, footer sekitar `1440x322.09px`, grid footer empat kolom `253px`, dan tidak ada horizontal overflow.
+- Shell mobile seluruh route identik: header inner `358x72px`, footer sekitar `390x689.64px`, grid footer dua kolom `171px`, serta brand/address span dan legal row membungkus secara rapi.
+- Tidak ada console error maupun page error pada seluruh route yang diperiksa.
+- Kontak diuji terpisah pada `1440x1000`, `768x900`, dan `390x844` dengan request map ditahan untuk menangkap initial loading secara deterministik.
+- Loading state di `src/pages/kontak.astro:20`–`31` terlihat intentional: panel hijau muda, ikon pin, label jelas, hierarchy terpusat, `role="status"`, `aria-live="polite"`, dan iframe transparan selama loading.
+- Transisi ready di `src/pages/kontak.astro:67`–`72` dan `171`–`175` menghasilkan geometri identik sebelum/sesudah: delta lebar `0px`, delta tinggi `0px` pada desktop/tablet/mobile. Placeholder menjadi `visibility:hidden`, `opacity:0`, `pointer-events:none`, sementara iframe menjadi `opacity:1`.
+- Google Maps asli diverifikasi terpisah: map tergambar normal dan interaktif; fade placeholder 240 ms tidak memblokir map.
+- Fallback no-JS di `src/pages/kontak.astro:32`–`37` lulus pada ketiga viewport: placeholder `display:none`, iframe terlihat dengan opacity penuh, dan ukuran panel tetap sama.
+- Reduced-motion di `src/pages/kontak.astro:184`–`192` lulus: shimmer tidak berjalan (`animation-name:none`) dan durasi transisi efektif `0.01ms` dari aturan global.
+- Form, card informasi, map shell, section rhythm, transisi content-to-footer, header fixed, serta footer Kontak tetap teratur pada desktop/tablet/mobile.
+- Screenshot dan artefak sementara audit telah dihapus. Tidak ada source, test, dependency, laporan agent lain, commit, atau push yang diubah.
 
 ## Batasan
 
-- Browser terintegrasi tidak tersedia pada sesi ini; audit dilakukan pada preview lokal terbaru menggunakan Chromium Playwright standalone.
-- Audit ini visual/design-only. Validasi fungsi runtime, link/aset, HTTP, SEO, keyboard, dan ARIA fungsional berada di luar scope Lyra.
+- Google Maps merupakan layanan eksternal; waktu pemuatan aktual tetap bergantung jaringan, tetapi loading placeholder sekarang menutup masa tunggu tersebut secara visual.
+- Audit visual dijalankan pada Chromium headless; variasi rendering browser lain tidak diperiksa.
