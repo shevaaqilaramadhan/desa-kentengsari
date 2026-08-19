@@ -1,14 +1,14 @@
 # Lyra Report
 
-- Waktu audit: 2026-08-16T01:20:14+07:00
+- Waktu audit: 2026-08-19T20:12:17+07:00
 - Base HEAD: `b53434880e812c26d9065969d8cd0beb09fc3c82`
-- Diff fingerprint: `e9a0e315b62a334074ff51d2eedc77176a7c11115750cd5e441ffe67ea9a50cc`
-- Scope: `package.json`, `package-lock.json`, `src/layouts/SiteLayout.astro`, `src/pages/kontak.astro`, `src/styles/global.css`, `tests/site-parity.spec.ts`
+- Diff fingerprint: `f3757d27a910d0caa5c0d21d0c2f7bf7dd6e0aa40e492f4d72268951c4cc7a44`
+- Scope: seluruh kandidat non-report pada fingerprint; fokus visual `src/pages/profil-desa.astro` dan regresi shell dari `src/layouts/SiteLayout.astro`, `src/styles/global.css`, `src/pages/kontak.astro`.
 - Status: `PASS`
 
 ## Ringkasan
 
-Audit visual round 2 lulus. Shell bersama tetap konsisten pada seluruh tujuh route, dan blank map note round 1 sudah terselesaikan. Halaman Kontak kini memiliki loading placeholder yang intentional, transisi ke map ready tanpa layout shift, iframe no-JS yang tidak tertutup, dan reduced-motion yang tenang. Tidak ditemukan overlay blocking, clipping, overlap, overflow, mojibake, atau regresi visual.
+Perbaikan konektor membuat garis horizontal berhenti tepat di pusat kartu cabang, sehingga tidak lagi terlihat menggantung atau terputus di sisi kiri/kanan. Hierarki, warna garis, border kartu, dan treatment mobile tetap konsisten. Tidak ada temuan visual yang perlu ditindaklanjuti.
 
 ## Temuan
 
@@ -16,23 +16,14 @@ Tidak ada temuan.
 
 ## Pemeriksaan yang Dilakukan
 
-- Fingerprint resmi dijalankan sebelum audit dan setelah seluruh artefak sementara dihapus; Base HEAD serta fingerprint identik dengan kontrak round 2.
-- Build Astro lulus dan menghasilkan tujuh route statis.
-- Playwright khusus shell dan map lulus `2/2`: shared header/footer seluruh route serta state map loading/ready/no-JS.
-- Screenshot full-page dan scroll nyata sampai footer pada `/index.html`, `/profil-desa.html`, `/destinasi.html`, `/dusun.html`, `/galeri.html`, `/umkm.html`, dan `/kontak.html` di `1440x1000` serta `390x844`.
-- Shell desktop seluruh route identik: header inner `1140x76px`, footer sekitar `1440x322.09px`, grid footer empat kolom `253px`, dan tidak ada horizontal overflow.
-- Shell mobile seluruh route identik: header inner `358x72px`, footer sekitar `390x689.64px`, grid footer dua kolom `171px`, serta brand/address span dan legal row membungkus secara rapi.
-- Tidak ada console error maupun page error pada seluruh route yang diperiksa.
-- Kontak diuji terpisah pada `1440x1000`, `768x900`, dan `390x844` dengan request map ditahan untuk menangkap initial loading secara deterministik.
-- Loading state di `src/pages/kontak.astro:20`–`31` terlihat intentional: panel hijau muda, ikon pin, label jelas, hierarchy terpusat, `role="status"`, `aria-live="polite"`, dan iframe transparan selama loading.
-- Transisi ready di `src/pages/kontak.astro:67`–`72` dan `171`–`175` menghasilkan geometri identik sebelum/sesudah: delta lebar `0px`, delta tinggi `0px` pada desktop/tablet/mobile. Placeholder menjadi `visibility:hidden`, `opacity:0`, `pointer-events:none`, sementara iframe menjadi `opacity:1`.
-- Google Maps asli diverifikasi terpisah: map tergambar normal dan interaktif; fade placeholder 240 ms tidak memblokir map.
-- Fallback no-JS di `src/pages/kontak.astro:32`–`37` lulus pada ketiga viewport: placeholder `display:none`, iframe terlihat dengan opacity penuh, dan ukuran panel tetap sama.
-- Reduced-motion di `src/pages/kontak.astro:184`–`192` lulus: shimmer tidak berjalan (`animation-name:none`) dan durasi transisi efektif `0.01ms` dari aturan global.
-- Form, card informasi, map shell, section rhythm, transisi content-to-footer, header fixed, serta footer Kontak tetap teratur pada desktop/tablet/mobile.
-- Screenshot dan artefak sementara audit telah dihapus. Tidak ada source, test, dependency, laporan agent lain, commit, atau push yang diubah.
+- Fingerprint resmi dijalankan sebelum audit; Base HEAD dan fingerprint cocok dengan laporan Orion.
+- Diff CSS pada `src/pages/profil-desa.astro:602-635` diperiksa langsung. Rumus endpoint mempertimbangkan dua gap grid sehingga selaras dengan pusat tiga kolom, dan `z-index` menjaga sambungan garis tetap terlihat.
+- Assertion rendered geometry pada `tests/site-parity.spec.ts:241-292` lulus pada desktop 768 dan 1440 px dengan toleransi sambungan maksimal 1 px.
+- Layout mobile pada lebar 390 px lulus dengan cabang satu kolom, gap konsisten, dan konektor horizontal tersembunyi agar tidak membentuk garis silang.
+- Build Astro menghasilkan 7 route; suite Playwright lulus 18/18, termasuk pemeriksaan overflow dan shared shell lintas viewport.
+- Tidak ada gambar statis baru, perubahan font, warna global, atau perubahan header/footer yang diperkenalkan oleh turn ini.
 
 ## Batasan
 
-- Google Maps merupakan layanan eksternal; waktu pemuatan aktual tetap bergantung jaringan, tetapi loading placeholder sekarang menutup masa tunggu tersebut secara visual.
-- Audit visual dijalankan pada Chromium headless; variasi rendering browser lain tidak diperiksa.
+- Browser interaktif aplikasi tidak tersedia; audit visual didasarkan pada review CSS dan rendered geometry Chromium melalui suite Playwright lokal.
+- Variasi rendering browser selain Chromium tidak diperiksa.

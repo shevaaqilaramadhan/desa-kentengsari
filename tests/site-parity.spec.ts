@@ -238,6 +238,18 @@ test('profile sections keep balanced responsive spacing and orderly geometry', a
         return { top: rect.top + scrollY, bottom: rect.bottom + scrollY, left: rect.left, width: rect.width };
       });
 
+      const branches = document.querySelector<HTMLElement>('.profile-org__branches')!;
+      const branchesRect = branches.getBoundingClientRect();
+      const connectorStyle = getComputedStyle(branches, '::before');
+      const organizationConnector = {
+        lineLeft: branchesRect.left + Number.parseFloat(connectorStyle.left),
+        lineRight: branchesRect.right - Number.parseFloat(connectorStyle.right),
+        nodeCenters: [...branches.querySelectorAll<HTMLElement>(':scope > article')].map((node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.left + rect.width / 2;
+        }),
+      };
+
       return {
         heroHeight: document.querySelector<HTMLElement>('.profile-hero')!.getBoundingClientRect().height,
         documentHeight: document.documentElement.scrollHeight,
@@ -245,6 +257,7 @@ test('profile sections keep balanced responsive spacing and orderly geometry', a
         sections,
         visionCards: boxes('.profile-vision__card'),
         organizationNodes: boxes('.profile-org__branches > article'),
+        organizationConnector,
         collage: boxes('.profile-landmark__image'),
       };
     });
@@ -275,6 +288,8 @@ test('profile sections keep balanced responsive spacing and orderly geometry', a
       const organizationBottoms = layout.organizationNodes.map(({ bottom }) => Math.round(bottom));
       expect(new Set(organizationTops).size, `${viewport.width}px organization row alignment`).toBe(1);
       expect(new Set(organizationBottoms).size, `${viewport.width}px equal-height organization nodes`).toBe(1);
+      expect(Math.abs(layout.organizationConnector.lineLeft - layout.organizationConnector.nodeCenters[0]!), `${viewport.width}px left connector join`).toBeLessThanOrEqual(1);
+      expect(Math.abs(layout.organizationConnector.lineRight - layout.organizationConnector.nodeCenters.at(-1)!), `${viewport.width}px right connector join`).toBeLessThanOrEqual(1);
     } else {
       const cardWidths = layout.visionCards.map(({ width }) => Math.round(width));
       const nodeWidths = layout.organizationNodes.map(({ width }) => Math.round(width));
